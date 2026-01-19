@@ -3,15 +3,15 @@ import { Public_Sans, Libre_Baskerville } from "next/font/google";
 import "./globals.css";
 
 const publicSans = Public_Sans({
-  variable: "--font-public-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
 });
 
 const libreBaskerville = Libre_Baskerville({
-  variable: "--font-libre-baskerville",
   subsets: ["latin"],
   weight: ["400", "700"],
+  variable: "--font-serif",
 });
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${publicSans.variable} ${libreBaskerville.variable} antialiased font-[--font-public-sans]`}
+        className={`${publicSans.variable} ${libreBaskerville.variable} antialiased font-sans`}
       >
         {children}
       </body>
