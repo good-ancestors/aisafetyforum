@@ -17,10 +17,10 @@ export default function Header() {
         <div className="max-w-[1200px] mx-auto px-8 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo.svg"
+              src="/logo.png"
               alt="AI Safety Forum Australia"
-              width={180}
-              height={60}
+              width={400}
+              height={200}
               className="h-[60px] w-auto"
               priority
             />
