@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Header() {
   return (
@@ -14,23 +15,15 @@ export default function Header() {
 
       <header className="bg-white border-b border-[#e0e4e8] sticky top-0 z-50">
         <div className="max-w-[1200px] mx-auto px-8 py-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-b from-[#0047ba] to-[#0a1f5c] flex items-center justify-center relative overflow-hidden">
-              <div className="flex flex-col gap-1 items-start pl-2">
-                <div className="h-[3px] w-5 bg-[#00d4ff] rounded-sm before:content-[''] before:inline-block before:w-[3px] before:h-[3px] before:bg-[#00d4ff] before:rounded-full before:mr-0.5 before:align-middle"></div>
-                <div className="h-[3px] w-[26px] bg-[#00d4ff] rounded-sm before:content-[''] before:inline-block before:w-[3px] before:h-[3px] before:bg-[#00d4ff] before:rounded-full before:mr-0.5 before:align-middle"></div>
-                <div className="h-[3px] w-[22px] bg-[#00d4ff] rounded-sm before:content-[''] before:inline-block before:w-[3px] before:h-[3px] before:bg-[#00d4ff] before:rounded-full before:mr-0.5 before:align-middle"></div>
-                <div className="h-[3px] w-[18px] bg-[#00d4ff] rounded-sm before:content-[''] before:inline-block before:w-[3px] before:h-[3px] before:bg-[#00d4ff] before:rounded-full before:mr-0.5 before:align-middle"></div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-[1.3rem] text-[#0a1f5c] tracking-tight">AI</span>
-              <div className="w-0.5 h-7 bg-[#a8b0b8]"></div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-extrabold text-base text-[#0047ba] tracking-wide">SAFETY</span>
-                <span className="font-bold text-[0.7rem] text-[#0a1f5c] tracking-[0.15em]">FORUM</span>
-              </div>
-            </div>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.svg"
+              alt="AI Safety Forum Australia"
+              width={180}
+              height={60}
+              className="h-[60px] w-auto"
+              priority
+            />
           </Link>
 
           <nav className="flex items-center gap-2">
