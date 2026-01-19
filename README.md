@@ -2,16 +2,9 @@
 
 Website for the Australian AI Safety Forum 2026.
 
-## Structure
-
-- `/website` - Next.js website
-- `/Branding` - Brand assets and design files
-- `/mockup-8-branded.html` - Original design mockup
-
 ## Getting Started
 
 ```bash
-cd website
 npm install
 npm run dev
 ```
@@ -26,4 +19,11 @@ Visit http://localhost:3000
 - Tailwind CSS 4+
 - Framer Motion
 
-See `/website/CLAUDE.md` for detailed project documentation.
+See `CLAUDE.md` for detailed project documentation.
+
+## Project Structure
+
+- `/app` - Next.js pages and layouts
+- `/components` - React components
+- `/public` - Static assets
+- `/_reference` - Design mockups and branding (not in repo)
