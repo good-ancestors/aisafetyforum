@@ -21,9 +21,12 @@ These environment variables must be set in Vercel for the deployment to succeed:
 
 ### Application
 - `NEXT_PUBLIC_BASE_URL` - Base URL for the application
+  - **IMPORTANT**: Must include `https://` protocol
   - Production: `https://aisafetyforum.au`
-  - Staging: `https://aisafetyforum-staging.vercel.app` (or similar)
-  - Preview: Auto-generated Vercel URL
+  - Vercel: `https://aisafetyforum.vercel.app`
+  - Preview: Use `https://$VERCEL_URL` (Vercel auto-populates this)
+  - Used for Stripe redirect URLs (success/cancel pages)
+  - Code has fallback, but explicit setting is recommended
 
 ## Environment-Specific Notes
 

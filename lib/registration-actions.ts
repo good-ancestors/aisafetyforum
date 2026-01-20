@@ -93,7 +93,20 @@ export async function createCheckoutSession(data: RegistrationFormData) {
 
     // Create Stripe checkout session
     const stripe = requireStripe();
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisafetyforum.vercel.app';
+
+    // Build base URL with fallback logic
+    // 1. Use NEXT_PUBLIC_BASE_URL if set
+    // 2. Use VERCEL_URL for preview deployments
+    // 3. Fallback to production URL
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+    if (!baseUrl && process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    }
+
+    if (!baseUrl) {
+      baseUrl = 'https://aisafetyforum.vercel.app';
+    }
 
     // Ensure baseUrl has protocol
     const fullBaseUrl = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
