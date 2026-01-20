@@ -1,40 +1,54 @@
 import Stripe from 'stripe';
 
 /**
- * Stripe client singleton.
+ * Stripe client singleton (lazy-initialized).
  *
- * In production, this will throw immediately if STRIPE_SECRET_KEY is not set.
+ * The Stripe client is created on first use to avoid build-time errors
+ * when environment variables aren't available during static analysis.
+ *
  * In development, you can set SKIP_STRIPE_VALIDATION=true to test non-payment features.
- *
- * This is "fail-fast" by default, which catches configuration issues early.
  */
 
-const shouldSkipValidation = process.env.SKIP_STRIPE_VALIDATION === 'true';
+let stripeInstance: Stripe | null = null;
+let stripeInitialized = false;
 
-if (!process.env.STRIPE_SECRET_KEY && !shouldSkipValidation) {
-  throw new Error(
-    'STRIPE_SECRET_KEY is not set in environment variables. ' +
-    'For local development without Stripe, set SKIP_STRIPE_VALIDATION=true in .env'
-  );
-}
+function getStripeClient(): Stripe | null {
+  if (stripeInitialized) {
+    return stripeInstance;
+  }
 
-// Export null if skipping validation (dev only), otherwise initialize Stripe
-export const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+  stripeInitialized = true;
+
+  if (process.env.STRIPE_SECRET_KEY) {
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2025-12-15.clover',
       typescript: true,
-    })
-  : null;
+    });
+  }
+
+  return stripeInstance;
+}
+
+// Export getter for backwards compatibility (returns null if not configured)
+export const stripe = null as Stripe | null; // Type hint only, use requireStripe() instead
 
 /**
  * Helper to ensure Stripe is configured before use.
  * Call this at the start of any function that needs Stripe.
  */
 export function requireStripe(): Stripe {
-  if (!stripe) {
+  const client = getStripeClient();
+  if (!client) {
+    const shouldSkipValidation = process.env.SKIP_STRIPE_VALIDATION === 'true';
+    if (shouldSkipValidation) {
+      throw new Error(
+        'Stripe is not configured. This feature requires STRIPE_SECRET_KEY to be set.'
+      );
+    }
     throw new Error(
-      'Stripe is not configured. This feature requires STRIPE_SECRET_KEY to be set.'
+      'STRIPE_SECRET_KEY is not set in environment variables. ' +
+      'For local development without Stripe, set SKIP_STRIPE_VALIDATION=true in .env'
     );
   }
-  return stripe;
+  return client;
 }
