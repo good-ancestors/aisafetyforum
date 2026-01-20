@@ -2,7 +2,7 @@
 
 import { requireStripe } from './stripe';
 import { prisma } from './prisma';
-import { ticketTiers, type TicketTierId } from './stripe-config';
+import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
 import { revalidatePath } from 'next/cache';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
@@ -24,19 +24,23 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       return { success: false, error: 'Invalid ticket type' };
     }
 
+    // Check if early bird pricing is active
+    const earlyBird = isEarlyBirdActive();
+    const currentPrice = earlyBird ? ticketTier.earlyBirdPrice : ticketTier.price;
+
     // Check if email is on free ticket list first
     const freeTicketCheck = await checkFreeTicketEmail(data.email);
 
     // Validate and apply coupon if provided
     let discount = null;
     let couponId = null;
-    let finalAmount: number = ticketTier.price;
+    let finalAmount: number = currentPrice;
     let discountAmount: number = 0;
 
     if (freeTicketCheck.isFree) {
       // Email is on free ticket list - automatically free
       finalAmount = 0;
-      discountAmount = ticketTier.price;
+      discountAmount = currentPrice;
     } else if (data.couponCode) {
       // Apply coupon code
       const validation = await validateCoupon(data.couponCode, data.email, data.ticketType);
@@ -60,8 +64,8 @@ export async function createCheckoutSession(data: RegistrationFormData) {
         email: data.email,
         name: data.name,
         organisation: data.organisation || null,
-        ticketType: ticketTier.name,
-        originalAmount: ticketTier.price,
+        ticketType: earlyBird ? `${ticketTier.name} (Early Bird)` : ticketTier.name,
+        originalAmount: currentPrice,
         discountAmount: discountAmount,
         amountPaid: finalAmount,
         couponId: couponId,
@@ -88,7 +92,9 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       };
     }
 
-    if (!ticketTier.stripePriceId) {
+    // Get the correct Stripe price ID based on early bird status
+    const stripePriceId = earlyBird ? ticketTier.stripeEarlyBirdPriceId : ticketTier.stripePriceId;
+    if (!stripePriceId) {
       return { success: false, error: 'Stripe price ID not configured for this ticket type' };
     }
 
@@ -125,7 +131,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       payment_method_types: ['card'],
       line_items: [
         {
-          price: ticketTier.stripePriceId,
+          price: stripePriceId,
           quantity: 1,
         },
       ],

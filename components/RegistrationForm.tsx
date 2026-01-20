@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createCheckoutSession, type RegistrationFormData } from '@/lib/registration-actions';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { checkFreeTicketEmail } from '@/lib/free-ticket-actions';
-import { ticketTiers } from '@/lib/stripe-config';
+import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline } from '@/lib/stripe-config';
 
 export default function RegistrationForm() {
   const router = useRouter();
@@ -17,6 +17,13 @@ export default function RegistrationForm() {
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [discount, setDiscount] = useState<any>(null);
   const [freeTicketReason, setFreeTicketReason] = useState<string | null>(null);
+
+  const earlyBird = isEarlyBirdActive();
+  const deadlineDate = new Date(earlyBirdDeadline).toLocaleDateString('en-AU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 
   async function handleApplyCoupon() {
     if (!couponCode.trim()) {
@@ -190,6 +197,23 @@ export default function RegistrationForm() {
           />
         </div>
 
+        {/* Early Bird Banner */}
+        {earlyBird && (
+          <div className="bg-gradient-to-r from-[#0a1f5c] to-[#0047ba] text-white rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#00d4ff]/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-[#00d4ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold">Early Bird Pricing — 40% Off!</p>
+                <p className="text-sm opacity-90">Register before {deadlineDate} to save</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Ticket Type Selection */}
         <div>
           <label className="block text-sm font-bold text-[#0a1f5c] mb-3">
@@ -224,8 +248,15 @@ export default function RegistrationForm() {
                       <div className="ml-4 text-right">
                         {freeTicketReason ? (
                           <>
-                            <div className="text-sm text-[#5c6670] line-through">{tier.priceDisplay}</div>
+                            <div className="text-sm text-[#5c6670] line-through">{earlyBird ? tier.earlyBirdPriceDisplay : tier.priceDisplay}</div>
                             <div className="text-xl font-bold text-green-600">$0.00 <span className="text-sm font-normal text-[#5c6670]">inc GST</span></div>
+                          </>
+                        ) : earlyBird ? (
+                          <>
+                            <div className="text-sm text-[#5c6670] line-through">{tier.priceDisplay}</div>
+                            <div className={`text-xl font-bold ${tier.textColor}`}>
+                              {tier.earlyBirdPriceDisplay} <span className="text-sm font-normal text-[#5c6670]">inc GST</span>
+                            </div>
                           </>
                         ) : (
                           <div className={`text-xl font-bold ${tier.textColor}`}>

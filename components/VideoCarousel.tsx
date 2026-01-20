@@ -1,7 +1,8 @@
 'use client';
 
 import useEmblaCarousel from 'embla-carousel-react';
-import { useEffect } from 'react';
+import Autoplay from 'embla-carousel-autoplay';
+import { useCallback } from 'react';
 
 interface Video {
   id: string;
@@ -20,20 +21,21 @@ const videos: Video[] = [
 ];
 
 export default function VideoCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    align: 'start',
-    slidesToScroll: 1,
-  });
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: 'center',
+      slidesToScroll: 1,
+    },
+    [Autoplay({ delay: 5000, stopOnInteraction: true })]
+  );
 
-  useEffect(() => {
-    if (!emblaApi) return;
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
 
-    const autoplay = setInterval(() => {
-      emblaApi.scrollNext();
-    }, 5000);
-
-    return () => clearInterval(autoplay);
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
   return (
@@ -47,34 +49,61 @@ export default function VideoCarousel() {
         </h2>
       </div>
 
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-5 pl-8 pr-5">
-          {videos.map((video) => (
-            <div
-              key={video.id}
-              className="flex-[0_0_min(400px,90vw)] min-w-0"
-            >
-              <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                <div className="aspect-video bg-[#0a1f5c]">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${video.id}`}
-                    title={video.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-sm font-semibold text-[#0a1f5c]">
-                    {video.title}
-                  </h3>
+      <div className="relative w-full overflow-hidden">
+        {/* Left gradient fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-[#f0f4f8] to-transparent z-10 pointer-events-none" />
+        {/* Right gradient fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-[#f0f4f8] to-transparent z-10 pointer-events-none" />
+
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex">
+            {videos.map((video) => (
+              <div
+                key={video.id}
+                className="flex-[0_0_85%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_35%] xl:flex-[0_0_28%] min-w-0 px-2"
+              >
+                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  <div className="aspect-video bg-[#0a1f5c]">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${video.id}`}
+                      title={video.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-[#0a1f5c]">
+                      {video.title}
+                    </h3>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
+        {/* Navigation Buttons */}
+        <button
+          onClick={scrollPrev}
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
+          aria-label="Previous video"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={scrollNext}
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
+          aria-label="Next video"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       <div className="text-center mt-8">

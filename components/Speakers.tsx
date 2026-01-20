@@ -6,8 +6,8 @@ import { useCallback } from 'react';
 
 export default function Speakers() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: 'start' },
-    [Autoplay({ delay: 5000 })]
+    { loop: true, align: 'center' },
+    [Autoplay({ delay: 5000, stopOnInteraction: true })]
   );
 
   const scrollPrev = useCallback(() => {
@@ -100,11 +100,16 @@ export default function Speakers() {
         </div>
       </div>
 
-      <div className="relative w-full">
+      <div className="relative w-full overflow-hidden">
+        {/* Left gradient fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        {/* Right gradient fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
         <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex gap-4">
+          <div className="flex">
             {speakers2024.map((speaker, index) => (
-              <div key={index} className="flex-[0_0_280px] min-w-0">
+              <div key={index} className="flex-[0_0_70%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_20%] xl:flex-[0_0_16%] min-w-0 px-2">
                 <div className="bg-[#f0f4f8] rounded-lg overflow-hidden border-l-4 border-[#0099cc] h-full flex flex-col">
                   <div className="relative w-full aspect-square bg-gradient-to-br from-[#0a1f5c] to-[#0047ba] overflow-hidden">
                     {speaker.image ? (
@@ -179,7 +184,7 @@ export default function Speakers() {
         {/* Navigation Buttons */}
         <button
           onClick={scrollPrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-10"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
           aria-label="Previous slide"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +193,7 @@ export default function Speakers() {
         </button>
         <button
           onClick={scrollNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-10"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
           aria-label="Next slide"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
