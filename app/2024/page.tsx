@@ -280,7 +280,7 @@ export default function Forum2024() {
                         <div className="text-sm text-[#5c6670]">Johanna Weaver (Tech Policy Design Institute), Chelle Adamson (DISR)</div>
                       </div>
                       <div>
-                        <div className="font-semibold text-[#0a1f5c] mb-1">Workshop Track B: Defining "Safe" and "Responsible" AI</div>
+                        <div className="font-semibold text-[#0a1f5c] mb-1">Workshop Track B: Defining &quot;Safe&quot; and &quot;Responsible&quot; AI</div>
                         <div className="text-sm text-[#5c6670]">Qinghua Lu (CSIRO), Alexander Saeri (MIT FutureTech)</div>
                       </div>
                       <div>

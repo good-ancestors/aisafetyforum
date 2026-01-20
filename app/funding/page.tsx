@@ -25,12 +25,12 @@ export default function Funding() {
           {/* Description */}
           <div className="bg-white rounded-lg p-8 border border-[#e0e4e8] mb-8">
             <p className="text-lg text-[#333333] mb-6">
-              We have limited funding for travel and accommodation to help people attend who otherwise couldn't.
+              We have limited funding for travel and accommodation to help people attend who otherwise couldn&apos;t.
             </p>
 
             {/* What's Included */}
             <div className="mb-8">
-              <h2 className="font-bold text-xl text-[#0a1f5c] mb-4">What's Included</h2>
+              <h2 className="font-bold text-xl text-[#0a1f5c] mb-4">What&apos;s Included</h2>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <svg className="w-6 h-6 text-[#00d4ff] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@ export default function Funding() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <div className="text-sm text-[#856404]">
-                  <strong>Important:</strong> We'll notify you by soon. Please wait to book travel until you hear from us.
+                  <strong>Important:</strong> We&apos;ll notify you by soon. Please wait to book travel until you hear from us.
                 </div>
               </div>
             </div>

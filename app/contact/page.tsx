@@ -20,7 +20,7 @@ export default function ContactPage() {
               Contact Us
             </h1>
             <p className="text-lg text-[#5c6670] max-w-[600px] mx-auto">
-              Have questions about the Australian AI Safety Forum {eventConfig.year}? We'd love to hear from you.
+              Have questions about the Australian AI Safety Forum {eventConfig.year}? We&apos;d love to hear from you.
             </p>
           </div>
 

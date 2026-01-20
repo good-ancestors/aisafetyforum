@@ -9,7 +9,7 @@
 
 import 'dotenv/config';
 import { prisma } from '../lib/prisma';
-import { addFreeTicketEmail, addBulkFreeTicketEmails } from '../lib/free-ticket-actions';
+import { addFreeTicketEmail } from '../lib/free-ticket-actions';
 
 async function main() {
   console.log('🧪 Setting up test data...\n');
@@ -31,8 +31,8 @@ async function main() {
       },
     });
     console.log('✓ Created TEST50: 50% off any ticket');
-  } catch (e: any) {
-    if (e.code === 'P2002') {
+  } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'P2002') {
       console.log('✓ TEST50 already exists');
     } else {
       throw e;
@@ -53,8 +53,8 @@ async function main() {
       },
     });
     console.log('✓ Created TESTFREE: 100% off (free ticket)');
-  } catch (e: any) {
-    if (e.code === 'P2002') {
+  } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'P2002') {
       console.log('✓ TESTFREE already exists');
     } else {
       throw e;
@@ -75,8 +75,8 @@ async function main() {
       },
     });
     console.log('✓ Created TEST20: $20 off any ticket');
-  } catch (e: any) {
-    if (e.code === 'P2002') {
+  } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'P2002') {
       console.log('✓ TEST20 already exists');
     } else {
       throw e;
@@ -89,8 +89,8 @@ async function main() {
   try {
     await addFreeTicketEmail('test@example.com', 'Test user for development');
     console.log('✓ Added test@example.com');
-  } catch (e: any) {
-    if (e.code === 'P2002') {
+  } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'P2002') {
       console.log('✓ test@example.com already exists');
     } else {
       throw e;
@@ -100,8 +100,8 @@ async function main() {
   try {
     await addFreeTicketEmail('speaker@example.com', 'Test speaker');
     console.log('✓ Added speaker@example.com');
-  } catch (e: any) {
-    if (e.code === 'P2002') {
+  } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'P2002') {
       console.log('✓ speaker@example.com already exists');
     } else {
       throw e;
@@ -111,8 +111,8 @@ async function main() {
   try {
     await addFreeTicketEmail('vip@example.com', 'Test VIP');
     console.log('✓ Added vip@example.com');
-  } catch (e: any) {
-    if (e.code === 'P2002') {
+  } catch (e) {
+    if (e instanceof Error && 'code' in e && e.code === 'P2002') {
       console.log('✓ vip@example.com already exists');
     } else {
       throw e;

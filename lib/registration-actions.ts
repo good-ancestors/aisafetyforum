@@ -3,6 +3,7 @@
 import { requireStripe } from './stripe';
 import { prisma } from './prisma';
 import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
+import Stripe from 'stripe';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
 import { headers } from 'next/headers';
@@ -208,7 +209,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
     // Ensure baseUrl has protocol
     const fullBaseUrl = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
 
-    const sessionConfig: any = {
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
       payment_method_types: ['card'],
       line_items: [
@@ -266,7 +267,7 @@ async function getOrCreateStripeCoupon(discount: {
   const stripe = requireStripe();
 
   // Create a Stripe coupon for this discount
-  const couponConfig: any = {
+  const couponConfig: Stripe.CouponCreateParams = {
     duration: 'once',
     currency: 'aud',
   };
@@ -518,7 +519,7 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
     }
     const fullBaseUrl = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
 
-    const sessionConfig: any = {
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
       payment_method_types: ['card'],
       line_items: lineItems,

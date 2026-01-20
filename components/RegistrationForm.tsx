@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createCheckoutSession, type RegistrationFormData } from '@/lib/registration-actions';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { checkFreeTicketEmail } from '@/lib/free-ticket-actions';
-import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline } from '@/lib/stripe-config';
+import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 
 export default function RegistrationForm() {
   const router = useRouter();
@@ -15,7 +15,14 @@ export default function RegistrationForm() {
   const [couponCode, setCouponCode] = useState<string>('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
-  const [discount, setDiscount] = useState<any>(null);
+  const [discount, setDiscount] = useState<{
+    type: 'percentage' | 'fixed' | 'free';
+    value: number;
+    description?: string;
+    originalAmount?: number;
+    discountAmount: number;
+    finalAmount: number;
+  } | null>(null);
   const [freeTicketReason, setFreeTicketReason] = useState<string | null>(null);
 
   const earlyBird = isEarlyBirdActive();
@@ -46,7 +53,7 @@ export default function RegistrationForm() {
       return;
     }
 
-    const result = await validateCoupon(couponCode, email, selectedTicket as any);
+    const result = await validateCoupon(couponCode, email, selectedTicket as TicketTierId);
 
     if (result.valid && result.discount) {
       setCouponApplied(true);
@@ -108,7 +115,7 @@ export default function RegistrationForm() {
       email: formData.get('email') as string,
       name: formData.get('name') as string,
       organisation: (formData.get('organisation') as string) || undefined,
-      ticketType: formData.get('ticketType') as any,
+      ticketType: formData.get('ticketType') as TicketTierId,
       couponCode: couponApplied ? couponCode : undefined,
     };
 
@@ -329,12 +336,12 @@ export default function RegistrationForm() {
               <div className="flex-1">
                 <p className="font-bold text-green-800 mb-1">Coupon applied!</p>
                 <p className="text-sm text-green-700">{discount.description}</p>
-                {discount.type === 'percentage' && (
+                {discount.type === 'percentage' && discount.originalAmount && (
                   <p className="text-sm text-green-700 mt-1">
                     {discount.value}% discount: ${(discount.originalAmount / 100).toFixed(2)} → <strong>${(discount.finalAmount / 100).toFixed(2)}</strong>
                   </p>
                 )}
-                {discount.type === 'fixed' && (
+                {discount.type === 'fixed' && discount.originalAmount && (
                   <p className="text-sm text-green-700 mt-1">
                     ${(discount.discountAmount / 100).toFixed(2)} discount: ${(discount.originalAmount / 100).toFixed(2)} → <strong>${(discount.finalAmount / 100).toFixed(2)}</strong>
                   </p>

@@ -50,7 +50,7 @@ export default function FundingApplicationForm() {
         </div>
         <h2 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-3">Thanks!</h2>
         <p className="text-[#333333] mb-6">
-          We've received your application. You'll hear from us by soon.
+          We&apos;ve received your application. You&apos;ll hear from us by soon.
         </p>
         <button
           onClick={() => setSubmitted(false)}
@@ -122,7 +122,7 @@ export default function FundingApplicationForm() {
             Organisation or affiliation *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            e.g. university, employer, or "Independent"
+            e.g. university, employer, or &quot;Independent&quot;
           </p>
           <input
             type="text"
@@ -139,7 +139,7 @@ export default function FundingApplicationForm() {
             Role *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            e.g. "PhD student, CS" or "Policy analyst"
+            e.g. &quot;PhD student, CS&quot; or &quot;Policy analyst&quot;
           </p>
           <input
             type="text"
@@ -174,7 +174,7 @@ export default function FundingApplicationForm() {
             How much funding do you need (AUD)? *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            e.g. "$400 — flights + 2 nights accommodation" (just applying for a free ticket then enter $0)
+            e.g. &quot;$400 — flights + 2 nights accommodation&quot; (just applying for a free ticket then enter $0)
           </p>
           <input
             type="text"

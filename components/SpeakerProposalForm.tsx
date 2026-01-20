@@ -54,7 +54,7 @@ export default function SpeakerProposalForm() {
         </div>
         <h2 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-3">Thanks!</h2>
         <p className="text-[#333333] mb-6">
-          We've received your proposal. You'll hear from us by soon.
+          We&apos;ve received your proposal. You&apos;ll hear from us by soon.
         </p>
         <button
           onClick={() => setSubmitted(false)}
@@ -87,7 +87,7 @@ export default function SpeakerProposalForm() {
             What format works best? *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            Not sure? Choose "Flexible" — we can work with you to find the right format.
+            Not sure? Choose &quot;Flexible&quot; — we can work with you to find the right format.
           </p>
           <select
             id="format"
@@ -110,7 +110,7 @@ export default function SpeakerProposalForm() {
             Tell us about your session idea *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            Share what you'd like to cover and why it matters. Don't worry about perfection — we're excited to hear your ideas! (Around 200 words)
+            Share what you&apos;d like to cover and why it matters. Don&apos;t worry about perfection — we&apos;re excited to hear your ideas! (Around 200 words)
           </p>
           <textarea
             id="abstract"
@@ -162,7 +162,7 @@ export default function SpeakerProposalForm() {
             Your role or title *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            e.g. "Research Fellow", "PhD Student, Computer Science", or "Policy Analyst"
+            e.g. &quot;Research Fellow&quot;, &quot;PhD Student, Computer Science&quot;, or &quot;Policy Analyst&quot;
           </p>
           <input
             type="text"
@@ -197,7 +197,7 @@ export default function SpeakerProposalForm() {
             Short bio *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            A few sentences about your background — we'll use this in the program. (Around 75 words)
+            A few sentences about your background — we&apos;ll use this in the program. (Around 75 words)
           </p>
           <textarea
             id="bio"
@@ -216,7 +216,7 @@ export default function SpeakerProposalForm() {
             Profile links
           </label>
           <p className="text-sm text-[#5c6670] mb-3">
-            Optional — add any professional profiles you'd like to share
+            Optional — add any professional profiles you&apos;d like to share
           </p>
           <div className="space-y-3">
             <input
@@ -261,7 +261,7 @@ export default function SpeakerProposalForm() {
             Would travel support help you attend? *
           </label>
           <p className="text-sm text-[#5c6670] mb-3">
-            We have limited funding available. Let us know if support would make a difference — it won't affect your proposal evaluation.
+            We have limited funding available. Let us know if support would make a difference — it won&apos;t affect your proposal evaluation.
           </p>
           <div className="space-y-2">
             <div className="flex items-center gap-3">
@@ -288,7 +288,7 @@ export default function SpeakerProposalForm() {
                 className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
               />
               <label htmlFor="travelYes" className="text-sm text-[#333333]">
-                Yes, I'd need support to attend
+                Yes, I&apos;d need support to attend
               </label>
             </div>
             <div className="flex items-center gap-3">
@@ -301,7 +301,7 @@ export default function SpeakerProposalForm() {
                 className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
               />
               <label htmlFor="travelMaybe" className="text-sm text-[#333333]">
-                Possibly — I'd like to explore options
+                Possibly — I&apos;d like to explore options
               </label>
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function SpeakerProposalForm() {
               Rough estimate of support needed
             </label>
             <p className="text-sm text-[#5c6670] mb-2">
-              Just a ballpark figure helps us plan — e.g. "$500 for flights from Perth" or "$800 for flights + 2 nights accommodation"
+              Just a ballpark figure helps us plan — e.g. &quot;$500 for flights from Perth&quot; or &quot;$800 for flights + 2 nights accommodation&quot;
             </p>
             <input
               type="text"

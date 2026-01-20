@@ -25,7 +25,7 @@ export default function Speak() {
           {/* Quick Info */}
           <div className="bg-white rounded-lg p-6 border border-[#e0e4e8] mb-8">
             <p className="text-[#333333]">
-              We'd love to hear your session ideas on AI safety science and governance — whether technical, policy-focused, or cross-disciplinary. Early-stage work and fresh perspectives are welcome. <strong>Accepted speakers receive free registration</strong> and we have travel support available for those who need it.
+              We&apos;d love to hear your session ideas on AI safety science and governance — whether technical, policy-focused, or cross-disciplinary. Early-stage work and fresh perspectives are welcome. <strong>Accepted speakers receive free registration</strong> and we have travel support available for those who need it.
             </p>
           </div>
 
