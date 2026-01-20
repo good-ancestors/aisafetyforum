@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -340,11 +341,12 @@ export default function SponsorPage() {
                   className="bg-[#f0f4f8] rounded-lg p-6 border-l-4 border-[#0099cc] flex flex-col"
                 >
                   {/* Logo */}
-                  <div className="h-20 flex items-center justify-center mb-4 bg-white rounded border border-[#e0e4e8] p-4">
-                    <img
+                  <div className="h-20 flex items-center justify-center mb-4 bg-white rounded border border-[#e0e4e8] p-4 relative">
+                    <Image
                       src={org.logo}
                       alt={`${org.name} logo`}
-                      className="max-h-full max-w-full object-contain"
+                      fill
+                      className="object-contain p-2"
                     />
                   </div>
                   <a

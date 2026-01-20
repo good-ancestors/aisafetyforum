@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Footer() {
   const sponsors = [
     {
@@ -23,12 +25,13 @@ export default function Footer() {
               href={sponsor.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white rounded p-3 hover:bg-[#f0f4f8] transition-colors"
+              className="bg-white rounded p-3 hover:bg-[#f0f4f8] transition-colors relative h-16 w-40"
             >
-              <img
+              <Image
                 src={sponsor.logo}
                 alt={`${sponsor.name} logo`}
-                className="h-10 object-contain"
+                fill
+                className="object-contain p-2"
               />
             </a>
           ))}

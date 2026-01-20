@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { useCallback } from 'react';
@@ -113,10 +114,11 @@ export default function Speakers() {
                 <div className="bg-[#f0f4f8] rounded-lg overflow-hidden border-l-4 border-[#0099cc] h-full flex flex-col">
                   <div className="relative w-full aspect-square bg-gradient-to-br from-[#0a1f5c] to-[#0047ba] overflow-hidden">
                     {speaker.image ? (
-                      <img
+                      <Image
                         src={speaker.image}
                         alt={speaker.name}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-white text-4xl font-serif font-bold">
