@@ -54,7 +54,7 @@ export default function SpeakerProposalForm() {
         </div>
         <h2 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-3">Thanks!</h2>
         <p className="text-[#333333] mb-6">
-          We've received your proposal. You'll hear from us by [DATE].
+          We've received your proposal. You'll hear from us by soon.
         </p>
         <button
           onClick={() => setSubmitted(false)}

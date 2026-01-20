@@ -239,7 +239,7 @@ export default function SponsorPage() {
                   </div>
                   <div>
                     <div className="font-semibold text-[#0047ba] mb-1">Dates & Venue</div>
-                    <p className="text-sm">Sydney University in June or July, or Melbourne Abbotsford Convent 8-9 May (coinciding with Wisdom & Action Forum 2026: Trust in the Age of AI).</p>
+                    <p className="text-sm">22-23 June 2026 at The University of Sydney, Sydney, Australia</p>
                   </div>
                 </div>
               </div>

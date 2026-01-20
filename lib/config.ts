@@ -23,9 +23,9 @@ export const eventConfig = {
   endTime: '17:00',
 
   // Deadlines
-  speakerDeadline: 'TBC',
-  fundingDeadline: 'TBC',
-  registrationDeadline: 'TBC',
+  speakerDeadline: 'Rolling',
+  fundingDeadline: 'Rolling',
+  registrationDeadline: 'Rolling',
 
   // Organization details for receipts
   organization: {

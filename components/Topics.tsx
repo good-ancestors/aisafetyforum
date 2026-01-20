@@ -53,9 +53,7 @@ export default function Topics() {
               {topic.number}
             </span>
             <h3 className="text-lg font-bold text-[#0a1f5c] mb-2 pr-8 group-hover:text-[--blue] transition-colors">
-              <Link href="#" className="text-inherit">
-                {topic.title}
-              </Link>
+              {topic.title}
             </h3>
             <p className="text-[0.95rem] text-[#5c6670] leading-relaxed">{topic.description}</p>
           </div>

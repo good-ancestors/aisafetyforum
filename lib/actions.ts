@@ -86,3 +86,23 @@ export async function submitFundingApplication(data: FundingApplicationFormData)
     return { success: false, error: 'Failed to submit application. Please try again.' };
   }
 }
+
+export async function submitContactForm(formData: FormData) {
+  const name = formData.get('name') as string;
+  const email = formData.get('email') as string;
+  const subject = formData.get('subject') as string;
+  const message = formData.get('message') as string;
+
+  if (!name || !email || !subject || !message) {
+    throw new Error('All fields are required');
+  }
+
+  // TODO: Send email notification to team
+  // For now, just log it
+  console.log('Contact form submission:', { name, email, subject, message });
+
+  // You could store in database if needed:
+  // await prisma.contactMessage.create({ data: { name, email, subject, message } });
+
+  return { success: true };
+}
