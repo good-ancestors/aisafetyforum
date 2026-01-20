@@ -18,7 +18,7 @@ export default function Program() {
           {/* Day 1 */}
           <div className="bg-gradient-to-br from-[#0a1f5c] to-[#0047ba] rounded-lg p-8 text-white">
             <div className="text-[#00d4ff] font-bold text-sm mb-3 uppercase tracking-wider">
-              Day 1 • Sunday 22 June
+              Day 1 • Monday 22 June
             </div>
             <h3 className="font-serif text-2xl font-bold mb-6">
               Single-Track Program
@@ -46,7 +46,7 @@ export default function Program() {
           {/* Day 2 */}
           <div className="bg-[#f0f4f8] rounded-lg p-8 border-2 border-[#0099cc]">
             <div className="text-[#0099cc] font-bold text-sm mb-3 uppercase tracking-wider">
-              Day 2 • Monday 23 June
+              Day 2 • Tuesday 23 June
             </div>
             <h3 className="font-serif text-2xl font-bold mb-6 text-[#0a1f5c]">
               Parallel Workshops
