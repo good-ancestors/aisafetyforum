@@ -30,6 +30,12 @@ export type MultiTicketFormData = {
   couponCode?: string;
 };
 
+export type InvoiceFormData = MultiTicketFormData & {
+  orgName?: string;
+  orgABN?: string;
+  poNumber?: string;
+};
+
 /**
  * Get or create a Profile by email.
  * If the profile exists, optionally update name/organisation if provided.
@@ -582,5 +588,244 @@ export async function getOrderBySessionId(sessionId: string) {
   } catch (error) {
     console.error('Error fetching order by session:', error);
     return null;
+  }
+}
+
+/**
+ * Create an invoice order using Stripe Invoicing.
+ * The invoice will be sent to the purchaser's email with bank transfer details.
+ */
+export async function createInvoiceOrder(data: InvoiceFormData) {
+  try {
+    const stripe = requireStripe();
+    const earlyBird = isEarlyBirdActive();
+
+    // Calculate totals and validate tickets
+    let subtotal = 0;
+    const invoiceItems: { description: string; amount: number; quantity: number }[] = [];
+    const ticketCounts: Record<string, { tier: (typeof ticketTiers)[number]; count: number }> = {};
+
+    for (const attendee of data.attendees) {
+      const tier = ticketTiers.find((t) => t.id === attendee.ticketType);
+      if (!tier) {
+        return { success: false, error: `Invalid ticket type: ${attendee.ticketType}` };
+      }
+
+      const price = earlyBird ? tier.earlyBirdPrice : tier.price;
+      subtotal += price;
+
+      // Count tickets by type
+      if (!ticketCounts[tier.id]) {
+        ticketCounts[tier.id] = { tier, count: 0 };
+      }
+      ticketCounts[tier.id].count++;
+    }
+
+    // Build invoice items from ticket counts
+    for (const { tier, count } of Object.values(ticketCounts)) {
+      const price = earlyBird ? tier.earlyBirdPrice : tier.price;
+      const description = earlyBird
+        ? `${tier.name} Ticket (Early Bird) - AI Safety Forum 2026`
+        : `${tier.name} Ticket - AI Safety Forum 2026`;
+      invoiceItems.push({ description, amount: price, quantity: count });
+    }
+
+    // Validate and apply coupon if provided
+    let discount = null;
+    let couponId = null;
+    let discountAmount = 0;
+    let totalAmount = subtotal;
+
+    if (data.couponCode) {
+      const validation = await validateCoupon(
+        data.couponCode,
+        data.purchaserEmail,
+        data.attendees[0].ticketType
+      );
+      if (!validation.valid) {
+        return { success: false, error: validation.error };
+      }
+      discount = validation.discount!;
+
+      // Apply discount to total
+      if (discount.type === 'percentage') {
+        discountAmount = Math.round(subtotal * (discount.value / 100));
+      } else if (discount.type === 'fixed') {
+        discountAmount = discount.value;
+      } else if (discount.type === 'free') {
+        discountAmount = subtotal;
+      }
+      totalAmount = Math.max(0, subtotal - discountAmount);
+
+      // Get coupon ID
+      const coupon = await prisma.discountCode.findUnique({
+        where: { code: data.couponCode.toUpperCase() },
+      });
+      couponId = coupon?.id || null;
+    }
+
+    // Create Stripe customer (or find existing)
+    let customer = await stripe.customers.list({
+      email: data.purchaserEmail.toLowerCase(),
+      limit: 1,
+    });
+
+    let stripeCustomer;
+    if (customer.data.length > 0) {
+      stripeCustomer = customer.data[0];
+      // Update customer with latest info
+      stripeCustomer = await stripe.customers.update(stripeCustomer.id, {
+        name: data.purchaserName,
+        metadata: {
+          organisation: data.orgName || data.purchaserOrg || '',
+          abn: data.orgABN || '',
+        },
+      });
+    } else {
+      stripeCustomer = await stripe.customers.create({
+        email: data.purchaserEmail.toLowerCase(),
+        name: data.purchaserName,
+        metadata: {
+          organisation: data.orgName || data.purchaserOrg || '',
+          abn: data.orgABN || '',
+        },
+      });
+    }
+
+    // Create order in database first
+    const order = await prisma.order.create({
+      data: {
+        purchaserEmail: data.purchaserEmail.toLowerCase().trim(),
+        purchaserName: data.purchaserName,
+        orgName: data.orgName || data.purchaserOrg || null,
+        orgABN: data.orgABN || null,
+        poNumber: data.poNumber || null,
+        paymentMethod: 'invoice',
+        paymentStatus: 'pending',
+        totalAmount,
+        discountAmount,
+        couponId,
+      },
+    });
+
+    // Create profiles and registrations for each attendee
+    const registrations = [];
+    for (const attendee of data.attendees) {
+      const profile = await getOrCreateProfile(attendee.email, attendee.name);
+      const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
+      const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
+
+      const registration = await prisma.registration.create({
+        data: {
+          email: attendee.email.toLowerCase().trim(),
+          name: attendee.name,
+          ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+          ticketPrice,
+          originalAmount: ticketPrice,
+          discountAmount: 0,
+          amountPaid: ticketPrice,
+          status: 'pending',
+          profileId: profile.id,
+          orderId: order.id,
+        },
+      });
+      registrations.push(registration);
+    }
+
+    // If total is free (100% discount), mark as paid immediately
+    if (totalAmount === 0) {
+      await prisma.$transaction([
+        prisma.order.update({
+          where: { id: order.id },
+          data: { paymentStatus: 'paid' },
+        }),
+        ...registrations.map((reg) =>
+          prisma.registration.update({
+            where: { id: reg.id },
+            data: { status: 'paid' },
+          })
+        ),
+      ]);
+
+      if (data.couponCode) {
+        await incrementCouponUsage(data.couponCode);
+      }
+
+      return {
+        success: true,
+        free: true,
+        orderId: order.id,
+        registrationIds: registrations.map((r) => r.id),
+      };
+    }
+
+    // Create Stripe Invoice
+    const invoice = await stripe.invoices.create({
+      customer: stripeCustomer.id,
+      collection_method: 'send_invoice',
+      days_until_due: 14,
+      auto_advance: true,
+      payment_settings: {
+        payment_method_types: ['au_becs_debit', 'card'],
+      },
+      metadata: {
+        orderId: order.id,
+        registrationIds: registrations.map((r) => r.id).join(','),
+        attendeeCount: data.attendees.length.toString(),
+        poNumber: data.poNumber || '',
+      },
+      custom_fields: data.poNumber
+        ? [{ name: 'PO Number', value: data.poNumber }]
+        : undefined,
+    });
+
+    // Add line items to invoice
+    // Note: For each individual ticket, we add a separate line item
+    for (const item of invoiceItems) {
+      // When using amount, it's the total for all quantities
+      const totalAmount = item.amount * item.quantity;
+      await stripe.invoiceItems.create({
+        customer: stripeCustomer.id,
+        invoice: invoice.id,
+        description: item.quantity > 1
+          ? `${item.description} (x${item.quantity})`
+          : item.description,
+        amount: totalAmount,
+        currency: 'aud',
+      });
+    }
+
+    // Add discount line item if applicable
+    if (discountAmount > 0 && discount) {
+      await stripe.invoiceItems.create({
+        customer: stripeCustomer.id,
+        invoice: invoice.id,
+        description: `Discount: ${discount.description || data.couponCode}`,
+        amount: -discountAmount,
+        currency: 'aud',
+      });
+    }
+
+    // Finalize and send the invoice
+    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+    await stripe.invoices.sendInvoice(invoice.id);
+
+    // Update order with Stripe invoice ID
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { stripeInvoiceId: finalizedInvoice.id },
+    });
+
+    return {
+      success: true,
+      invoiceSent: true,
+      orderId: order.id,
+      invoiceId: finalizedInvoice.id,
+      invoiceUrl: finalizedInvoice.hosted_invoice_url,
+      registrationIds: registrations.map((r) => r.id),
+    };
+  } catch (error) {
+    console.error('Error creating invoice order:', error);
+    return { success: false, error: 'Failed to create invoice. Please try again.' };
   }
 }

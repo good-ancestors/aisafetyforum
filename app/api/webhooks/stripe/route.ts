@@ -233,6 +233,104 @@ export async function POST(req: Request) {
         break;
       }
 
+      case 'invoice.paid': {
+        const invoice = event.data.object as Stripe.Invoice;
+
+        console.log('✅ Invoice paid:', invoice.id);
+
+        // Get payment intent ID from charge or metadata
+        // Invoice payment_intent may not be directly accessible in all API versions
+        const invoiceData = invoice as any;
+        const paymentIntentId = invoiceData.payment_intent
+          ? (typeof invoiceData.payment_intent === 'string'
+              ? invoiceData.payment_intent
+              : invoiceData.payment_intent?.id)
+          : null;
+
+        // Find order by Stripe invoice ID
+        const order = await prisma.order.findUnique({
+          where: { stripeInvoiceId: invoice.id },
+          include: { registrations: true },
+        });
+
+        if (order) {
+          // Update order and all registrations to paid
+          await prisma.$transaction([
+            prisma.order.update({
+              where: { id: order.id },
+              data: {
+                paymentStatus: 'paid',
+                stripePaymentId: paymentIntentId,
+              },
+            }),
+            ...order.registrations.map((reg) =>
+              prisma.registration.update({
+                where: { id: reg.id },
+                data: {
+                  status: 'paid',
+                  stripePaymentId: paymentIntentId,
+                },
+              })
+            ),
+          ]);
+
+          console.log(`✅ Invoice order ${order.id} marked as paid with ${order.registrations.length} registrations`);
+
+          // Send confirmation email to each attendee
+          for (const reg of order.registrations) {
+            try {
+              const receiptNumber = `AISF-${reg.id.slice(-8).toUpperCase()}`;
+              const receiptDate = new Date().toLocaleDateString('en-AU', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              });
+
+              await sendConfirmationEmail({
+                email: reg.email,
+                name: reg.name,
+                ticketType: reg.ticketType,
+                organisation: reg.organisation,
+                receiptNumber,
+                receiptDate,
+                amountPaid: reg.ticketPrice || reg.amountPaid,
+                transactionId: paymentIntentId,
+                // Include purchaser info for group orders
+                purchaserEmail: order.purchaserEmail,
+                purchaserName: order.purchaserName,
+              });
+
+              console.log(`✅ Confirmation email sent to ${reg.email} (invoice payment)`);
+            } catch (emailError) {
+              console.error(`❌ Error sending confirmation email to ${reg.email}:`, emailError);
+            }
+          }
+        } else {
+          console.warn(`⚠️  No order found for invoice ${invoice.id}`);
+        }
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+
+        console.error('❌ Invoice payment failed:', invoice.id);
+
+        // Find order by Stripe invoice ID
+        const order = await prisma.order.findUnique({
+          where: { stripeInvoiceId: invoice.id },
+        });
+
+        if (order) {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { paymentStatus: 'failed' },
+          });
+          console.log(`❌ Order ${order.id} marked as failed (invoice payment failed)`);
+        }
+        break;
+      }
+
       default:
         console.log(`ℹ️  Unhandled event type: ${event.type}`);
     }

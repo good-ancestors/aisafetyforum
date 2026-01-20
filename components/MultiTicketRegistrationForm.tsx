@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createMultiTicketCheckout, type MultiTicketFormData, type AttendeeData } from '@/lib/registration-actions';
+import { createMultiTicketCheckout, createInvoiceOrder, type MultiTicketFormData, type AttendeeData } from '@/lib/registration-actions';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 
@@ -33,6 +33,11 @@ export default function MultiTicketRegistrationForm() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [discount, setDiscount] = useState<any>(null);
+
+  // Payment method
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'invoice'>('card');
+  const [orgABN, setOrgABN] = useState('');
+  const [poNumber, setPoNumber] = useState('');
 
   const earlyBird = isEarlyBirdActive();
   const deadlineDate = new Date(earlyBirdDeadline).toLocaleDateString('en-AU', {
@@ -186,17 +191,35 @@ export default function MultiTicketRegistrationForm() {
       couponCode: couponApplied ? couponCode : undefined,
     };
 
-    const result = await createMultiTicketCheckout(formData);
+    if (paymentMethod === 'invoice') {
+      // Create invoice order
+      const result = await createInvoiceOrder({
+        ...formData,
+        orgName: purchaserOrg || undefined,
+        orgABN: orgABN || undefined,
+        poNumber: poNumber || undefined,
+      });
 
-    if (result.success) {
-      if (result.free) {
-        router.push(`/register/success?order_id=${result.orderId}`);
-      } else if (result.url) {
-        window.location.href = result.url;
+      if (result.success) {
+        router.push(`/register/invoice-sent?order_id=${result.orderId}`);
+      } else {
+        setError(result.error || 'An error occurred');
+        setIsSubmitting(false);
       }
     } else {
-      setError(result.error || 'An error occurred');
-      setIsSubmitting(false);
+      // Card payment via Stripe Checkout
+      const result = await createMultiTicketCheckout(formData);
+
+      if (result.success) {
+        if (result.free) {
+          router.push(`/register/success?order_id=${result.orderId}`);
+        } else if (result.url) {
+          window.location.href = result.url;
+        }
+      } else {
+        setError(result.error || 'An error occurred');
+        setIsSubmitting(false);
+      }
     }
   }
 
@@ -438,6 +461,111 @@ export default function MultiTicketRegistrationForm() {
           )}
         </section>
 
+        {/* Payment Method */}
+        {totals.total > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
+              Payment Method
+            </h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label
+                  className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'card'
+                      ? 'border-[#00d4ff] bg-[#00d4ff]/5'
+                      : 'border-[#e0e4e8] hover:border-[#a8b0b8]'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="card"
+                    checked={paymentMethod === 'card'}
+                    onChange={(e) => setPaymentMethod(e.target.value as 'card' | 'invoice')}
+                    className="w-4 h-4 text-[#00d4ff] focus:ring-[#00d4ff]"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-[#0a1f5c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                      <span className="font-bold text-[#0a1f5c]">Pay by Card</span>
+                    </div>
+                    <p className="text-sm text-[#5c6670] mt-1">
+                      Pay now via Stripe
+                    </p>
+                  </div>
+                </label>
+
+                <label
+                  className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'invoice'
+                      ? 'border-[#00d4ff] bg-[#00d4ff]/5'
+                      : 'border-[#e0e4e8] hover:border-[#a8b0b8]'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="invoice"
+                    checked={paymentMethod === 'invoice'}
+                    onChange={(e) => setPaymentMethod(e.target.value as 'card' | 'invoice')}
+                    className="w-4 h-4 text-[#00d4ff] focus:ring-[#00d4ff]"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-[#0a1f5c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span className="font-bold text-[#0a1f5c]">Pay by Invoice</span>
+                    </div>
+                    <p className="text-sm text-[#5c6670] mt-1">
+                      Bank transfer (14 days)
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {paymentMethod === 'invoice' && (
+                <div className="space-y-4 pt-4 border-t border-[#e0e4e8]">
+                  <p className="text-sm text-[#5c6670]">
+                    We&apos;ll send an invoice to <strong>{purchaserEmail || 'your email'}</strong> with bank transfer details.
+                    Payment is due within 14 days. Tickets will be confirmed once payment is received.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="orgABN" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+                        ABN (optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="orgABN"
+                        value={orgABN}
+                        onChange={(e) => setOrgABN(e.target.value)}
+                        placeholder="e.g., 12 345 678 901"
+                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="poNumber" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+                        PO Number (optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="poNumber"
+                        value={poNumber}
+                        onChange={(e) => setPoNumber(e.target.value)}
+                        placeholder="Your purchase order number"
+                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* Order Summary */}
         <section className="bg-[#f0f4f8] rounded-lg p-6">
           <h2 className="text-lg font-bold text-[#0a1f5c] mb-4">Order Summary</h2>
@@ -471,11 +599,15 @@ export default function MultiTicketRegistrationForm() {
               ? 'Processing...'
               : totals.total === 0
                 ? 'Complete Registration'
-                : `Pay $${(totals.total / 100).toFixed(2)} AUD`}
+                : paymentMethod === 'invoice'
+                  ? `Request Invoice — $${(totals.total / 100).toFixed(2)} AUD`
+                  : `Pay $${(totals.total / 100).toFixed(2)} AUD`}
           </button>
           {totals.total > 0 && (
             <p className="text-sm text-[#5c6670] mt-4 text-center">
-              Secure checkout powered by Stripe
+              {paymentMethod === 'invoice'
+                ? 'Invoice will be sent via Stripe'
+                : 'Secure checkout powered by Stripe'}
             </p>
           )}
         </div>
