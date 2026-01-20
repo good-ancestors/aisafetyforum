@@ -6,7 +6,10 @@ These environment variables must be set in Vercel for the deployment to succeed:
 
 ### Database
 - `DATABASE_URL` - PostgreSQL connection string (from Vercel Postgres)
+  - **Important**: Should use `sslmode=verify-full` or `sslmode=require`
+  - Example: `postgresql://user:pass@host/db?sslmode=verify-full`
 - `POSTGRES_PRISMA_URL` - Prisma-specific connection string (from Vercel Postgres)
+  - Should also include `sslmode=verify-full`
 
 ### Stripe
 - `STRIPE_SECRET_KEY` - Stripe secret key (starts with `sk_test_` for test mode)
