@@ -93,6 +93,11 @@ export async function createCheckoutSession(data: RegistrationFormData) {
 
     // Create Stripe checkout session
     const stripe = requireStripe();
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisafetyforum.vercel.app';
+
+    // Ensure baseUrl has protocol
+    const fullBaseUrl = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
+
     const sessionConfig: any = {
       mode: 'payment',
       payment_method_types: ['card'],
@@ -108,8 +113,8 @@ export async function createCheckoutSession(data: RegistrationFormData) {
         ticketType: data.ticketType,
         couponCode: data.couponCode || '',
       },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/register/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/register`,
+      success_url: `${fullBaseUrl}/register/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${fullBaseUrl}/register`,
     };
 
     // Apply discount if there is one
