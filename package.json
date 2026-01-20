@@ -12,6 +12,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@getbrevo/brevo": "^3.0.1",
+    "@neondatabase/auth": "^0.1.0-beta.21",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@stripe/stripe-js": "^8.6.3",
