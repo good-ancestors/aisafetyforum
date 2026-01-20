@@ -25,7 +25,7 @@ export default function Register() {
           <RegistrationForm />
 
           {/* Additional Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <div className="bg-white rounded-lg p-6 border border-[#e0e4e8]">
               <h3 className="font-bold text-lg text-[#0a1f5c] mb-3">Have a proposal?</h3>
               <p className="text-sm text-[#5c6670] mb-4">
