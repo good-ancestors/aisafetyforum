@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SpeakerProposal {
+  id        String   @id @default(cuid())
+  email     String
+  name      String
+  organisation String
+  title     String
+  bio       String
+  linkedin  String?
+  twitter   String?
+  bluesky   String?
+  website   String?
+  format    String   // Keynote, Lightning talk, Workshop, Panel, Flexible
+  abstract  String
+  travelSupport String // No, Yes, Maybe
+  anythingElse String?
+  acceptedTerms Boolean @default(true)
+  status    String   @default("pending") // pending, accepted, rejected
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model FundingApplication {
+  id        String   @id @default(cuid())
+  email     String
+  name      String
+  location  String
+  organisation String
+  role      String
+  whyAttend String
+  amount    String
+  day1      Boolean  @default(false)
+  day2      Boolean  @default(false)
+  acceptedTerms Boolean @default(true)
+  status    String   @default("pending") // pending, approved, rejected
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model Registration {
+  id              String        @id @default(cuid())
+  email           String
+  name            String
+  organisation    String?
+  ticketType      String        // Standard, Academic, Concession
+  stripeSessionId String?       @unique
+  stripePaymentId String?
+  amountPaid      Int           // Amount in cents (after discount)
+  originalAmount  Int           // Original price before discount
+  discountAmount  Int           @default(0) // Discount applied in cents
+  couponId        String?
+  coupon          DiscountCode? @relation(fields: [couponId], references: [id])
+  status          String        @default("pending") // pending, paid, cancelled, refunded
+  attendeeDetails Json?         // Additional attendee info (dietary, accessibility, etc)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([stripeSessionId])
+  @@index([couponId])
+}
+
+model DiscountCode {
+  id              String         @id @default(cuid())
+  code            String         @unique // e.g. "SPEAKER2026", "ORGANIZER", "EARLYBIRD"
+  description     String         // Human-readable description
+  type            String         // "percentage", "fixed", "free"
+  value           Int            // Percentage (0-100) or fixed amount in cents
+  validFor        String[]       // Empty = all tickets, or ["standard", "academic", "concession"]
+  allowedEmails   String[]       // Empty = any email, or specific emails allowed
+  maxUses         Int?           // null = unlimited, or specific number
+  currentUses     Int            @default(0)
+  active          Boolean        @default(true)
+  validFrom       DateTime?      // null = immediately valid
+  validUntil      DateTime?      // null = never expires
+  registrations   Registration[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([code])
+  @@index([active])
+}
+
+model FreeTicketEmail {
+  id          String   @id @default(cuid())
+  email       String   @unique // Email that gets free ticket
+  reason      String   // Why they get free access (e.g. "Accepted speaker", "Organizer", "VIP")
+  active      Boolean  @default(true)
+  notified    Boolean  @default(false) // Track if we've sent them an email notification
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+  @@index([active])
+}

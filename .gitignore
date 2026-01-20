@@ -42,3 +42,6 @@ next-env.d.ts
 
 # reference files
 _reference/
+
+/app/generated/prisma
+.env

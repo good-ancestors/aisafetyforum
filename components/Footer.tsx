@@ -1,32 +1,58 @@
-import Link from 'next/link';
-
 export default function Footer() {
+  const sponsors = [
+    {
+      name: 'Department of Industry, Science and Resources',
+      logo: '/logos/disr.png',
+      website: 'https://www.industry.gov.au/',
+    },
+  ];
+
   return (
-    <footer className="bg-[#061440] text-white py-12 px-8">
-      <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-b from-[#0047ba] to-[#0a1f5c] flex items-center justify-center relative">
-            <div className="w-5 h-0.5 bg-[#00d4ff] shadow-[0_5px_0_var(--cyan),0_10px_0_var(--cyan)]"></div>
-          </div>
-          <div>
-            <strong className="block text-base mb-1">AI Safety Forum Australia</strong>
-            <span className="text-sm opacity-70">Organised by Good Ancestors Policy</span>
-          </div>
+    <footer className="bg-[#061440] text-white py-10 px-8">
+      <div className="max-w-[900px] mx-auto text-center">
+        {/* Sponsor Appreciation */}
+        <p className="text-sm opacity-80 mb-4">
+          We appreciate the support of our <a href="/sponsor" className="underline hover:text-[#00d4ff]">sponsors</a>:
+        </p>
+
+        {/* Sponsor Logos */}
+        <div className="flex justify-center gap-4 mb-8">
+          {sponsors.map((sponsor, index) => (
+            <a
+              key={index}
+              href={sponsor.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white rounded p-3 hover:bg-[#f0f4f8] transition-colors"
+            >
+              <img
+                src={sponsor.logo}
+                alt={`${sponsor.name} logo`}
+                className="h-10 object-contain"
+              />
+            </a>
+          ))}
         </div>
-        <div className="flex gap-8">
-          <Link href="#about" className="text-[rgba(255,255,255,0.7)] text-[0.95rem] hover:text-[#00d4ff] transition-colors">
-            About
-          </Link>
-          <Link href="#" className="text-[rgba(255,255,255,0.7)] text-[0.95rem] hover:text-[#00d4ff] transition-colors">
-            2024 Event
-          </Link>
-          <Link href="#contact" className="text-[rgba(255,255,255,0.7)] text-[0.95rem] hover:text-[#00d4ff] transition-colors">
-            Contact
-          </Link>
-          <Link href="https://goodancestorspolicy.com" className="text-[rgba(255,255,255,0.7)] text-[0.95rem] hover:text-[#00d4ff] transition-colors">
-            Good Ancestors Policy
-          </Link>
-        </div>
+
+        {/* Editorial Independence */}
+        <p className="text-sm opacity-80 leading-relaxed mb-6">
+          The Australian AI Safety Forum does not represent the views of sponsors. Logistical and editorial decisions are solely the purview of the independent organising committee.
+        </p>
+
+        {/* Organization Info */}
+        <p className="text-sm opacity-80 leading-relaxed mb-4">
+          The forum is organised by a volunteer committee and operated by <a href="https://www.gradientinstitute.org/" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#00d4ff]">Gradient Institute</a>, an Australian charity registered with the ACNC. Unspent funds will go to future forums or supporting domestic AI safety programmes.
+        </p>
+
+        {/* Acknowledgement of Country */}
+        <p className="text-sm opacity-80 leading-relaxed italic mb-6">
+          We acknowledge the Traditional Custodians of country throughout Australia and their connections to land, sea and community.
+        </p>
+
+        {/* Copyright */}
+        <p className="text-xs opacity-60">
+          © {new Date().getFullYear()} Australian AI Safety Forum · <a href="https://www.gradientinstitute.org/privacy-policy/" target="_blank" rel="noopener noreferrer" className="hover:text-[#00d4ff]">Privacy</a>
+        </p>
       </div>
     </footer>
   );
