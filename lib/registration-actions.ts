@@ -16,6 +16,43 @@ export type RegistrationFormData = {
   couponCode?: string;
 };
 
+/**
+ * Get or create a Profile by email.
+ * If the profile exists, optionally update name/organisation if provided.
+ */
+async function getOrCreateProfile(email: string, name?: string, organisation?: string) {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  let profile = await prisma.profile.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (profile) {
+    // Update profile with new info if provided and different
+    const updates: { name?: string; organisation?: string } = {};
+    if (name && name !== profile.name) updates.name = name;
+    if (organisation && organisation !== profile.organisation) updates.organisation = organisation;
+
+    if (Object.keys(updates).length > 0) {
+      profile = await prisma.profile.update({
+        where: { id: profile.id },
+        data: updates,
+      });
+    }
+  } else {
+    // Create new profile
+    profile = await prisma.profile.create({
+      data: {
+        email: normalizedEmail,
+        name: name || null,
+        organisation: organisation || null,
+      },
+    });
+  }
+
+  return profile;
+}
+
 export async function createCheckoutSession(data: RegistrationFormData) {
   try {
     // Find the ticket tier
@@ -58,27 +95,52 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       couponId = coupon?.id || null;
     }
 
-    // Create a registration record in pending state
+    // Get or create profile for this attendee
+    const profile = await getOrCreateProfile(data.email, data.name, data.organisation);
+
+    // Create an order for this purchase
+    const order = await prisma.order.create({
+      data: {
+        purchaserEmail: data.email.toLowerCase().trim(),
+        purchaserName: data.name,
+        paymentMethod: 'card',
+        paymentStatus: 'pending',
+        totalAmount: finalAmount,
+        discountAmount: discountAmount,
+        couponId: couponId,
+      },
+    });
+
+    // Create a registration record linked to profile and order
     const registration = await prisma.registration.create({
       data: {
-        email: data.email,
+        email: data.email.toLowerCase().trim(),
         name: data.name,
         organisation: data.organisation || null,
         ticketType: earlyBird ? `${ticketTier.name} (Early Bird)` : ticketTier.name,
+        ticketPrice: currentPrice,
         originalAmount: currentPrice,
         discountAmount: discountAmount,
         amountPaid: finalAmount,
         couponId: couponId,
         status: 'pending',
+        profileId: profile.id,
+        orderId: order.id,
       },
     });
 
     // If ticket is free (100% discount), mark as paid immediately
     if (finalAmount === 0) {
-      await prisma.registration.update({
-        where: { id: registration.id },
-        data: { status: 'paid' },
-      });
+      await prisma.$transaction([
+        prisma.registration.update({
+          where: { id: registration.id },
+          data: { status: 'paid' },
+        }),
+        prisma.order.update({
+          where: { id: order.id },
+          data: { paymentStatus: 'paid' },
+        }),
+      ]);
 
       // Increment coupon usage
       if (data.couponCode) {
@@ -89,6 +151,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
         success: true,
         free: true,
         registrationId: registration.id,
+        orderId: order.id,
       };
     }
 
@@ -138,6 +201,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       customer_email: data.email,
       metadata: {
         registrationId: registration.id,
+        orderId: order.id,
         ticketType: data.ticketType,
         couponCode: data.couponCode || '',
       },
@@ -156,13 +220,19 @@ export async function createCheckoutSession(data: RegistrationFormData) {
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
 
-    // Update registration with Stripe session ID
-    await prisma.registration.update({
-      where: { id: registration.id },
-      data: { stripeSessionId: session.id },
-    });
+    // Update registration and order with Stripe session ID
+    await prisma.$transaction([
+      prisma.registration.update({
+        where: { id: registration.id },
+        data: { stripeSessionId: session.id },
+      }),
+      prisma.order.update({
+        where: { id: order.id },
+        data: { stripeSessionId: session.id },
+      }),
+    ]);
 
-    return { success: true, sessionId: session.id, url: session.url };
+    return { success: true, sessionId: session.id, url: session.url, orderId: order.id };
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return { success: false, error: 'Failed to create checkout session. Please try again.' };
@@ -198,6 +268,8 @@ export async function getRegistrationBySessionId(sessionId: string) {
       where: { stripeSessionId: sessionId },
       include: {
         coupon: true,
+        profile: true,
+        order: true,
       },
     });
     return registration;
@@ -213,11 +285,60 @@ export async function getRegistrationById(registrationId: string) {
       where: { id: registrationId },
       include: {
         coupon: true,
+        profile: true,
+        order: true,
       },
     });
     return registration;
   } catch (error) {
     console.error('Error fetching registration:', error);
     return null;
+  }
+}
+
+/**
+ * Get an order by its ID with all registrations
+ */
+export async function getOrderById(orderId: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        registrations: {
+          include: {
+            profile: true,
+          },
+        },
+        coupon: true,
+      },
+    });
+    return order;
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    return null;
+  }
+}
+
+/**
+ * Get all orders for a purchaser email
+ */
+export async function getOrdersByEmail(email: string) {
+  try {
+    const orders = await prisma.order.findMany({
+      where: { purchaserEmail: email.toLowerCase().trim() },
+      include: {
+        registrations: {
+          include: {
+            profile: true,
+          },
+        },
+        coupon: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return orders;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return [];
   }
 }

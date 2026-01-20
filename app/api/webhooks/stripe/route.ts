@@ -42,18 +42,37 @@ export async function POST(req: Request) {
         // Update registration to paid
         const registration = await prisma.registration.findUnique({
           where: { stripeSessionId: session.id },
+          include: { order: true },
         });
 
         if (registration) {
-          await prisma.registration.update({
-            where: { id: registration.id },
-            data: {
-              status: 'paid',
-              stripePaymentId: session.payment_intent as string,
-            },
-          });
+          // Update both registration and order in a transaction
+          await prisma.$transaction([
+            prisma.registration.update({
+              where: { id: registration.id },
+              data: {
+                status: 'paid',
+                stripePaymentId: session.payment_intent as string,
+              },
+            }),
+            // Update order if it exists
+            ...(registration.orderId
+              ? [
+                  prisma.order.update({
+                    where: { id: registration.orderId },
+                    data: {
+                      paymentStatus: 'paid',
+                      stripePaymentId: session.payment_intent as string,
+                    },
+                  }),
+                ]
+              : []),
+          ]);
 
           console.log(`✅ Registration ${registration.id} marked as paid`);
+          if (registration.orderId) {
+            console.log(`✅ Order ${registration.orderId} marked as paid`);
+          }
 
           // Send confirmation email with calendar invite
           try {
@@ -91,16 +110,27 @@ export async function POST(req: Request) {
 
         console.log('⏱️  Checkout session expired:', session.id);
 
-        // Mark registration as cancelled
+        // Mark registration and order as cancelled
         const registration = await prisma.registration.findUnique({
           where: { stripeSessionId: session.id },
         });
 
         if (registration) {
-          await prisma.registration.update({
-            where: { id: registration.id },
-            data: { status: 'cancelled' },
-          });
+          await prisma.$transaction([
+            prisma.registration.update({
+              where: { id: registration.id },
+              data: { status: 'cancelled' },
+            }),
+            // Update order if it exists
+            ...(registration.orderId
+              ? [
+                  prisma.order.update({
+                    where: { id: registration.orderId },
+                    data: { paymentStatus: 'cancelled' },
+                  }),
+                ]
+              : []),
+          ]);
 
           console.log(`❌ Registration ${registration.id} marked as cancelled (session expired)`);
         }
@@ -116,6 +146,14 @@ export async function POST(req: Request) {
           await prisma.registration.update({
             where: { id: paymentIntent.metadata.registrationId },
             data: { status: 'failed' },
+          });
+        }
+
+        // Also update order if present in metadata
+        if (paymentIntent.metadata?.orderId) {
+          await prisma.order.update({
+            where: { id: paymentIntent.metadata.orderId },
+            data: { paymentStatus: 'failed' },
           });
         }
         break;
