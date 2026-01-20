@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { eventConfig } from '@/lib/config';
-import RegistrationForm from '@/components/RegistrationForm';
+import MultiTicketRegistrationForm from '@/components/MultiTicketRegistrationForm';
 
 export default function Register() {
   return (
@@ -22,7 +22,7 @@ export default function Register() {
           </div>
 
           {/* Registration Form */}
-          <RegistrationForm />
+          <MultiTicketRegistrationForm />
 
           {/* Additional Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">

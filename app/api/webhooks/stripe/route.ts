@@ -39,68 +39,122 @@ export async function POST(req: Request) {
 
         console.log('✅ Checkout session completed:', session.id);
 
-        // Update registration to paid
-        const registration = await prisma.registration.findUnique({
+        // First try to find an Order by session ID (multi-ticket orders)
+        const order = await prisma.order.findUnique({
           where: { stripeSessionId: session.id },
-          include: { order: true },
+          include: { registrations: true },
         });
 
-        if (registration) {
-          // Update both registration and order in a transaction
+        if (order) {
+          // Multi-ticket order: update order and all registrations
           await prisma.$transaction([
-            prisma.registration.update({
-              where: { id: registration.id },
+            prisma.order.update({
+              where: { id: order.id },
               data: {
-                status: 'paid',
+                paymentStatus: 'paid',
                 stripePaymentId: session.payment_intent as string,
               },
             }),
-            // Update order if it exists
-            ...(registration.orderId
-              ? [
-                  prisma.order.update({
-                    where: { id: registration.orderId },
-                    data: {
-                      paymentStatus: 'paid',
-                      stripePaymentId: session.payment_intent as string,
-                    },
-                  }),
-                ]
-              : []),
+            ...order.registrations.map((reg) =>
+              prisma.registration.update({
+                where: { id: reg.id },
+                data: {
+                  status: 'paid',
+                  stripePaymentId: session.payment_intent as string,
+                },
+              })
+            ),
           ]);
 
-          console.log(`✅ Registration ${registration.id} marked as paid`);
-          if (registration.orderId) {
-            console.log(`✅ Order ${registration.orderId} marked as paid`);
-          }
+          console.log(`✅ Order ${order.id} marked as paid with ${order.registrations.length} registrations`);
 
-          // Send confirmation email with calendar invite
-          try {
-            const receiptNumber = `AISF-${registration.id.slice(-8).toUpperCase()}`;
-            const receiptDate = new Date(registration.createdAt).toLocaleDateString('en-AU', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            });
+          // Send confirmation email to each attendee
+          for (const reg of order.registrations) {
+            try {
+              const receiptNumber = `AISF-${reg.id.slice(-8).toUpperCase()}`;
+              const receiptDate = new Date(reg.createdAt).toLocaleDateString('en-AU', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              });
 
-            await sendConfirmationEmail({
-              email: registration.email,
-              name: registration.name,
-              ticketType: registration.ticketType,
-              organisation: registration.organisation,
-              receiptNumber,
-              receiptDate,
-              amountPaid: registration.amountPaid,
-              transactionId: session.payment_intent as string,
-            });
+              await sendConfirmationEmail({
+                email: reg.email,
+                name: reg.name,
+                ticketType: reg.ticketType,
+                organisation: reg.organisation,
+                receiptNumber,
+                receiptDate,
+                amountPaid: reg.ticketPrice || reg.amountPaid,
+                transactionId: session.payment_intent as string,
+                // Include purchaser info for group orders
+                purchaserEmail: order.purchaserEmail,
+                purchaserName: order.purchaserName,
+              });
 
-            console.log(`✅ Confirmation email sent to ${registration.email}`);
-          } catch (emailError) {
-            console.error('❌ Error sending confirmation email:', emailError);
-            // Don't fail the webhook if email fails
+              console.log(`✅ Confirmation email sent to ${reg.email}`);
+            } catch (emailError) {
+              console.error(`❌ Error sending confirmation email to ${reg.email}:`, emailError);
+            }
           }
         } else {
-          console.warn(`⚠️  No registration found for session ${session.id}`);
+          // Fallback: try to find single registration by session ID (legacy single-ticket)
+          const registration = await prisma.registration.findUnique({
+            where: { stripeSessionId: session.id },
+            include: { order: true },
+          });
+
+          if (registration) {
+            await prisma.$transaction([
+              prisma.registration.update({
+                where: { id: registration.id },
+                data: {
+                  status: 'paid',
+                  stripePaymentId: session.payment_intent as string,
+                },
+              }),
+              ...(registration.orderId
+                ? [
+                    prisma.order.update({
+                      where: { id: registration.orderId },
+                      data: {
+                        paymentStatus: 'paid',
+                        stripePaymentId: session.payment_intent as string,
+                      },
+                    }),
+                  ]
+                : []),
+            ]);
+
+            console.log(`✅ Registration ${registration.id} marked as paid`);
+
+            // Send confirmation email
+            try {
+              const receiptNumber = `AISF-${registration.id.slice(-8).toUpperCase()}`;
+              const receiptDate = new Date(registration.createdAt).toLocaleDateString('en-AU', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              });
+
+              await sendConfirmationEmail({
+                email: registration.email,
+                name: registration.name,
+                ticketType: registration.ticketType,
+                organisation: registration.organisation,
+                receiptNumber,
+                receiptDate,
+                amountPaid: registration.amountPaid,
+                transactionId: session.payment_intent as string,
+              });
+
+              console.log(`✅ Confirmation email sent to ${registration.email}`);
+            } catch (emailError) {
+              console.error('❌ Error sending confirmation email:', emailError);
+            }
+          } else {
+            console.warn(`⚠️  No order or registration found for session ${session.id}`);
+          }
         }
         break;
       }
@@ -110,29 +164,49 @@ export async function POST(req: Request) {
 
         console.log('⏱️  Checkout session expired:', session.id);
 
-        // Mark registration and order as cancelled
-        const registration = await prisma.registration.findUnique({
+        // First try to find an Order by session ID (multi-ticket orders)
+        const order = await prisma.order.findUnique({
           where: { stripeSessionId: session.id },
+          include: { registrations: true },
         });
 
-        if (registration) {
+        if (order) {
           await prisma.$transaction([
-            prisma.registration.update({
-              where: { id: registration.id },
-              data: { status: 'cancelled' },
+            prisma.order.update({
+              where: { id: order.id },
+              data: { paymentStatus: 'cancelled' },
             }),
-            // Update order if it exists
-            ...(registration.orderId
-              ? [
-                  prisma.order.update({
-                    where: { id: registration.orderId },
-                    data: { paymentStatus: 'cancelled' },
-                  }),
-                ]
-              : []),
+            ...order.registrations.map((reg) =>
+              prisma.registration.update({
+                where: { id: reg.id },
+                data: { status: 'cancelled' },
+              })
+            ),
           ]);
+          console.log(`❌ Order ${order.id} and ${order.registrations.length} registrations cancelled (session expired)`);
+        } else {
+          // Fallback: try single registration
+          const registration = await prisma.registration.findUnique({
+            where: { stripeSessionId: session.id },
+          });
 
-          console.log(`❌ Registration ${registration.id} marked as cancelled (session expired)`);
+          if (registration) {
+            await prisma.$transaction([
+              prisma.registration.update({
+                where: { id: registration.id },
+                data: { status: 'cancelled' },
+              }),
+              ...(registration.orderId
+                ? [
+                    prisma.order.update({
+                      where: { id: registration.orderId },
+                      data: { paymentStatus: 'cancelled' },
+                    }),
+                  ]
+                : []),
+            ]);
+            console.log(`❌ Registration ${registration.id} marked as cancelled (session expired)`);
+          }
         }
         break;
       }

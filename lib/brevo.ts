@@ -23,6 +23,9 @@ interface RegistrationEmailParams {
   receiptDate: string;
   amountPaid: number;
   transactionId?: string | null;
+  // For group orders: who purchased this ticket
+  purchaserEmail?: string | null;
+  purchaserName?: string | null;
 }
 
 export async function sendConfirmationEmail(params: RegistrationEmailParams) {
@@ -79,7 +82,10 @@ export async function sendConfirmationEmail(params: RegistrationEmailParams) {
     <div class="content">
       <p>Dear ${params.name},</p>
 
-      <p>Thank you for registering for the Australian AI Safety Forum ${eventConfig.year}!</p>
+      ${params.purchaserName && params.purchaserEmail && params.purchaserEmail.toLowerCase() !== params.email.toLowerCase()
+        ? `<p>Great news! <strong>${params.purchaserName}</strong> has registered you for the Australian AI Safety Forum ${eventConfig.year}.</p>`
+        : `<p>Thank you for registering for the Australian AI Safety Forum ${eventConfig.year}!</p>`
+      }
 
       <div class="receipt-box">
         <h3 style="margin-top: 0; color: #0a1f5c;">Event Details</h3>
@@ -143,7 +149,10 @@ Registration Confirmed - Australian AI Safety Forum ${eventConfig.year}
 
 Dear ${params.name},
 
-Thank you for registering for the Australian AI Safety Forum ${eventConfig.year}!
+${params.purchaserName && params.purchaserEmail && params.purchaserEmail.toLowerCase() !== params.email.toLowerCase()
+  ? `Great news! ${params.purchaserName} has registered you for the Australian AI Safety Forum ${eventConfig.year}.`
+  : `Thank you for registering for the Australian AI Safety Forum ${eventConfig.year}!`
+}
 
 Event Details:
 - Dates: ${eventConfig.datesLong}

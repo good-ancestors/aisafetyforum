@@ -16,6 +16,20 @@ export type RegistrationFormData = {
   couponCode?: string;
 };
 
+export type AttendeeData = {
+  email: string;
+  name: string;
+  ticketType: TicketTierId;
+};
+
+export type MultiTicketFormData = {
+  purchaserEmail: string;
+  purchaserName: string;
+  purchaserOrg?: string;
+  attendees: AttendeeData[];
+  couponCode?: string;
+};
+
 /**
  * Get or create a Profile by email.
  * If the profile exists, optionally update name/organisation if provided.
@@ -340,5 +354,233 @@ export async function getOrdersByEmail(email: string) {
   } catch (error) {
     console.error('Error fetching orders:', error);
     return [];
+  }
+}
+
+/**
+ * Create a multi-ticket checkout session.
+ * Supports multiple attendees with different ticket types in a single order.
+ */
+export async function createMultiTicketCheckout(data: MultiTicketFormData) {
+  try {
+    const earlyBird = isEarlyBirdActive();
+
+    // Calculate totals and validate tickets
+    let subtotal = 0;
+    const lineItems: { price: string; quantity: number }[] = [];
+    const ticketCounts: Record<string, number> = {};
+
+    for (const attendee of data.attendees) {
+      const tier = ticketTiers.find((t) => t.id === attendee.ticketType);
+      if (!tier) {
+        return { success: false, error: `Invalid ticket type: ${attendee.ticketType}` };
+      }
+
+      const price = earlyBird ? tier.earlyBirdPrice : tier.price;
+      subtotal += price;
+
+      // Count tickets by type for Stripe line items
+      const priceId = earlyBird ? tier.stripeEarlyBirdPriceId : tier.stripePriceId;
+      if (!priceId) {
+        return { success: false, error: `Stripe price ID not configured for ${tier.name}` };
+      }
+
+      ticketCounts[priceId] = (ticketCounts[priceId] || 0) + 1;
+    }
+
+    // Build line items from ticket counts
+    for (const [priceId, quantity] of Object.entries(ticketCounts)) {
+      lineItems.push({ price: priceId, quantity });
+    }
+
+    // Validate and apply coupon if provided
+    let discount = null;
+    let couponId = null;
+    let discountAmount = 0;
+    let totalAmount = subtotal;
+
+    if (data.couponCode) {
+      const validation = await validateCoupon(
+        data.couponCode,
+        data.purchaserEmail,
+        data.attendees[0].ticketType
+      );
+      if (!validation.valid) {
+        return { success: false, error: validation.error };
+      }
+      discount = validation.discount!;
+
+      // Apply discount to total
+      if (discount.type === 'percentage') {
+        discountAmount = Math.round(subtotal * (discount.value / 100));
+      } else if (discount.type === 'fixed') {
+        discountAmount = discount.value;
+      } else if (discount.type === 'free') {
+        discountAmount = subtotal;
+      }
+      totalAmount = Math.max(0, subtotal - discountAmount);
+
+      // Get coupon ID
+      const coupon = await prisma.discountCode.findUnique({
+        where: { code: data.couponCode.toUpperCase() },
+      });
+      couponId = coupon?.id || null;
+    }
+
+    // Create order
+    const order = await prisma.order.create({
+      data: {
+        purchaserEmail: data.purchaserEmail.toLowerCase().trim(),
+        purchaserName: data.purchaserName,
+        orgName: data.purchaserOrg || null,
+        paymentMethod: 'card',
+        paymentStatus: 'pending',
+        totalAmount,
+        discountAmount,
+        couponId,
+      },
+    });
+
+    // Create profiles and registrations for each attendee
+    const registrations = [];
+    for (const attendee of data.attendees) {
+      const profile = await getOrCreateProfile(attendee.email, attendee.name);
+      const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
+      const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
+
+      const registration = await prisma.registration.create({
+        data: {
+          email: attendee.email.toLowerCase().trim(),
+          name: attendee.name,
+          ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+          ticketPrice,
+          originalAmount: ticketPrice,
+          discountAmount: 0, // Discount applied at order level
+          amountPaid: ticketPrice, // Individual ticket price (before order-level discount)
+          status: 'pending',
+          profileId: profile.id,
+          orderId: order.id,
+        },
+      });
+      registrations.push(registration);
+    }
+
+    // If total is free (100% discount), mark as paid immediately
+    if (totalAmount === 0) {
+      await prisma.$transaction([
+        prisma.order.update({
+          where: { id: order.id },
+          data: { paymentStatus: 'paid' },
+        }),
+        ...registrations.map((reg) =>
+          prisma.registration.update({
+            where: { id: reg.id },
+            data: { status: 'paid' },
+          })
+        ),
+      ]);
+
+      if (data.couponCode) {
+        await incrementCouponUsage(data.couponCode);
+      }
+
+      return {
+        success: true,
+        free: true,
+        orderId: order.id,
+        registrationIds: registrations.map((r) => r.id),
+      };
+    }
+
+    // Create Stripe checkout session
+    const stripe = requireStripe();
+
+    // Build base URL
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!baseUrl) {
+      try {
+        const headersList = await headers();
+        const host = headersList.get('host');
+        if (host) {
+          baseUrl = `https://${host}`;
+        }
+      } catch (e) {
+        console.log('Could not read headers:', e);
+      }
+    }
+    if (!baseUrl) {
+      baseUrl = 'https://aisafetyforum.vercel.app';
+    }
+    const fullBaseUrl = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
+
+    const sessionConfig: any = {
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      customer_email: data.purchaserEmail,
+      metadata: {
+        orderId: order.id,
+        registrationIds: registrations.map((r) => r.id).join(','),
+        attendeeCount: data.attendees.length.toString(),
+        couponCode: data.couponCode || '',
+      },
+      success_url: `${fullBaseUrl}/register/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${fullBaseUrl}/register`,
+    };
+
+    // Apply discount if there is one
+    if (discount && discountAmount > 0) {
+      sessionConfig.discounts = [
+        {
+          coupon: await getOrCreateStripeCoupon({
+            type: discount.type,
+            value: discount.value,
+            discountAmount,
+          }),
+        },
+      ];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    // Update order with Stripe session ID
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { stripeSessionId: session.id },
+    });
+
+    return {
+      success: true,
+      sessionId: session.id,
+      url: session.url,
+      orderId: order.id,
+      registrationIds: registrations.map((r) => r.id),
+    };
+  } catch (error) {
+    console.error('Error creating multi-ticket checkout:', error);
+    return { success: false, error: 'Failed to create checkout. Please try again.' };
+  }
+}
+
+/**
+ * Get order by Stripe session ID (for success page)
+ */
+export async function getOrderBySessionId(sessionId: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { stripeSessionId: sessionId },
+      include: {
+        registrations: {
+          include: {
+            profile: true,
+          },
+        },
+        coupon: true,
+      },
+    });
+    return order;
+  } catch (error) {
+    console.error('Error fetching order by session:', error);
+    return null;
   }
 }
