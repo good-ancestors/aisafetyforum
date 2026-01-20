@@ -6,6 +6,7 @@ import { ticketTiers, type TicketTierId } from './stripe-config';
 import { revalidatePath } from 'next/cache';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
+import { headers } from 'next/headers';
 
 export type RegistrationFormData = {
   email: string;
@@ -95,15 +96,23 @@ export async function createCheckoutSession(data: RegistrationFormData) {
     const stripe = requireStripe();
 
     // Build base URL with fallback logic
-    // 1. Use NEXT_PUBLIC_BASE_URL if set
-    // 2. Use VERCEL_URL for preview deployments
-    // 3. Fallback to production URL
+    // Priority: NEXT_PUBLIC_BASE_URL > request host > fallback
     let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-    if (!baseUrl && process.env.VERCEL_URL) {
-      baseUrl = `https://${process.env.VERCEL_URL}`;
+    // If not set, try to get from request headers
+    if (!baseUrl) {
+      try {
+        const headersList = await headers();
+        const host = headersList.get('host');
+        if (host) {
+          baseUrl = `https://${host}`;
+        }
+      } catch (e) {
+        console.log('Could not read headers:', e);
+      }
     }
 
+    // Final fallback
     if (!baseUrl) {
       baseUrl = 'https://aisafetyforum.vercel.app';
     }

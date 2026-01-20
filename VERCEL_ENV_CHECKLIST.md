@@ -5,11 +5,16 @@ These environment variables must be set in Vercel for the deployment to succeed:
 ## Required for All Environments
 
 ### Database
-- `DATABASE_URL` - PostgreSQL connection string (from Vercel Postgres)
+- `DATABASE_URL` - PostgreSQL connection string (from Neon via Vercel integration)
   - **Important**: Should use `sslmode=verify-full` or `sslmode=require`
   - Example: `postgresql://user:pass@host/db?sslmode=verify-full`
-- `POSTGRES_PRISMA_URL` - Prisma-specific connection string (from Vercel Postgres)
+  - **Auto-provided** by Neon integration in Vercel
+- `POSTGRES_PRISMA_URL` - Prisma-specific connection string (from Neon via Vercel integration)
+  - Uses connection pooling for better serverless performance
   - Should also include `sslmode=verify-full`
+  - **Auto-provided** by Neon integration in Vercel
+
+> **Note:** See [NEON_DATABASE_SETUP.md](./NEON_DATABASE_SETUP.md) for detailed Neon configuration
 
 ### Stripe
 - `STRIPE_SECRET_KEY` - Stripe secret key (starts with `sk_test_` for test mode)
