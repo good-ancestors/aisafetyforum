@@ -71,9 +71,9 @@ export async function validateCoupon(
       return { valid: false, error: 'Invalid ticket type' };
     }
 
-    const originalAmount = ticketTier.price;
-    let discountAmount = 0;
-    let finalAmount = originalAmount;
+    const originalAmount: number = ticketTier.price;
+    let discountAmount: number = 0;
+    let finalAmount: number = originalAmount;
 
     if (coupon.type === 'free') {
       discountAmount = originalAmount;

@@ -29,8 +29,8 @@ export async function createCheckoutSession(data: RegistrationFormData) {
     // Validate and apply coupon if provided
     let discount = null;
     let couponId = null;
-    let finalAmount = ticketTier.price;
-    let discountAmount = 0;
+    let finalAmount: number = ticketTier.price;
+    let discountAmount: number = 0;
 
     if (freeTicketCheck.isFree) {
       // Email is on free ticket list - automatically free
