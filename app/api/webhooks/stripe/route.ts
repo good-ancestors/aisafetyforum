@@ -240,7 +240,7 @@ export async function POST(req: Request) {
 
         // Get payment intent ID from charge or metadata
         // Invoice payment_intent may not be directly accessible in all API versions
-        const invoiceData = invoice as any;
+        const invoiceData = invoice as Stripe.Invoice & { payment_intent?: string | { id: string } | null };
         const paymentIntentId = invoiceData.payment_intent
           ? (typeof invoiceData.payment_intent === 'string'
               ? invoiceData.payment_intent

@@ -3,7 +3,6 @@
 import { requireStripe } from './stripe';
 import { prisma } from './prisma';
 import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
-import { revalidatePath } from 'next/cache';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
 import { headers } from 'next/headers';
@@ -665,7 +664,7 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
     }
 
     // Create Stripe customer (or find existing)
-    let customer = await stripe.customers.list({
+    const customer = await stripe.customers.list({
       email: data.purchaserEmail.toLowerCase(),
       limit: 1,
     });

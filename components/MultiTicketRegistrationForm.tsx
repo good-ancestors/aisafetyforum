@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createMultiTicketCheckout, createInvoiceOrder, type MultiTicketFormData, type AttendeeData } from '@/lib/registration-actions';
+import { createMultiTicketCheckout, createInvoiceOrder, type MultiTicketFormData } from '@/lib/registration-actions';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 
@@ -32,7 +32,11 @@ export default function MultiTicketRegistrationForm() {
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
-  const [discount, setDiscount] = useState<any>(null);
+  const [discount, setDiscount] = useState<{
+    type: 'percentage' | 'fixed' | 'free';
+    value: number;
+    description?: string;
+  } | null>(null);
 
   // Payment method
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'invoice'>('card');

@@ -126,7 +126,7 @@ export default async function InvoiceSentPage({
             <div className="border-t border-[#e0e4e8] pt-6">
               <h3 className="font-bold text-[#0a1f5c] mb-4">Registered Attendees</h3>
               <div className="space-y-3">
-                {order.registrations.map((reg, index) => (
+                {order.registrations.map((reg) => (
                   <div key={reg.id} className="flex justify-between items-center text-sm bg-[#f9fafb] p-3 rounded">
                     <div>
                       <span className="font-medium">{reg.name}</span>
