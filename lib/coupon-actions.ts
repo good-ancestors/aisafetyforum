@@ -53,7 +53,7 @@ export async function validateCoupon(
     // Check if email is allowed (if email restriction exists)
     if (coupon.allowedEmails.length > 0) {
       const emailAllowed = coupon.allowedEmails.some(
-        (allowedEmail) => allowedEmail.toLowerCase() === email.toLowerCase()
+        (allowedEmail: string) => allowedEmail.toLowerCase() === email.toLowerCase()
       );
       if (!emailAllowed) {
         return { valid: false, error: 'This coupon is not valid for your email address' };
