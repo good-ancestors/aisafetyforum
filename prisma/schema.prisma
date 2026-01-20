@@ -13,47 +13,57 @@ datasource db {
 }
 
 model SpeakerProposal {
-  id        String   @id @default(cuid())
-  email     String
-  name      String
+  id           String   @id @default(cuid())
+  email        String
+  name         String
   organisation String
-  title     String
-  bio       String
-  linkedin  String?
-  twitter   String?
-  bluesky   String?
-  website   String?
-  format    String   // Keynote, Lightning talk, Workshop, Panel, Flexible
-  abstract  String
-  travelSupport String // No, Yes, Maybe
+  title        String
+  bio          String
+  linkedin     String?
+  twitter      String?
+  bluesky      String?
+  website      String?
+  format       String   // Keynote, Lightning talk, Workshop, Panel, Flexible
+  abstract     String
+  travelSupport String  // No, Yes, Maybe
   anythingElse String?
   acceptedTerms Boolean @default(true)
-  status    String   @default("pending") // pending, accepted, rejected
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status       String   @default("pending") // pending, accepted, rejected
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Link to unified profile (nullable during migration)
+  profileId    String?
+  profile      Profile? @relation(fields: [profileId], references: [id])
 
   @@index([email])
   @@index([status])
+  @@index([profileId])
 }
 
 model FundingApplication {
-  id        String   @id @default(cuid())
-  email     String
-  name      String
-  location  String
+  id           String   @id @default(cuid())
+  email        String
+  name         String
+  location     String
   organisation String
-  role      String
-  whyAttend String
-  amount    String
-  day1      Boolean  @default(false)
-  day2      Boolean  @default(false)
+  role         String
+  whyAttend    String
+  amount       String
+  day1         Boolean  @default(false)
+  day2         Boolean  @default(false)
   acceptedTerms Boolean @default(true)
-  status    String   @default("pending") // pending, approved, rejected
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status       String   @default("pending") // pending, approved, rejected
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Link to unified profile (nullable during migration)
+  profileId    String?
+  profile      Profile? @relation(fields: [profileId], references: [id])
 
   @@index([email])
   @@index([status])
+  @@index([profileId])
 }
 
 model Registration {
@@ -62,11 +72,12 @@ model Registration {
   name            String
   organisation    String?
   ticketType      String        // Standard, Academic, Concession
+  ticketPrice     Int?          // Price for this specific ticket in cents (new)
   stripeSessionId String?       @unique
   stripePaymentId String?
-  amountPaid      Int           // Amount in cents (after discount)
-  originalAmount  Int           // Original price before discount
-  discountAmount  Int           @default(0) // Discount applied in cents
+  amountPaid      Int           // Amount in cents (after discount) - legacy, used for single-ticket
+  originalAmount  Int           // Original price before discount - legacy
+  discountAmount  Int           @default(0) // Discount applied in cents - legacy
   couponId        String?
   coupon          DiscountCode? @relation(fields: [couponId], references: [id])
   status          String        @default("pending") // pending, paid, cancelled, refunded
@@ -74,10 +85,20 @@ model Registration {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
+  // Link to unified profile (nullable during migration)
+  profileId       String?
+  profile         Profile?      @relation(fields: [profileId], references: [id])
+
+  // Link to order (nullable during migration, for multi-ticket support)
+  orderId         String?
+  order           Order?        @relation(fields: [orderId], references: [id])
+
   @@index([email])
   @@index([status])
   @@index([stripeSessionId])
   @@index([couponId])
+  @@index([profileId])
+  @@index([orderId])
 }
 
 model DiscountCode {
@@ -93,7 +114,8 @@ model DiscountCode {
   active          Boolean        @default(true)
   validFrom       DateTime?      // null = immediately valid
   validUntil      DateTime?      // null = never expires
-  registrations   Registration[]
+  registrations   Registration[] // Legacy: individual registration coupons
+  orders          Order[]        // New: order-level coupons
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
@@ -112,4 +134,60 @@ model FreeTicketEmail {
 
   @@index([email])
   @@index([active])
+}
+
+// Central profile - one per person, linked by email
+model Profile {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  title        String?  // Job title/role
+  organisation String?
+
+  // Relationships
+  registrations       Registration[]
+  speakerProposals    SpeakerProposal[]
+  fundingApplications FundingApplication[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+// Order = a purchase (can contain multiple tickets)
+model Order {
+  id             String   @id @default(cuid())
+  purchaserEmail String   // Who paid (may differ from attendees)
+  purchaserName  String
+
+  // Payment
+  paymentMethod  String   @default("card") // card, invoice
+  paymentStatus  String   @default("pending") // pending, paid, cancelled, failed
+  stripeSessionId String? @unique // For card payments (Checkout Session)
+  stripePaymentId String? // Payment Intent ID
+  stripeInvoiceId String? @unique // For invoice payments
+
+  // Totals (in cents)
+  totalAmount    Int
+  discountAmount Int      @default(0)
+
+  // For invoices (org billing details)
+  orgName        String?
+  orgABN         String?
+  poNumber       String?
+
+  // Coupon applied to order
+  couponId       String?
+  coupon         DiscountCode? @relation(fields: [couponId], references: [id])
+
+  registrations  Registration[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([purchaserEmail])
+  @@index([paymentStatus])
+  @@index([stripeSessionId])
+  @@index([stripeInvoiceId])
 }
