@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { eventConfig } from '@/lib/config';
-import RegistrationForm from '@/components/RegistrationForm';
+import MultiTicketRegistrationForm from '@/components/MultiTicketRegistrationForm';
 
 export default function Register() {
   return (
@@ -22,32 +22,40 @@ export default function Register() {
           </div>
 
           {/* Registration Form */}
-          <RegistrationForm />
+          <MultiTicketRegistrationForm />
+
+          {/* Cancellation Policy */}
+          <div className="bg-[#f0f4f8] rounded-lg p-6 mt-8">
+            <h3 className="font-bold text-[#0a1f5c] mb-2">Cancellation Policy</h3>
+            <p className="text-sm text-[#5c6670]">
+              Full refund available until the event starts. If you&apos;re accepted as a speaker or awarded a scholarship after purchasing a ticket, we&apos;ll refund your registration.
+            </p>
+          </div>
 
           {/* Additional Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div className="bg-white rounded-lg p-6 border border-[#e0e4e8]">
               <h3 className="font-bold text-lg text-[#0a1f5c] mb-3">Have a proposal?</h3>
               <p className="text-sm text-[#5c6670] mb-4">
-                Accepted speakers receive free registration. Travel support may be available.
+                Accepted speakers receive free registration and we&apos;ll refund any ticket you&apos;ve already purchased. Travel support may be available.
               </p>
               <Link
                 href="/speak"
                 className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
               >
-                Submit a speaker proposal →
+                Apply to speak →
               </Link>
             </div>
             <div className="bg-white rounded-lg p-6 border border-[#e0e4e8]">
-              <h3 className="font-bold text-lg text-[#0a1f5c] mb-3">Need funding support?</h3>
+              <h3 className="font-bold text-lg text-[#0a1f5c] mb-3">Need a scholarship?</h3>
               <p className="text-sm text-[#5c6670] mb-4">
-                We have limited funding for travel and accommodation to help people attend who otherwise couldn't.
+                We offer scholarships with travel and accommodation support. If approved, we&apos;ll refund any ticket you&apos;ve already purchased.
               </p>
               <Link
-                href="/funding"
+                href="/scholarship"
                 className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
               >
-                Apply for funding →
+                Apply for a scholarship →
               </Link>
             </div>
           </div>

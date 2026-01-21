@@ -13,7 +13,7 @@ export default function Speak() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="font-serif text-[2.5rem] font-bold text-[#0a1f5c] mb-4">
-              Share Your Ideas at the Forum
+              Apply to Speak at the Forum
             </h1>
             <div className="text-lg text-[#333333] space-y-2">
               <p><strong>Event:</strong> Australian AI Safety Forum {eventConfig.year}</p>
@@ -25,7 +25,10 @@ export default function Speak() {
           {/* Quick Info */}
           <div className="bg-white rounded-lg p-6 border border-[#e0e4e8] mb-8">
             <p className="text-[#333333]">
-              We'd love to hear your session ideas on AI safety science and governance — whether technical, policy-focused, or cross-disciplinary. Early-stage work and fresh perspectives are welcome. <strong>Accepted speakers receive free registration</strong> and we have travel support available for those who need it.
+              We&apos;d love to hear your session ideas on AI safety science and governance — whether technical, policy-focused, or cross-disciplinary. Early-stage work and fresh perspectives are welcome. <strong>Accepted speakers receive free registration</strong> and we have travel support available for those who need it.
+            </p>
+            <p className="text-sm text-[#5c6670] mt-4">
+              Already registered? No problem — if your proposal is accepted, we&apos;ll refund your ticket.
             </p>
           </div>
 
@@ -47,15 +50,15 @@ export default function Speak() {
               </Link>
             </div>
             <div className="bg-white rounded-lg p-6 border border-[#e0e4e8]">
-              <h3 className="font-bold text-lg text-[#0a1f5c] mb-3">Need funding support?</h3>
+              <h3 className="font-bold text-lg text-[#0a1f5c] mb-3">Need a scholarship?</h3>
               <p className="text-sm text-[#5c6670] mb-4">
-                We have limited funding for travel and accommodation.
+                We offer scholarships with travel and accommodation support.
               </p>
               <Link
-                href="/funding"
+                href="/scholarship"
                 className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
               >
-                Apply for funding →
+                Apply for a scholarship →
               </Link>
             </div>
           </div>

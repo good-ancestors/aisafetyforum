@@ -20,7 +20,7 @@ export default function ContactPage() {
               Contact Us
             </h1>
             <p className="text-lg text-[#5c6670] max-w-[600px] mx-auto">
-              Have questions about the Australian AI Safety Forum {eventConfig.year}? We'd love to hear from you.
+              Have questions about the Australian AI Safety Forum {eventConfig.year}? We&apos;d love to hear from you.
             </p>
           </div>
 
@@ -72,8 +72,8 @@ export default function ContactPage() {
                     </a>
                   </li>
                   <li>
-                    <a href="/funding" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
-                      → Apply for Travel Funding
+                    <a href="/scholarship" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
+                      → Apply for a Scholarship
                     </a>
                   </li>
                   <li>

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -35,17 +36,9 @@ export default function SponsorPage() {
 
   const impactStats = [
     { value: '100+', label: 'Attendees in 2024' },
-    { value: '76%', label: 'Increased understanding of Australia\'s role' },
+    { value: '76%', label: "Increased understanding of Australia's role" },
     { value: '92%', label: 'Increased connection with AI safety community' },
     { value: '85%', label: 'Rated experience as good or very good' },
-  ];
-
-  const sponsors = [
-    {
-      name: 'Department of Industry, Science and Resources',
-      logo: '/logos/disr.png',
-      website: 'https://www.industry.gov.au/',
-    },
   ];
 
   const organisingCommittee = [
@@ -104,7 +97,7 @@ export default function SponsorPage() {
               Become a Sponsor
             </h1>
             <p className="text-xl leading-relaxed mb-8 text-[#e0f2ff]">
-              Support Australia's premier gathering for AI safety researchers, policymakers, and industry leaders. Help advance evidence-based AI policy and foster the next generation of AI safety work.
+              Support Australia&apos;s premier gathering for AI safety researchers, policymakers, and industry leaders. Help advance evidence-based AI policy and foster the next generation of AI safety work.
             </p>
           </div>
         </section>
@@ -182,7 +175,7 @@ export default function SponsorPage() {
             </div>
 
             <p className="text-center text-lg text-[#333333] mt-8 font-semibold">
-              The 2026 forum is an opportunity to take stock of these changes and prepare for what's to come.
+              The 2026 forum is an opportunity to take stock of these changes and prepare for what&apos;s to come.
             </p>
           </div>
         </section>
@@ -213,7 +206,7 @@ export default function SponsorPage() {
                     <svg className="w-5 h-5 text-[#0099cc] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span>Strengthen Australia's role in international AI safety coordination</span>
+                    <span>Strengthen Australia&apos;s role in international AI safety coordination</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-[#0099cc] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -225,7 +218,7 @@ export default function SponsorPage() {
                     <svg className="w-5 h-5 text-[#0099cc] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span>Raise the profile of Australia's new AI Safety Institute</span>
+                    <span>Raise the profile of Australia&apos;s new AI Safety Institute</span>
                   </li>
                 </ul>
               </div>
@@ -348,11 +341,12 @@ export default function SponsorPage() {
                   className="bg-[#f0f4f8] rounded-lg p-6 border-l-4 border-[#0099cc] flex flex-col"
                 >
                   {/* Logo */}
-                  <div className="h-20 flex items-center justify-center mb-4 bg-white rounded border border-[#e0e4e8] p-4">
-                    <img
+                  <div className="h-20 flex items-center justify-center mb-4 bg-white rounded border border-[#e0e4e8] p-4 relative">
+                    <Image
                       src={org.logo}
                       alt={`${org.name} logo`}
-                      className="max-h-full max-w-full object-contain"
+                      fill
+                      className="object-contain p-2"
                     />
                   </div>
                   <a
@@ -378,7 +372,7 @@ export default function SponsorPage() {
               Partner With Us
             </h2>
             <p className="text-xl leading-relaxed mb-8 text-[#e0f2ff]">
-              Support at any level demonstrates leadership in fostering Australia's AI safety ecosystem and advancing evidence-based AI policy.
+              Support at any level demonstrates leadership in fostering Australia&apos;s AI safety ecosystem and advancing evidence-based AI policy.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

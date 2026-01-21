@@ -76,11 +76,12 @@ export default function Organisers() {
                 className="bg-white rounded-lg p-6 shadow-sm border border-[#e0e4e8] flex flex-col"
               >
                 {/* Logo */}
-                <div className="h-20 flex items-center justify-center mb-4 bg-[#f9fafb] rounded border border-[#e0e4e8] p-4">
-                  <img
+                <div className="h-20 flex items-center justify-center mb-4 bg-[#f9fafb] rounded border border-[#e0e4e8] p-4 relative">
+                  <Image
                     src={org.logo}
                     alt={`${org.name} logo`}
-                    className="max-h-full max-w-full object-contain"
+                    fill
+                    className="object-contain p-2"
                   />
                 </div>
                 <a
@@ -116,11 +117,12 @@ export default function Organisers() {
                 className="bg-white rounded-lg p-8 shadow-sm border-2 border-[#0099cc] max-w-md w-full"
               >
                 {/* Logo */}
-                <div className="h-24 flex items-center justify-center mb-6 bg-[#f9fafb] rounded p-4">
-                  <img
+                <div className="h-24 flex items-center justify-center mb-6 bg-[#f9fafb] rounded p-4 relative">
+                  <Image
                     src={sponsor.logo}
                     alt={`${sponsor.name} logo`}
-                    className="max-h-full max-w-full object-contain"
+                    fill
+                    className="object-contain p-2"
                   />
                 </div>
                 <div className="text-center">
