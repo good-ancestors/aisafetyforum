@@ -143,7 +143,7 @@ export default function Organisers() {
 
             {/* Become a Sponsor link */}
             <p className="text-sm text-[#5c6670] mt-4">
-              Interested in sponsoring? <a href="/sponsor" className="text-[#0047ba] hover:text-[#0099cc] underline font-medium">Learn about sponsorship opportunities</a>
+              Interested in sponsoring? <a href="/sponsorship" className="text-[#0047ba] hover:text-[#0099cc] underline font-medium">Learn about sponsorship opportunities</a>
             </p>
           </div>
         </div>

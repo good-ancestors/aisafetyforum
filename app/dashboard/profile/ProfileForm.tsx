@@ -1,0 +1,227 @@
+'use client';
+
+import { useState } from 'react';
+import { updateProfile } from '@/lib/profile-actions';
+
+interface ProfileFormProps {
+  email: string;
+  initialData?: {
+    name: string;
+    title: string;
+    organisation: string;
+    bio: string;
+    linkedin: string;
+    twitter: string;
+    bluesky: string;
+    website: string;
+  };
+}
+
+export default function ProfileForm({ email, initialData }: ProfileFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    setSaved(false);
+
+    const formData = new FormData(event.currentTarget);
+
+    const data = {
+      name: formData.get('name') as string,
+      title: formData.get('title') as string,
+      organisation: formData.get('organisation') as string,
+      bio: formData.get('bio') as string,
+      linkedin: formData.get('linkedin') as string,
+      twitter: formData.get('twitter') as string,
+      bluesky: formData.get('bluesky') as string,
+      website: formData.get('website') as string,
+    };
+
+    const result = await updateProfile(email, data);
+
+    if (result.success) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } else {
+      setError(result.error || 'An error occurred');
+    }
+
+    setIsSubmitting(false);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[--border]">
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+          <p className="font-medium">Error</p>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {saved && (
+        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded">
+          <p className="font-medium">Saved!</p>
+          <p className="text-sm">Your profile has been updated.</p>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        {/* Email (read-only) */}
+        <div>
+          <label className="block text-sm font-bold text-[--navy] mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            disabled
+            className="w-full px-4 py-2 border border-[--border] rounded-md bg-[--bg-light] text-[--text-muted]"
+          />
+          <p className="text-xs text-[--text-muted] mt-1">
+            Email cannot be changed
+          </p>
+        </div>
+
+        {/* Name */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-bold text-[--navy] mb-2">
+            Full Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            defaultValue={initialData?.name}
+            className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent"
+          />
+        </div>
+
+        {/* Title */}
+        <div>
+          <label htmlFor="title" className="block text-sm font-bold text-[--navy] mb-2">
+            Job Title / Role
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            defaultValue={initialData?.title}
+            placeholder="e.g. Research Fellow, Policy Analyst"
+            className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent"
+          />
+        </div>
+
+        {/* Organisation */}
+        <div>
+          <label htmlFor="organisation" className="block text-sm font-bold text-[--navy] mb-2">
+            Organisation
+          </label>
+          <input
+            type="text"
+            id="organisation"
+            name="organisation"
+            defaultValue={initialData?.organisation}
+            placeholder="e.g. Australian National University"
+            className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent"
+          />
+        </div>
+
+        {/* Bio */}
+        <div>
+          <label htmlFor="bio" className="block text-sm font-bold text-[--navy] mb-2">
+            Bio
+          </label>
+          <p className="text-sm text-[--text-muted] mb-2">
+            A short description about yourself (around 75 words)
+          </p>
+          <textarea
+            id="bio"
+            name="bio"
+            defaultValue={initialData?.bio}
+            rows={4}
+            maxLength={450}
+            placeholder="Your background, research interests, or current work..."
+            className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent"
+          />
+        </div>
+
+        {/* Profile Links Section */}
+        <div className="border-t border-[--border] pt-6">
+          <h3 className="font-bold text-[--navy] mb-4">Profile Links</h3>
+          <p className="text-sm text-[--text-muted] mb-4">
+            Optional - add your professional profiles
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="linkedin" className="block text-sm font-medium text-[--text-body] mb-1">
+                LinkedIn
+              </label>
+              <input
+                type="url"
+                id="linkedin"
+                name="linkedin"
+                defaultValue={initialData?.linkedin}
+                placeholder="https://linkedin.com/in/yourname"
+                className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="twitter" className="block text-sm font-medium text-[--text-body] mb-1">
+                X / Twitter
+              </label>
+              <input
+                type="url"
+                id="twitter"
+                name="twitter"
+                defaultValue={initialData?.twitter}
+                placeholder="https://x.com/yourhandle"
+                className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="bluesky" className="block text-sm font-medium text-[--text-body] mb-1">
+                Bluesky
+              </label>
+              <input
+                type="url"
+                id="bluesky"
+                name="bluesky"
+                defaultValue={initialData?.bluesky}
+                placeholder="https://bsky.app/profile/yourname"
+                className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent text-sm"
+              />
+            </div>
+            <div>
+              <label htmlFor="website" className="block text-sm font-medium text-[--text-body] mb-1">
+                Website
+              </label>
+              <input
+                type="url"
+                id="website"
+                name="website"
+                defaultValue={initialData?.website}
+                placeholder="https://yourwebsite.com"
+                className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full px-8 py-3 text-base font-bold bg-[--navy] text-white rounded-md hover:bg-[--navy-light] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
