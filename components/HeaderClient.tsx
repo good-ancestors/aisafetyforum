@@ -330,7 +330,38 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
       {user && (
         <nav className="bg-[#f9fafb] border-b border-[#e0e4e8]">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
-            <div className="flex items-center gap-1 overflow-x-auto">
+            {/* Mobile: Grid layout for better spacing */}
+            <div className="grid grid-cols-2 gap-1 sm:hidden py-2">
+              {dashboardNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-3 py-2.5 text-sm font-medium text-center rounded transition-colors ${
+                    isNavActive(item.href, item.exact)
+                      ? 'text-[#0a1f5c] bg-white border border-[#00d4ff]'
+                      : 'text-[#5c6670] hover:text-[#0a1f5c] hover:bg-[#f0f4f8]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {isAdmin && (
+                <Link
+                  href="/admin/invoices"
+                  className={`px-3 py-2.5 text-sm font-medium text-center rounded transition-colors flex items-center justify-center gap-1.5 col-span-2 ${
+                    pathname.startsWith('/admin')
+                      ? 'text-[#0a1f5c] bg-white border border-[#00d4ff]'
+                      : 'text-[#5c6670] hover:text-[#0a1f5c] hover:bg-[#f0f4f8]'
+                  }`}
+                >
+                  <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">Admin</span>
+                  Admin
+                </Link>
+              )}
+            </div>
+
+            {/* Desktop: Horizontal layout */}
+            <div className="hidden sm:flex items-center gap-1">
               {dashboardNavItems.map((item) => (
                 <Link
                   key={item.href}
