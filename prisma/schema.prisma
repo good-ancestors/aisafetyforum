@@ -18,11 +18,12 @@ model SpeakerProposal {
   name         String
   organisation String
   title        String
-  bio          String
-  linkedin     String?
-  twitter      String?
-  bluesky      String?
-  website      String?
+  // Bio and links stored on Profile; these fields kept for legacy data
+  bio          String?  // Legacy: now stored on Profile
+  linkedin     String?  // Legacy: now stored on Profile
+  twitter      String?  // Legacy: now stored on Profile
+  bluesky      String?  // Legacy: now stored on Profile
+  website      String?  // Legacy: now stored on Profile
   format       String   // Keynote, Lightning talk, Workshop, Panel, Flexible
   abstract     String
   travelSupport String  // No, Yes, Maybe
@@ -32,7 +33,7 @@ model SpeakerProposal {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Link to unified profile (nullable during migration)
+  // Link to unified profile
   profileId    String?
   profile      Profile? @relation(fields: [profileId], references: [id])
 
@@ -45,19 +46,27 @@ model FundingApplication {
   id           String   @id @default(cuid())
   email        String
   name         String
-  location     String
+  location     String   // Legacy field, no longer collected for new applications
   organisation String
   role         String
+  // Bio and links now stored on Profile; these fields kept for legacy data
+  bio          String?  // Legacy: now stored on Profile
+  linkedin     String?  // Legacy: now stored on Profile
+  twitter      String?  // Legacy: now stored on Profile
+  bluesky      String?  // Legacy: now stored on Profile
+  website      String?  // Legacy: now stored on Profile
   whyAttend    String
-  amount       String
-  day1         Boolean  @default(false)
-  day2         Boolean  @default(false)
-  acceptedTerms Boolean @default(true)
+  travelSupport String?  // No, Yes, Maybe - whether travel support is needed
+  amount       String   // Travel estimate (e.g., "$250 flight + $200 accommodation")
+  backgroundInfo String[] @default([]) // Self-identification checkboxes (student, civil_society, etc.)
+  day1         Boolean  @default(true)  // Legacy field, defaults to true for new applications
+  day2         Boolean  @default(true)  // Legacy field, defaults to true for new applications
+  acceptedTerms Boolean @default(true)  // Legacy field, implied by submission for new applications
   status       String   @default("pending") // pending, approved, rejected
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Link to unified profile (nullable during migration)
+  // Link to unified profile
   profileId    String?
   profile      Profile? @relation(fields: [profileId], references: [id])
 
@@ -144,6 +153,13 @@ model Profile {
   title        String?  // Job title/role
   organisation String?
 
+  // Bio and social links (centralized, used across forms)
+  bio          String?
+  linkedin     String?
+  twitter      String?
+  bluesky      String?
+  website      String?
+
   // Relationships
   registrations       Registration[]
   speakerProposals    SpeakerProposal[]
@@ -166,7 +182,11 @@ model Order {
   paymentStatus  String   @default("pending") // pending, paid, cancelled, failed
   stripeSessionId String? @unique // For card payments (Checkout Session)
   stripePaymentId String? // Payment Intent ID
-  stripeInvoiceId String? @unique // For invoice payments
+  stripeInvoiceId String? @unique // For Stripe invoice payments (legacy)
+
+  // Manual invoice (bank transfer)
+  invoiceNumber  String?  @unique // e.g., "AISF26-0001"
+  invoiceDueDate DateTime? // When payment is due
 
   // Totals (in cents)
   totalAmount    Int
@@ -190,4 +210,5 @@ model Order {
   @@index([paymentStatus])
   @@index([stripeSessionId])
   @@index([stripeInvoiceId])
+  @@index([invoiceNumber])
 }

@@ -225,11 +225,11 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* Funding Applications */}
+        {/* Scholarship Applications */}
         {profile?.fundingApplications && profile.fundingApplications.length > 0 && (
           <section className="bg-white rounded-lg border border-[--border] p-6 mb-8">
             <h2 className="font-serif text-xl font-bold text-[--navy] mb-4">
-              Funding Applications
+              Scholarship Applications
             </h2>
             <div className="space-y-4">
               {profile.fundingApplications.map((app) => (

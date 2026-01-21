@@ -25,8 +25,10 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-2">
             <ul className="flex list-none">
-              <li><Link href="/sponsor" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">Sponsor</Link></li>
-              <li><Link href="/2024" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">2024 Forum</Link></li>
+              <li><Link href="/program" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">Program</Link></li>
+              <li><Link href="/speakers" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">Speakers</Link></li>
+              <li><Link href="/scholarship" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">Scholarships</Link></li>
+              <li><Link href="/sponsor" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">Sponsorship</Link></li>
               <li><Link href="/contact" className="text-[#1a1a1a] px-5 py-3 font-medium text-[0.95rem] hover:text-[#0047ba] transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-[#00d4ff] after:opacity-0 hover:after:opacity-100 after:transition-opacity">Contact</Link></li>
             </ul>
             <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-semibold bg-[#0a1f5c] text-white rounded-md hover:bg-[#061440] transition-colors">
@@ -58,20 +60,38 @@ export default function Header() {
             <ul className="flex flex-col list-none">
               <li>
                 <Link
-                  href="/sponsor"
+                  href="/program"
                   className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Sponsor
+                  Program
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/2024"
+                  href="/speakers"
                   className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  2024 Forum
+                  Speakers
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/scholarship"
+                  className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Scholarships
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/sponsor"
+                  className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sponsorship
                 </Link>
               </li>
               <li>

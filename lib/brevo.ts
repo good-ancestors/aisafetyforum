@@ -201,6 +201,207 @@ ABN ${eventConfig.organization.abn}
   }
 }
 
+interface InvoiceEmailParams {
+  email: string;
+  name: string;
+  organisation?: string | null;
+  invoiceNumber: string;
+  invoiceDate: string;
+  dueDate: string;
+  totalAmount: number; // in cents
+  attendeeCount: number;
+  poNumber?: string | null;
+  pdfBuffer: Buffer;
+}
+
+export async function sendInvoiceEmail(params: InvoiceEmailParams) {
+  const apiInstance = getBrevoClient();
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+  sendSmtpEmail.subject = `Invoice ${params.invoiceNumber} - Australian AI Safety Forum ${eventConfig.year}`;
+  sendSmtpEmail.sender = {
+    name: 'Australian AI Safety Forum',
+    email: eventConfig.organization.email,
+  };
+  sendSmtpEmail.to = [
+    {
+      email: params.email,
+      name: params.name,
+    },
+  ];
+
+  const bankDetails = eventConfig.organization.bankDetails;
+
+  // HTML email content
+  sendSmtpEmail.htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0a1f5c 0%, #0047ba 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { background: white; padding: 30px 20px; }
+    .invoice-box { background: #f0f4f8; border-left: 4px solid #0a1f5c; padding: 20px; margin: 20px 0; }
+    .bank-box { background: #e8f4fd; border-left: 4px solid #00d4ff; padding: 20px; margin: 20px 0; }
+    .footer { background: #0a1f5c; color: white; padding: 20px; text-align: center; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e0e4e8; }
+    th { background: transparent; font-weight: normal; color: #5c6670; }
+    td { font-weight: bold; }
+    .important { color: #d9534f; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Tax Invoice</h1>
+      <p>Australian AI Safety Forum ${eventConfig.year}</p>
+    </div>
+
+    <div class="content">
+      <p>Dear ${params.name},</p>
+
+      <p>Please find attached your tax invoice for ${params.attendeeCount} ticket${params.attendeeCount !== 1 ? 's' : ''} to the Australian AI Safety Forum ${eventConfig.year}.</p>
+
+      <div class="invoice-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">Invoice Summary</h3>
+        <table>
+          <tr>
+            <th>Invoice Number</th>
+            <td>${params.invoiceNumber}</td>
+          </tr>
+          <tr>
+            <th>Invoice Date</th>
+            <td>${params.invoiceDate}</td>
+          </tr>
+          <tr>
+            <th>Due Date</th>
+            <td class="important">${params.dueDate}</td>
+          </tr>
+          ${params.poNumber ? `<tr><th>PO Number</th><td>${params.poNumber}</td></tr>` : ''}
+          <tr>
+            <th>Amount Due</th>
+            <td style="font-size: 18px; color: #0a1f5c;">$${(params.totalAmount / 100).toFixed(2)} AUD</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="bank-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">Payment Details - Bank Transfer</h3>
+        <table>
+          <tr>
+            <th>Account Name</th>
+            <td>${bankDetails.accountName}</td>
+          </tr>
+          <tr>
+            <th>BSB</th>
+            <td>${bankDetails.bsb}</td>
+          </tr>
+          <tr>
+            <th>Account Number</th>
+            <td>${bankDetails.accountNumber}</td>
+          </tr>
+          <tr>
+            <th>Bank</th>
+            <td>${bankDetails.bank}</td>
+          </tr>
+          <tr>
+            <th>Reference</th>
+            <td class="important">${params.invoiceNumber}</td>
+          </tr>
+        </table>
+        <p style="margin-bottom: 0; font-size: 14px; color: #5c6670;">
+          <strong>Important:</strong> Please use the invoice number as your payment reference so we can identify your payment.
+        </p>
+      </div>
+
+      <h3 style="color: #0a1f5c;">What happens next?</h3>
+      <ol>
+        <li>Transfer the amount to the bank account above</li>
+        <li>Use <strong>${params.invoiceNumber}</strong> as the payment reference</li>
+        <li>Once we receive your payment, we'll confirm your registration</li>
+        <li>Each attendee will receive a confirmation email with event details</li>
+      </ol>
+
+      <p>If you have any questions, please contact us at
+        <a href="mailto:${eventConfig.organization.email}">${eventConfig.organization.email}</a>
+      </p>
+
+      <p>Best regards,<br>
+      <strong>The Australian AI Safety Forum Team</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>${eventConfig.organization.name}<br>
+      ABN ${eventConfig.organization.abn}<br>
+      ${eventConfig.organization.address.line1}, ${eventConfig.organization.address.city} ${eventConfig.organization.address.postcode}</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  // Plain text version
+  sendSmtpEmail.textContent = `
+Tax Invoice - Australian AI Safety Forum ${eventConfig.year}
+
+Dear ${params.name},
+
+Please find attached your tax invoice for ${params.attendeeCount} ticket${params.attendeeCount !== 1 ? 's' : ''} to the Australian AI Safety Forum ${eventConfig.year}.
+
+INVOICE SUMMARY
+---------------
+Invoice Number: ${params.invoiceNumber}
+Invoice Date: ${params.invoiceDate}
+Due Date: ${params.dueDate}
+${params.poNumber ? `PO Number: ${params.poNumber}\n` : ''}Amount Due: $${(params.totalAmount / 100).toFixed(2)} AUD
+
+PAYMENT DETAILS - BANK TRANSFER
+-------------------------------
+Account Name: ${bankDetails.accountName}
+BSB: ${bankDetails.bsb}
+Account Number: ${bankDetails.accountNumber}
+Bank: ${bankDetails.bank}
+Reference: ${params.invoiceNumber}
+
+IMPORTANT: Please use the invoice number as your payment reference.
+
+WHAT HAPPENS NEXT?
+1. Transfer the amount to the bank account above
+2. Use ${params.invoiceNumber} as the payment reference
+3. Once we receive your payment, we'll confirm your registration
+4. Each attendee will receive a confirmation email with event details
+
+If you have any questions, please contact us at ${eventConfig.organization.email}
+
+Best regards,
+The Australian AI Safety Forum Team
+
+${eventConfig.organization.name}
+ABN ${eventConfig.organization.abn}
+  `.trim();
+
+  // Attach PDF invoice
+  sendSmtpEmail.attachment = [
+    {
+      name: `${params.invoiceNumber}.pdf`,
+      content: params.pdfBuffer.toString('base64'),
+    },
+  ];
+
+  try {
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('✅ Invoice email sent:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error sending invoice email:', error);
+    throw error;
+  }
+}
+
 function generateCalendarInvite(params: { name: string; email: string }): string {
   // Format dates for iCalendar (YYYYMMDD format with time)
   const startDate = `${eventConfig.day1.isoDate.replace(/-/g, '')}T${eventConfig.startTime.replace(':', '')}00`;

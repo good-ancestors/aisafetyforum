@@ -24,7 +24,7 @@ export const eventConfig = {
 
   // Deadlines
   speakerDeadline: 'Rolling',
-  fundingDeadline: 'Rolling',
+  scholarshipDeadline: 'Rolling',
   registrationDeadline: 'Rolling',
 
   // Organization details for receipts
@@ -41,5 +41,13 @@ export const eventConfig = {
     },
     email: 'contact@goodancestors.org.au',
     website: 'https://www.gradientinstitute.org',
+    // Bank details for invoice payments (bank transfer)
+    // IMPORTANT: Update these with real bank details before going live!
+    bankDetails: {
+      accountName: 'Gradient Institute Ltd',
+      bsb: 'TBD', // Update with actual BSB before going live
+      accountNumber: 'TBD', // Update with actual account number before going live
+      bank: 'TBD', // Update with actual bank name before going live
+    },
   },
 } as const;

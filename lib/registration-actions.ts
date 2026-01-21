@@ -7,6 +7,7 @@ import Stripe from 'stripe';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
 import { headers } from 'next/headers';
+import type { InvoiceLineItem, InvoiceAttendee } from './invoice-pdf';
 
 export type RegistrationFormData = {
   email: string;
@@ -19,12 +20,15 @@ export type RegistrationFormData = {
 export type AttendeeData = {
   email: string;
   name: string;
+  role?: string;
+  organisation?: string;
   ticketType: TicketTierId;
 };
 
 export type MultiTicketFormData = {
   purchaserEmail: string;
   purchaserName: string;
+  purchaserRole?: string;
   purchaserOrg?: string;
   attendees: AttendeeData[];
   couponCode?: string;
@@ -38,9 +42,9 @@ export type InvoiceFormData = MultiTicketFormData & {
 
 /**
  * Get or create a Profile by email.
- * If the profile exists, optionally update name/organisation if provided.
+ * If the profile exists, optionally update name/title/organisation if provided.
  */
-async function getOrCreateProfile(email: string, name?: string, organisation?: string) {
+async function getOrCreateProfile(email: string, name?: string, title?: string, organisation?: string) {
   const normalizedEmail = email.toLowerCase().trim();
 
   let profile = await prisma.profile.findUnique({
@@ -49,8 +53,9 @@ async function getOrCreateProfile(email: string, name?: string, organisation?: s
 
   if (profile) {
     // Update profile with new info if provided and different
-    const updates: { name?: string; organisation?: string } = {};
+    const updates: { name?: string; title?: string; organisation?: string } = {};
     if (name && name !== profile.name) updates.name = name;
+    if (title && title !== profile.title) updates.title = title;
     if (organisation && organisation !== profile.organisation) updates.organisation = organisation;
 
     if (Object.keys(updates).length > 0) {
@@ -65,6 +70,7 @@ async function getOrCreateProfile(email: string, name?: string, organisation?: s
       data: {
         email: normalizedEmail,
         name: name || null,
+        title: title || null,
         organisation: organisation || null,
       },
     });
@@ -116,7 +122,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
     }
 
     // Get or create profile for this attendee
-    const profile = await getOrCreateProfile(data.email, data.name, data.organisation);
+    const profile = await getOrCreateProfile(data.email, data.name, undefined, data.organisation);
 
     // Create an order for this purchase
     const order = await prisma.order.create({
@@ -371,10 +377,12 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
   try {
     const earlyBird = isEarlyBirdActive();
 
-    // Calculate totals and validate tickets
+    // Check each attendee for free ticket eligibility and calculate totals
     let subtotal = 0;
+    let freeTicketCount = 0;
     const lineItems: { price: string; quantity: number }[] = [];
     const ticketCounts: Record<string, number> = {};
+    const attendeeFreeTicketStatus: boolean[] = [];
 
     for (const attendee of data.attendees) {
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType);
@@ -382,19 +390,28 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
         return { success: false, error: `Invalid ticket type: ${attendee.ticketType}` };
       }
 
-      const price = earlyBird ? tier.earlyBirdPrice : tier.price;
-      subtotal += price;
+      // Check if this attendee has a free ticket
+      const freeTicketCheck = await checkFreeTicketEmail(attendee.email);
+      attendeeFreeTicketStatus.push(freeTicketCheck.isFree);
 
-      // Count tickets by type for Stripe line items
-      const priceId = earlyBird ? tier.stripeEarlyBirdPriceId : tier.stripePriceId;
-      if (!priceId) {
-        return { success: false, error: `Stripe price ID not configured for ${tier.name}` };
+      if (freeTicketCheck.isFree) {
+        freeTicketCount++;
+        // Don't add to subtotal or line items for free tickets
+      } else {
+        const price = earlyBird ? tier.earlyBirdPrice : tier.price;
+        subtotal += price;
+
+        // Count tickets by type for Stripe line items (only paid tickets)
+        const priceId = earlyBird ? tier.stripeEarlyBirdPriceId : tier.stripePriceId;
+        if (!priceId) {
+          return { success: false, error: `Stripe price ID not configured for ${tier.name}` };
+        }
+
+        ticketCounts[priceId] = (ticketCounts[priceId] || 0) + 1;
       }
-
-      ticketCounts[priceId] = (ticketCounts[priceId] || 0) + 1;
     }
 
-    // Build line items from ticket counts
+    // Build line items from ticket counts (paid tickets only)
     for (const [priceId, quantity] of Object.entries(ticketCounts)) {
       lineItems.push({ price: priceId, quantity });
     }
@@ -449,8 +466,10 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
 
     // Create profiles and registrations for each attendee
     const registrations = [];
-    for (const attendee of data.attendees) {
-      const profile = await getOrCreateProfile(attendee.email, attendee.name);
+    for (let i = 0; i < data.attendees.length; i++) {
+      const attendee = data.attendees[i];
+      const isFreeTicket = attendeeFreeTicketStatus[i];
+      const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation);
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
       const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
 
@@ -461,9 +480,9 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
           ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
           ticketPrice,
           originalAmount: ticketPrice,
-          discountAmount: 0, // Discount applied at order level
-          amountPaid: ticketPrice, // Individual ticket price (before order-level discount)
-          status: 'pending',
+          discountAmount: isFreeTicket ? ticketPrice : 0, // Full discount for free tickets
+          amountPaid: isFreeTicket ? 0 : ticketPrice,
+          status: isFreeTicket ? 'paid' : 'pending', // Free tickets are immediately paid
           profileId: profile.id,
           orderId: order.id,
         },
@@ -471,7 +490,7 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
       registrations.push(registration);
     }
 
-    // If total is free (100% discount), mark as paid immediately
+    // If total is free (all tickets free or 100% discount), mark as paid immediately
     if (totalAmount === 0) {
       await prisma.$transaction([
         prisma.order.update({
@@ -592,18 +611,18 @@ export async function getOrderBySessionId(sessionId: string) {
 }
 
 /**
- * Create an invoice order using Stripe Invoicing.
- * The invoice will be sent to the purchaser's email with bank transfer details.
+ * Create an invoice order with PDF invoice sent via email.
+ * Uses bank transfer for payment instead of Stripe (not available in AU).
  */
 export async function createInvoiceOrder(data: InvoiceFormData) {
   try {
-    const stripe = requireStripe();
     const earlyBird = isEarlyBirdActive();
 
-    // Calculate totals and validate tickets
+    // Check each attendee for free ticket eligibility and calculate totals
     let subtotal = 0;
-    const invoiceItems: { description: string; amount: number; quantity: number }[] = [];
+    let freeTicketCount = 0;
     const ticketCounts: Record<string, { tier: (typeof ticketTiers)[number]; count: number }> = {};
+    const attendeeFreeTicketStatus: boolean[] = [];
 
     for (const attendee of data.attendees) {
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType);
@@ -611,23 +630,23 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
         return { success: false, error: `Invalid ticket type: ${attendee.ticketType}` };
       }
 
-      const price = earlyBird ? tier.earlyBirdPrice : tier.price;
-      subtotal += price;
+      // Check if this attendee has a free ticket
+      const freeTicketCheck = await checkFreeTicketEmail(attendee.email);
+      attendeeFreeTicketStatus.push(freeTicketCheck.isFree);
 
-      // Count tickets by type
-      if (!ticketCounts[tier.id]) {
-        ticketCounts[tier.id] = { tier, count: 0 };
+      if (freeTicketCheck.isFree) {
+        freeTicketCount++;
+        // Don't add to subtotal for free tickets
+      } else {
+        const price = earlyBird ? tier.earlyBirdPrice : tier.price;
+        subtotal += price;
+
+        // Count tickets by type (only paid tickets)
+        if (!ticketCounts[tier.id]) {
+          ticketCounts[tier.id] = { tier, count: 0 };
+        }
+        ticketCounts[tier.id].count++;
       }
-      ticketCounts[tier.id].count++;
-    }
-
-    // Build invoice items from ticket counts
-    for (const { tier, count } of Object.values(ticketCounts)) {
-      const price = earlyBird ? tier.earlyBirdPrice : tier.price;
-      const description = earlyBird
-        ? `${tier.name} Ticket (Early Bird) - AI Safety Forum 2026`
-        : `${tier.name} Ticket - AI Safety Forum 2026`;
-      invoiceItems.push({ description, amount: price, quantity: count });
     }
 
     // Validate and apply coupon if provided
@@ -664,35 +683,14 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       couponId = coupon?.id || null;
     }
 
-    // Create Stripe customer (or find existing)
-    const customer = await stripe.customers.list({
-      email: data.purchaserEmail.toLowerCase(),
-      limit: 1,
-    });
+    // Generate invoice number
+    const { generateInvoiceNumber } = await import('./invoice-pdf');
+    const invoiceNumber = await generateInvoiceNumber(prisma);
+    const invoiceDate = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 14); // 14 days from now
 
-    let stripeCustomer;
-    if (customer.data.length > 0) {
-      stripeCustomer = customer.data[0];
-      // Update customer with latest info
-      stripeCustomer = await stripe.customers.update(stripeCustomer.id, {
-        name: data.purchaserName,
-        metadata: {
-          organisation: data.orgName || data.purchaserOrg || '',
-          abn: data.orgABN || '',
-        },
-      });
-    } else {
-      stripeCustomer = await stripe.customers.create({
-        email: data.purchaserEmail.toLowerCase(),
-        name: data.purchaserName,
-        metadata: {
-          organisation: data.orgName || data.purchaserOrg || '',
-          abn: data.orgABN || '',
-        },
-      });
-    }
-
-    // Create order in database first
+    // Create order in database
     const order = await prisma.order.create({
       data: {
         purchaserEmail: data.purchaserEmail.toLowerCase().trim(),
@@ -705,13 +703,17 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
         totalAmount,
         discountAmount,
         couponId,
+        invoiceNumber,
+        invoiceDueDate: dueDate,
       },
     });
 
     // Create profiles and registrations for each attendee
     const registrations = [];
-    for (const attendee of data.attendees) {
-      const profile = await getOrCreateProfile(attendee.email, attendee.name);
+    for (let i = 0; i < data.attendees.length; i++) {
+      const attendee = data.attendees[i];
+      const isFreeTicket = attendeeFreeTicketStatus[i];
+      const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation);
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
       const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
 
@@ -722,9 +724,9 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
           ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
           ticketPrice,
           originalAmount: ticketPrice,
-          discountAmount: 0,
-          amountPaid: ticketPrice,
-          status: 'pending',
+          discountAmount: isFreeTicket ? ticketPrice : 0, // Full discount for free tickets
+          amountPaid: isFreeTicket ? 0 : ticketPrice,
+          status: isFreeTicket ? 'paid' : 'pending', // Free tickets are immediately paid
           profileId: profile.id,
           orderId: order.id,
         },
@@ -732,7 +734,7 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       registrations.push(registration);
     }
 
-    // If total is free (100% discount), mark as paid immediately
+    // If total is free (all tickets free or 100% discount), mark as paid immediately
     if (totalAmount === 0) {
       await prisma.$transaction([
         prisma.order.update({
@@ -759,73 +761,97 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       };
     }
 
-    // Create Stripe Invoice
-    const invoice = await stripe.invoices.create({
-      customer: stripeCustomer.id,
-      collection_method: 'send_invoice',
-      days_until_due: 14,
-      auto_advance: true,
-      payment_settings: {
-        payment_method_types: ['au_becs_debit', 'card'],
-      },
-      metadata: {
-        orderId: order.id,
-        registrationIds: registrations.map((r) => r.id).join(','),
-        attendeeCount: data.attendees.length.toString(),
-        poNumber: data.poNumber || '',
-      },
-      custom_fields: data.poNumber
-        ? [{ name: 'PO Number', value: data.poNumber }]
-        : undefined,
+    // Build invoice line items for PDF
+    const { generateInvoicePDF, calculateGST } = await import('./invoice-pdf');
+
+    const lineItems: InvoiceLineItem[] = [];
+    for (const { tier, count } of Object.values(ticketCounts)) {
+      const unitPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
+      const description = earlyBird
+        ? `${tier.name} Ticket (Early Bird) - AI Safety Forum 2026`
+        : `${tier.name} Ticket - AI Safety Forum 2026`;
+      lineItems.push({
+        description,
+        quantity: count,
+        unitPrice,
+        amount: unitPrice * count,
+      });
+    }
+
+    // Build attendees list for PDF
+    const attendeesForPDF: InvoiceAttendee[] = data.attendees.map((a, i) => {
+      const tier = ticketTiers.find((t) => t.id === a.ticketType)!;
+      return {
+        name: a.name,
+        email: a.email,
+        ticketType: attendeeFreeTicketStatus[i]
+          ? `${tier.name} (Complimentary)`
+          : earlyBird
+            ? `${tier.name} (Early Bird)`
+            : tier.name,
+      };
     });
 
-    // Add line items to invoice
-    // Note: For each individual ticket, we add a separate line item
-    for (const item of invoiceItems) {
-      // When using amount, it's the total for all quantities
-      const totalAmount = item.amount * item.quantity;
-      await stripe.invoiceItems.create({
-        customer: stripeCustomer.id,
-        invoice: invoice.id,
-        description: item.quantity > 1
-          ? `${item.description} (x${item.quantity})`
-          : item.description,
-        amount: totalAmount,
-        currency: 'aud',
-      });
-    }
+    // Generate PDF invoice
+    const pdfBuffer = await generateInvoicePDF({
+      invoiceNumber,
+      invoiceDate,
+      dueDate,
+      purchaser: {
+        name: data.purchaserName,
+        email: data.purchaserEmail,
+        organisation: data.orgName || data.purchaserOrg,
+        abn: data.orgABN,
+      },
+      poNumber: data.poNumber,
+      lineItems,
+      subtotal,
+      gstAmount: calculateGST(totalAmount),
+      discountAmount: discountAmount > 0 ? discountAmount : undefined,
+      discountDescription: discount?.description || data.couponCode,
+      total: totalAmount,
+      attendees: attendeesForPDF,
+    });
 
-    // Add discount line item if applicable
-    if (discountAmount > 0 && discount) {
-      await stripe.invoiceItems.create({
-        customer: stripeCustomer.id,
-        invoice: invoice.id,
-        description: `Discount: ${discount.description || data.couponCode}`,
-        amount: -discountAmount,
-        currency: 'aud',
-      });
-    }
-
-    // Finalize and send the invoice
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-    await stripe.invoices.sendInvoice(invoice.id);
-
-    // Update order with Stripe invoice ID
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { stripeInvoiceId: finalizedInvoice.id },
+    // Send invoice email with PDF attachment
+    const { sendInvoiceEmail } = await import('./brevo');
+    await sendInvoiceEmail({
+      email: data.purchaserEmail,
+      name: data.purchaserName,
+      organisation: data.orgName || data.purchaserOrg,
+      invoiceNumber,
+      invoiceDate: invoiceDate.toLocaleDateString('en-AU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+      dueDate: dueDate.toLocaleDateString('en-AU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+      totalAmount,
+      attendeeCount: data.attendees.length,
+      poNumber: data.poNumber,
+      pdfBuffer,
     });
 
     return {
       success: true,
       invoiceSent: true,
       orderId: order.id,
-      invoiceId: finalizedInvoice.id,
-      invoiceUrl: finalizedInvoice.hosted_invoice_url,
+      invoiceNumber,
       registrationIds: registrations.map((r) => r.id),
     };
   } catch (error) {
     console.error('Error creating invoice order:', error);
-    return { success: false, error: 'Failed to create invoice. Please try again.' };
+
+    let errorMessage = 'Failed to create invoice. Please try again.';
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack);
+      errorMessage = `Invoice error: ${error.message}`;
+    }
+
+    return { success: false, error: errorMessage };
   }
 }

@@ -47,7 +47,7 @@ export default function CTA() {
             </Link>
           </div>
 
-          {/* Apply for Funding */}
+          {/* Apply for Scholarship */}
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 text-center hover:bg-white/15 transition-colors">
             <div className="w-12 h-12 rounded-lg bg-[#00d4ff]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-4">
               <div className="relative w-6 h-6">
@@ -55,11 +55,11 @@ export default function CTA() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#00d4ff] text-xs font-bold">$</div>
               </div>
             </div>
-            <h3 className="font-bold text-xl mb-3">Apply for Funding</h3>
+            <h3 className="font-bold text-xl mb-3">Apply for Scholarship</h3>
             <p className="text-sm opacity-90 mb-6">
-              Limited travel and accommodation support available for attendees.
+              Scholarships with travel and accommodation support available.
             </p>
-            <Link href="/funding" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors">
+            <Link href="/scholarship" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors">
               Apply Now
             </Link>
           </div>

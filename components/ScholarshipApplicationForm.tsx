@@ -1,47 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { submitSpeakerProposal, type SpeakerProposalFormData } from '@/lib/actions';
+import { submitScholarshipApplication, type ScholarshipApplicationFormData } from '@/lib/actions';
 
-const sessionFormats = [
-  {
-    id: 'keynote',
-    value: 'Keynote',
-    label: 'Keynote',
-    description: '20-30 minute presentation to the full audience',
-  },
-  {
-    id: 'lightning',
-    value: 'Lightning talk',
-    label: 'Lightning Talk',
-    description: '5-10 minute focused presentation on a specific topic',
-  },
-  {
-    id: 'workshop',
-    value: 'Workshop',
-    label: 'Workshop',
-    description: 'Interactive session with hands-on activities (45-90 mins)',
-  },
-  {
-    id: 'panel',
-    value: 'Panel',
-    label: 'Panel Discussion',
-    description: 'Moderated discussion with multiple speakers on a theme',
-  },
-  {
-    id: 'flexible',
-    value: 'Flexible',
-    label: 'Flexible',
-    description: "Not sure yet — we'll work with you to find the right format",
-  },
-];
-
-export default function SpeakerProposalForm() {
+export default function ScholarshipApplicationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [travelSupport, setTravelSupport] = useState<string>('');
-  const [selectedFormat, setSelectedFormat] = useState<string>('');
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,24 +16,36 @@ export default function SpeakerProposalForm() {
 
     const formData = new FormData(event.currentTarget);
 
-    const data: SpeakerProposalFormData = {
+    // Collect background checkbox values
+    const backgroundChecks: string[] = [];
+    if (formData.get('background_student')) backgroundChecks.push('student');
+    if (formData.get('background_civil_society')) backgroundChecks.push('civil_society');
+    if (formData.get('background_independent')) backgroundChecks.push('independent');
+    if (formData.get('background_lmic')) backgroundChecks.push('lmic');
+    if (formData.get('background_gender')) backgroundChecks.push('gender_diverse');
+    if (formData.get('background_first_nations')) backgroundChecks.push('first_nations');
+    if (formData.get('background_cald')) backgroundChecks.push('cald');
+    if (formData.get('background_neurodiverse')) backgroundChecks.push('neurodiverse');
+    if (formData.get('background_disability')) backgroundChecks.push('disability');
+    if (formData.get('background_other_barriers')) backgroundChecks.push('other_barriers');
+
+    const data: ScholarshipApplicationFormData = {
       email: formData.get('email') as string,
       name: formData.get('name') as string,
-      organisation: (formData.get('organisation') as string) || undefined,
-      title: formData.get('title') as string,
+      organisation: formData.get('organisation') as string,
+      role: formData.get('role') as string,
       bio: formData.get('bio') as string,
       linkedin: (formData.get('linkedin') as string) || undefined,
       twitter: (formData.get('twitter') as string) || undefined,
       bluesky: (formData.get('bluesky') as string) || undefined,
       website: (formData.get('website') as string) || undefined,
-      format: formData.get('format') as string,
-      abstract: formData.get('abstract') as string,
+      whyAttend: formData.get('whyAttend') as string,
       travelSupport: formData.get('travelSupport') as string,
-      anythingElse: formData.get('anythingElse') as string || undefined,
-      acceptedTerms: true,
+      travelEstimate: (formData.get('travelEstimate') as string) || undefined,
+      backgroundInfo: backgroundChecks.length > 0 ? backgroundChecks : undefined,
     };
 
-    const result = await submitSpeakerProposal(data);
+    const result = await submitScholarshipApplication(data);
 
     if (result.success) {
       setSubmitted(true);
@@ -88,13 +66,13 @@ export default function SpeakerProposalForm() {
         </div>
         <h2 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-3">Thanks!</h2>
         <p className="text-[#333333] mb-6">
-          We&apos;ve received your proposal. You&apos;ll hear from us by soon.
+          We&apos;ve received your scholarship application. You&apos;ll hear from us soon.
         </p>
         <button
           onClick={() => setSubmitted(false)}
           className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
         >
-          Submit another proposal
+          Submit another application
         </button>
       </div>
     );
@@ -110,66 +88,8 @@ export default function SpeakerProposalForm() {
       )}
 
       <div className="space-y-6">
-        {/* Session Section Header */}
+        {/* About You Section Header */}
         <div className="border-b-2 border-[#0a1f5c] pb-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">Your Session Idea</h3>
-        </div>
-
-        {/* Format */}
-        <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-2">
-            What format works best? *
-          </label>
-          <input type="hidden" name="format" value={selectedFormat} />
-          <div className="space-y-2">
-            {sessionFormats.map((format) => (
-              <label
-                key={format.id}
-                className={`flex items-start gap-3 p-3 border-l-4 ${
-                  selectedFormat === format.value
-                    ? 'border-[#00d4ff] bg-[#00d4ff]/5 ring-2 ring-[#00d4ff]'
-                    : 'border-[#0a1f5c] bg-[#f9fafb]'
-                } rounded cursor-pointer hover:bg-[#f0f4f8] transition-colors`}
-              >
-                <input
-                  type="radio"
-                  name="formatRadio"
-                  value={format.value}
-                  checked={selectedFormat === format.value}
-                  onChange={(e) => setSelectedFormat(e.target.value)}
-                  required
-                  className="mt-1 w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
-                />
-                <div>
-                  <div className="font-bold text-[#0a1f5c] text-sm">{format.label}</div>
-                  <div className="text-xs text-[#5c6670]">{format.description}</div>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Abstract */}
-        <div>
-          <label htmlFor="abstract" className="block text-sm font-bold text-[#0a1f5c] mb-2">
-            Tell us about your session idea *
-          </label>
-          <p className="text-sm text-[#5c6670] mb-2">
-            Share what you&apos;d like to cover and why it matters. Don&apos;t worry about perfection — we&apos;re excited to hear your ideas! (Around 200 words)
-          </p>
-          <textarea
-            id="abstract"
-            name="abstract"
-            required
-            maxLength={1200}
-            rows={6}
-            placeholder="e.g. I'd like to share recent findings on..., or lead a discussion about..."
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
-          />
-        </div>
-
-        {/* Profile Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
           <h3 className="font-bold text-lg text-[#0a1f5c]">About You</h3>
         </div>
 
@@ -201,9 +121,9 @@ export default function SpeakerProposalForm() {
           />
         </div>
 
-        {/* Title/Role */}
+        {/* Role */}
         <div>
-          <label htmlFor="title" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="role" className="block text-sm font-bold text-[#0a1f5c] mb-2">
             Your role or title *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
@@ -211,8 +131,8 @@ export default function SpeakerProposalForm() {
           </p>
           <input
             type="text"
-            id="title"
-            name="title"
+            id="role"
+            name="role"
             required
             placeholder="e.g. Research Fellow"
             className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
@@ -242,7 +162,7 @@ export default function SpeakerProposalForm() {
             Short bio *
           </label>
           <p className="text-sm text-[#5c6670] mb-2">
-            A few sentences about your background. (Around 75 words)
+            A few sentences about your background and interest in AI safety. (Around 75 words)
           </p>
           <textarea
             id="bio"
@@ -295,7 +215,132 @@ export default function SpeakerProposalForm() {
           </div>
         </div>
 
-        {/* Travel Section Header */}
+        {/* Application Section Header */}
+        <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
+          <h3 className="font-bold text-lg text-[#0a1f5c]">Your Application</h3>
+        </div>
+
+        {/* Self-identification */}
+        <div>
+          <label className="block text-sm font-bold text-[#0a1f5c] mb-2">
+            Help us understand your background
+          </label>
+          <p className="text-sm text-[#5c6670] mb-3">
+            Optional — select any that apply. This helps us prioritise scholarships for underrepresented groups.
+          </p>
+          <div className="space-y-2">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_student"
+                value="student"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I am a student (undergraduate, postgraduate, or PhD)</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_civil_society"
+                value="civil_society"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I work in civil society, non-profit, or public interest</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_independent"
+                value="independent"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I am an independent researcher or practitioner</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_lmic"
+                value="lmic"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I am from a low or middle-income country</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_gender"
+                value="gender_diverse"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I identify as a woman, non-binary, or gender diverse</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_first_nations"
+                value="first_nations"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I identify as First Nations or Indigenous</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_cald"
+                value="cald"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I am from a culturally or linguistically diverse background</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_neurodiverse"
+                value="neurodiverse"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I am neurodiverse</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_disability"
+                value="disability"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I have a disability or chronic health condition</span>
+            </label>
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="background_other_barriers"
+                value="other_barriers"
+                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+              />
+              <span className="text-sm text-[#333333]">I face other barriers to attending (please specify in pitch)</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Scholarship Pitch */}
+        <div>
+          <label htmlFor="whyAttend" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+            Scholarship pitch *
+          </label>
+          <p className="text-sm text-[#5c6670] mb-2">
+            Tell us how attending the forum would support your work and why a scholarship would make a difference for you. (Around 150 words)
+          </p>
+          <textarea
+            id="whyAttend"
+            name="whyAttend"
+            required
+            maxLength={900}
+            rows={5}
+            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+          />
+        </div>
+
+        {/* Travel Support Section Header */}
         <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
           <h3 className="font-bold text-lg text-[#0a1f5c]">Travel Support</h3>
         </div>
@@ -306,7 +351,7 @@ export default function SpeakerProposalForm() {
             Would travel support help you attend? *
           </label>
           <p className="text-sm text-[#5c6670] mb-3">
-            We have limited funding available. Let us know if support would make a difference.
+            We have limited funding available. Let us know if support would make a difference, or if you just need the free registration.
           </p>
           <div className="space-y-2">
             <div className="flex items-center gap-3">
@@ -320,7 +365,7 @@ export default function SpeakerProposalForm() {
                 className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
               />
               <label htmlFor="travelNo" className="text-sm text-[#333333]">
-                No thanks, I can cover my own travel
+                No thanks, I just need the free registration
               </label>
             </div>
             <div className="flex items-center gap-3">
@@ -333,7 +378,7 @@ export default function SpeakerProposalForm() {
                 className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
               />
               <label htmlFor="travelYes" className="text-sm text-[#333333]">
-                Yes, I&apos;d need support to attend
+                Yes, I&apos;d need travel support to attend
               </label>
             </div>
             <div className="flex items-center gap-3">
@@ -363,7 +408,7 @@ export default function SpeakerProposalForm() {
             </p>
             <textarea
               id="travelEstimate"
-              name="anythingElse"
+              name="travelEstimate"
               rows={2}
               placeholder="e.g. $400 domestic flight from Brisbane & $300 for 2 nights accommodation"
               className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
@@ -378,7 +423,7 @@ export default function SpeakerProposalForm() {
             disabled={isSubmitting}
             className="w-full px-8 py-4 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Proposal'}
+            {isSubmitting ? 'Submitting...' : 'Submit Application'}
           </button>
         </div>
       </div>

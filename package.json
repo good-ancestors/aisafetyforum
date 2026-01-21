@@ -15,6 +15,7 @@
     "@neondatabase/auth": "^0.1.0-beta.21",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
+    "@react-pdf/renderer": "^4.3.2",
     "@stripe/stripe-js": "^8.6.3",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",

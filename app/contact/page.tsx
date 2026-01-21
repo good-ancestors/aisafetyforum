@@ -72,8 +72,8 @@ export default function ContactPage() {
                     </a>
                   </li>
                   <li>
-                    <a href="/funding" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
-                      → Apply for Travel Funding
+                    <a href="/scholarship" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
+                      → Apply for a Scholarship
                     </a>
                   </li>
                   <li>
