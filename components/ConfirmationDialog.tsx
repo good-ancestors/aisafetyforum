@@ -12,6 +12,11 @@ export interface ConfirmationDialogProps {
   cancelLabel?: string;
   variant?: 'danger' | 'warning' | 'default';
   isLoading?: boolean;
+  extraAction?: {
+    label: string;
+    onClick: () => void | Promise<void>;
+    variant?: 'danger' | 'warning' | 'default';
+  };
 }
 
 export default function ConfirmationDialog({
@@ -24,6 +29,7 @@ export default function ConfirmationDialog({
   cancelLabel = 'Cancel',
   variant = 'default',
   isLoading = false,
+  extraAction,
 }: ConfirmationDialogProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -59,6 +65,16 @@ export default function ConfirmationDialog({
       setIsProcessing(false);
     }
   }, [onConfirm]);
+
+  const handleExtraAction = useCallback(async () => {
+    if (!extraAction) return;
+    setIsProcessing(true);
+    try {
+      await extraAction.onClick();
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [extraAction]);
 
   if (!isOpen) return null;
 
@@ -137,6 +153,37 @@ export default function ConfirmationDialog({
             )}
             {confirmLabel}
           </button>
+          {extraAction && (
+            <button
+              type="button"
+              onClick={handleExtraAction}
+              disabled={processing}
+              className={`px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 flex items-center gap-2 ${buttonStyles[extraAction.variant || 'default']}`}
+            >
+              {processing && (
+                <svg
+                  className="animate-spin h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              )}
+              {extraAction.label}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth/server';
+import { isAdmin } from '@/lib/auth/admin';
 import { prisma } from '@/lib/prisma';
 import { eventConfig } from '@/lib/config';
 
@@ -27,8 +28,9 @@ export async function GET(
     return new NextResponse('Order not found', { status: 404 });
   }
 
-  // Check if user is the purchaser
-  if (order.purchaserEmail.toLowerCase() !== user.email.toLowerCase()) {
+  // Check if user is the purchaser OR an admin
+  const userIsAdmin = await isAdmin(user.email);
+  if (order.purchaserEmail.toLowerCase() !== user.email.toLowerCase() && !userIsAdmin) {
     return new NextResponse('Unauthorized', { status: 403 });
   }
 

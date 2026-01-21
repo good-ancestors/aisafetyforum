@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 
 interface HeaderClientProps {
   user: {
@@ -12,18 +11,10 @@ interface HeaderClientProps {
   isAdmin: boolean;
 }
 
-const dashboardNavItems = [
-  { href: '/dashboard', label: 'Overview', exact: true },
-  { href: '/dashboard/profile', label: 'Profile' },
-  { href: '/dashboard/applications', label: 'Applications' },
-  { href: '/dashboard/tickets', label: 'Tickets' },
-];
-
 export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -35,13 +26,6 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const isNavActive = (href: string, exact?: boolean) => {
-    if (exact) {
-      return pathname === href;
-    }
-    return pathname.startsWith(href);
-  };
 
   return (
     <>
@@ -326,41 +310,6 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
         )}
       </header>
 
-      {/* Dashboard Sub-Navigation - shown when logged in */}
-      {user && (
-        <nav className="bg-[#f9fafb] border-b border-[#e0e4e8]">
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
-            <div className="flex items-center gap-1 overflow-x-auto">
-              {dashboardNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative ${
-                    isNavActive(item.href, item.exact)
-                      ? 'text-[#0a1f5c] after:absolute after:bottom-0 after:left-4 after:right-4 after:h-0.5 after:bg-[#00d4ff]'
-                      : 'text-[#5c6670] hover:text-[#0a1f5c] hover:bg-[#f0f4f8]'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              {isAdmin && (
-                <Link
-                  href="/admin/invoices"
-                  className={`ml-auto px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                    pathname.startsWith('/admin')
-                      ? 'text-[#0a1f5c]'
-                      : 'text-[#5c6670] hover:text-[#0a1f5c] hover:bg-[#f0f4f8]'
-                  }`}
-                >
-                  <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">Admin</span>
-                  Admin
-                </Link>
-              )}
-            </div>
-          </div>
-        </nav>
-      )}
     </>
   );
 }

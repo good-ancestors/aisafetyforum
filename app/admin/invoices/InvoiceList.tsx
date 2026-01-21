@@ -228,24 +228,34 @@ export default function InvoiceList({ orders }: { orders: Order[] }) {
               </div>
 
               {/* Actions */}
-              {order.paymentStatus === 'pending' && (
-                <div className="p-4 bg-[#f9fafb] border-t border-[#e0e4e8] flex gap-3">
-                  <button
-                    onClick={() => handleMarkAsPaid(order.id)}
-                    disabled={loading === order.id}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
-                  >
-                    {loading === order.id ? 'Processing...' : 'Mark as Paid'}
-                  </button>
-                  <button
-                    onClick={() => handleResendInvoice(order.id)}
-                    disabled={loading === order.id}
-                    className="px-4 py-2 bg-[#0a1f5c] text-white rounded-md text-sm font-medium hover:bg-[#1a3a8f] transition-colors disabled:opacity-50"
-                  >
-                    Resend Invoice
-                  </button>
-                </div>
-              )}
+              <div className="p-4 bg-[#f9fafb] border-t border-[#e0e4e8] flex gap-3">
+                {order.paymentStatus === 'pending' && (
+                  <>
+                    <button
+                      onClick={() => handleMarkAsPaid(order.id)}
+                      disabled={loading === order.id}
+                      className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                      {loading === order.id ? 'Processing...' : 'Mark as Paid'}
+                    </button>
+                    <button
+                      onClick={() => handleResendInvoice(order.id)}
+                      disabled={loading === order.id}
+                      className="px-4 py-2 bg-[#0a1f5c] text-white rounded-md text-sm font-medium hover:bg-[#1a3a8f] transition-colors disabled:opacity-50"
+                    >
+                      Resend Invoice
+                    </button>
+                  </>
+                )}
+                <a
+                  href={`/api/orders/${order.id}/invoice/pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  View Invoice
+                </a>
+              </div>
             </div>
           ))
         )}
