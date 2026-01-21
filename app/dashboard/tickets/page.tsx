@@ -2,6 +2,8 @@ import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import TicketCard from '@/components/dashboard/TicketCard';
+import OrderCard from '@/components/dashboard/OrderCard';
 import ReceiptButton from './ReceiptButton';
 import InvoiceButton from './InvoiceButton';
 import CancelOrderButton from './CancelOrderButton';
@@ -116,77 +118,32 @@ export default async function TicketsPage() {
               </p>
               <div className="space-y-6">
                 {pendingInvoiceOrders.map((order) => (
-                  <div
+                  <OrderCard
                     key={order.id}
-                    className="border border-amber-200 rounded-lg overflow-hidden bg-amber-50/50"
-                  >
-                    {/* Order Header */}
-                    <div className="bg-amber-100/50 px-4 py-3 border-b border-amber-200">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-semibold text-[--navy]">
-                            Order #{order.id.slice(-8).toUpperCase()}
-                          </p>
-                          <p className="text-xs text-[--text-muted]">
-                            {new Date(order.createdAt).toLocaleDateString()} • Invoice
-                            {order.invoiceDueDate && (
-                              <> • Due {new Date(order.invoiceDueDate).toLocaleDateString()}</>
-                            )}
-                          </p>
-                        </div>
-                        <div className="flex items-start gap-4">
-                          <div className="text-right">
-                            <p className="font-semibold text-[--navy]">
-                              ${(order.totalAmount / 100).toFixed(2)} AUD
-                            </p>
-                            <span className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded">
-                              Awaiting Payment
-                            </span>
-                          </div>
-                          <InvoiceButton orderId={order.id} invoiceNumber={order.invoiceNumber} />
-                          <CancelOrderButton
-                            orderId={order.id}
-                            ticketCount={order.registrations.length}
-                            totalAmount={order.totalAmount}
-                            paymentMethod={order.paymentMethod}
-                            paymentStatus={order.paymentStatus}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Tickets in Order */}
-                    <div className="p-4">
-                      <p className="text-sm font-medium text-[--text-muted] mb-3">
-                        {order.registrations.length} Ticket(s) - will be confirmed upon payment
-                      </p>
-                      <div className="space-y-2">
-                        {order.registrations.map((reg) => (
-                          <div
-                            key={reg.id}
-                            className="flex justify-between items-center text-sm bg-white p-3 rounded border border-amber-100"
-                          >
-                            <div>
-                              <span className="font-medium text-[--navy]">{reg.name}</span>
-                              <span className="text-[--text-muted] ml-2">({reg.email})</span>
-                            </div>
-                            <span className="text-[--text-muted]">{reg.ticketType}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Invoice Details */}
-                    {order.invoiceNumber && (
-                      <div className="bg-amber-100/50 px-4 py-3 border-t border-amber-200">
-                        <p className="text-xs text-[--text-muted]">
-                          Invoice: {order.invoiceNumber}
-                          {order.orgName && ` • ${order.orgName}`}
-                          {order.orgABN && ` • ABN: ${order.orgABN}`}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                    id={order.id}
+                    totalAmount={order.totalAmount}
+                    paymentStatus={order.paymentStatus}
+                    paymentMethod={order.paymentMethod}
+                    createdAt={order.createdAt}
+                    registrations={order.registrations}
+                    invoiceNumber={order.invoiceNumber}
+                    invoiceDueDate={order.invoiceDueDate}
+                    orgName={order.orgName}
+                    orgABN={order.orgABN}
+                    variant="full"
+                    actions={
+                      <>
+                        <InvoiceButton orderId={order.id} invoiceNumber={order.invoiceNumber} />
+                        <CancelOrderButton
+                          orderId={order.id}
+                          ticketCount={order.registrations.length}
+                          totalAmount={order.totalAmount}
+                          paymentMethod={order.paymentMethod}
+                          paymentStatus={order.paymentStatus}
+                        />
+                      </>
+                    }
+                  />
                 ))}
               </div>
             </section>
@@ -203,48 +160,27 @@ export default async function TicketsPage() {
               </p>
               <div className="space-y-4">
                 {myTickets.map((reg) => (
-                  <div
+                  <TicketCard
                     key={reg.id}
-                    className="border-l-4 border-[--cyan] bg-[--bg-light] p-4 rounded-r"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-[--navy]">
-                            {reg.ticketType} Ticket
-                          </span>
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
-                            Confirmed
-                          </span>
-                        </div>
-                        <p className="text-sm text-[--text-muted]">
-                          Receipt: AISF-{reg.id.slice(-8).toUpperCase()}
-                        </p>
-                        {reg.order && (
-                          <p className="text-xs text-[--text-muted] mt-1">
-                            Order #{reg.order.id.slice(-8).toUpperCase()}
-                          </p>
-                        )}
-                      </div>
-                      <div className="text-right flex items-start gap-4">
-                        <div>
-                          <p className="text-sm font-medium text-[--navy]">
-                            ${((reg.ticketPrice || reg.amountPaid) / 100).toFixed(2)} AUD
-                          </p>
-                          <p className="text-xs text-[--text-muted]">
-                            {new Date(reg.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <CancelTicketButton
-                          registrationId={reg.id}
-                          ticketType={reg.ticketType}
-                          attendeeName={reg.name}
-                          ticketPrice={reg.ticketPrice || reg.amountPaid}
-                          status={reg.status}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    id={reg.id}
+                    ticketType={reg.ticketType}
+                    name={reg.name}
+                    status={reg.status}
+                    ticketPrice={reg.ticketPrice}
+                    amountPaid={reg.amountPaid}
+                    createdAt={reg.createdAt}
+                    order={reg.order}
+                    variant="full"
+                    actions={
+                      <CancelTicketButton
+                        registrationId={reg.id}
+                        ticketType={reg.ticketType}
+                        attendeeName={reg.name}
+                        ticketPrice={reg.ticketPrice || reg.amountPaid}
+                        status={reg.status}
+                      />
+                    }
+                  />
                 ))}
               </div>
             </section>
@@ -261,71 +197,25 @@ export default async function TicketsPage() {
               </p>
               <div className="space-y-6">
                 {paidOrders.map((order) => (
-                  <div
+                  <OrderCard
                     key={order.id}
-                    className="border border-[--border] rounded-lg overflow-hidden"
-                  >
-                    {/* Order Header */}
-                    <div className="bg-[--bg-light] px-4 py-3 border-b border-[--border]">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-semibold text-[--navy]">
-                            Order #{order.id.slice(-8).toUpperCase()}
-                          </p>
-                          <p className="text-xs text-[--text-muted]">
-                            {new Date(order.createdAt).toLocaleDateString()} •{' '}
-                            {order.paymentMethod === 'invoice' ? 'Invoice' : 'Card Payment'}
-                          </p>
-                        </div>
-                        <div className="flex items-start gap-4">
-                          <div className="text-right">
-                            <p className="font-semibold text-[--navy]">
-                              ${(order.totalAmount / 100).toFixed(2)} AUD
-                            </p>
-                            <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
-                              Paid
-                            </span>
-                          </div>
-                          {order.paymentMethod === 'invoice' ? (
-                            <InvoiceButton orderId={order.id} invoiceNumber={order.invoiceNumber} />
-                          ) : (
-                            <ReceiptButton orderId={order.id} />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Tickets in Order */}
-                    <div className="p-4">
-                      <p className="text-sm font-medium text-[--text-muted] mb-3">
-                        {order.registrations.length} Ticket(s)
-                      </p>
-                      <div className="space-y-2">
-                        {order.registrations.map((reg) => (
-                          <div
-                            key={reg.id}
-                            className="flex justify-between items-center text-sm bg-[--bg-light] p-3 rounded"
-                          >
-                            <div>
-                              <span className="font-medium text-[--navy]">{reg.name}</span>
-                              <span className="text-[--text-muted] ml-2">({reg.email})</span>
-                            </div>
-                            <span className="text-[--text-muted]">{reg.ticketType}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Invoice Details (if applicable) */}
-                    {order.paymentMethod === 'invoice' && order.invoiceNumber && (
-                      <div className="bg-[--bg-light] px-4 py-3 border-t border-[--border]">
-                        <p className="text-xs text-[--text-muted]">
-                          Invoice: {order.invoiceNumber}
-                          {order.orgName && ` • ${order.orgName}`}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                    id={order.id}
+                    totalAmount={order.totalAmount}
+                    paymentStatus={order.paymentStatus}
+                    paymentMethod={order.paymentMethod}
+                    createdAt={order.createdAt}
+                    registrations={order.registrations}
+                    invoiceNumber={order.invoiceNumber}
+                    orgName={order.orgName}
+                    variant="full"
+                    actions={
+                      order.paymentMethod === 'invoice' ? (
+                        <InvoiceButton orderId={order.id} invoiceNumber={order.invoiceNumber} />
+                      ) : (
+                        <ReceiptButton orderId={order.id} />
+                      )
+                    }
+                  />
                 ))}
               </div>
             </section>
