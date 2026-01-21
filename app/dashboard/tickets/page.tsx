@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import ReceiptButton from './ReceiptButton';
 import InvoiceButton from './InvoiceButton';
+import CancelOrderButton from './CancelOrderButton';
+import CancelTicketButton from './CancelTicketButton';
 
 export default async function TicketsPage() {
   const user = await getCurrentUser();
@@ -142,6 +144,13 @@ export default async function TicketsPage() {
                             </span>
                           </div>
                           <InvoiceButton orderId={order.id} invoiceNumber={order.invoiceNumber} />
+                          <CancelOrderButton
+                            orderId={order.id}
+                            ticketCount={order.registrations.length}
+                            totalAmount={order.totalAmount}
+                            paymentMethod={order.paymentMethod}
+                            paymentStatus={order.paymentStatus}
+                          />
                         </div>
                       </div>
                     </div>
@@ -217,13 +226,22 @@ export default async function TicketsPage() {
                           </p>
                         )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-[--navy]">
-                          ${((reg.ticketPrice || reg.amountPaid) / 100).toFixed(2)} AUD
-                        </p>
-                        <p className="text-xs text-[--text-muted]">
-                          {new Date(reg.createdAt).toLocaleDateString()}
-                        </p>
+                      <div className="text-right flex items-start gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-[--navy]">
+                            ${((reg.ticketPrice || reg.amountPaid) / 100).toFixed(2)} AUD
+                          </p>
+                          <p className="text-xs text-[--text-muted]">
+                            {new Date(reg.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <CancelTicketButton
+                          registrationId={reg.id}
+                          ticketType={reg.ticketType}
+                          attendeeName={reg.name}
+                          ticketPrice={reg.ticketPrice || reg.amountPaid}
+                          status={reg.status}
+                        />
                       </div>
                     </div>
                   </div>

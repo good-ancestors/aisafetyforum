@@ -2,6 +2,7 @@ import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import DeleteApplicationButton from './DeleteApplicationButton';
 
 export default async function ApplicationsPage() {
   const user = await getCurrentUser();
@@ -84,12 +85,20 @@ export default async function ApplicationsPage() {
                     </p>
                   </div>
                   {proposal.status === 'pending' && (
-                    <Link
-                      href={`/dashboard/applications/speaker/${proposal.id}`}
-                      className="text-sm text-[--blue] hover:underline ml-4"
-                    >
-                      Edit
-                    </Link>
+                    <div className="flex items-center">
+                      <Link
+                        href={`/dashboard/applications/speaker/${proposal.id}`}
+                        className="text-sm text-[--blue] hover:underline ml-4"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteApplicationButton
+                        id={proposal.id}
+                        type="speaker"
+                        title={proposal.format}
+                        status={proposal.status}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -162,12 +171,20 @@ export default async function ApplicationsPage() {
                     </p>
                   </div>
                   {app.status === 'pending' && (
-                    <Link
-                      href={`/dashboard/applications/scholarship/${app.id}`}
-                      className="text-sm text-[--blue] hover:underline ml-4"
-                    >
-                      Edit
-                    </Link>
+                    <div className="flex items-center">
+                      <Link
+                        href={`/dashboard/applications/scholarship/${app.id}`}
+                        className="text-sm text-[--blue] hover:underline ml-4"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteApplicationButton
+                        id={app.id}
+                        type="scholarship"
+                        title={`$${app.amount} AUD requested`}
+                        status={app.status}
+                      />
+                    </div>
                   )}
                 </div>
               </div>

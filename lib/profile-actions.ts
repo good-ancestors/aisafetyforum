@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { getCurrentUser } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
 
 export interface ProfileUpdateData {
@@ -55,6 +56,163 @@ export async function updateProfile(
     return {
       success: false,
       error: 'Failed to update profile. Please try again.',
+    };
+  }
+}
+
+/**
+ * Check if a profile can be deleted.
+ * Returns info about what will happen during deletion.
+ */
+export async function getProfileDeletionInfo(): Promise<{
+  canDelete: boolean;
+  hasPendingOrders: boolean;
+  paidOrderCount: number;
+  pendingApplicationCount: number;
+  decidedApplicationCount: number;
+  error?: string;
+}> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return {
+        canDelete: false,
+        hasPendingOrders: false,
+        paidOrderCount: 0,
+        pendingApplicationCount: 0,
+        decidedApplicationCount: 0,
+        error: 'Not authenticated',
+      };
+    }
+
+    const userEmail = user.email.toLowerCase();
+
+    // Check for pending orders (payment in progress)
+    const pendingOrders = await prisma.order.count({
+      where: {
+        purchaserEmail: userEmail,
+        paymentStatus: 'pending',
+      },
+    });
+
+    // Count paid orders (will be orphaned)
+    const paidOrders = await prisma.order.count({
+      where: {
+        purchaserEmail: userEmail,
+        paymentStatus: 'paid',
+      },
+    });
+
+    // Get profile with applications
+    const profile = await prisma.profile.findUnique({
+      where: { email: userEmail },
+      include: {
+        speakerProposals: true,
+        fundingApplications: true,
+      },
+    });
+
+    const pendingApplications =
+      (profile?.speakerProposals.filter((p) => p.status === 'pending').length || 0) +
+      (profile?.fundingApplications.filter((a) => a.status === 'pending').length || 0);
+
+    const decidedApplications =
+      (profile?.speakerProposals.filter((p) => p.status !== 'pending').length || 0) +
+      (profile?.fundingApplications.filter((a) => a.status !== 'pending').length || 0);
+
+    return {
+      canDelete: pendingOrders === 0,
+      hasPendingOrders: pendingOrders > 0,
+      paidOrderCount: paidOrders,
+      pendingApplicationCount: pendingApplications,
+      decidedApplicationCount: decidedApplications,
+    };
+  } catch (error) {
+    console.error('Error getting profile deletion info:', error);
+    return {
+      canDelete: false,
+      hasPendingOrders: false,
+      paidOrderCount: 0,
+      pendingApplicationCount: 0,
+      decidedApplicationCount: 0,
+      error: 'Failed to check profile status.',
+    };
+  }
+}
+
+/**
+ * Delete the current user's profile.
+ * - Blocks if there are pending orders (require cancel first)
+ * - Orphans paid orders (keeps order data, removes profile link)
+ * - Orphans registrations (keeps registration data)
+ * - Deletes all applications (both pending and decided)
+ * - Deletes the Profile record
+ *
+ * The caller is responsible for signing out the user after this succeeds.
+ */
+export async function deleteProfile(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const userEmail = user.email.toLowerCase();
+
+    // Check for pending orders
+    const pendingOrders = await prisma.order.count({
+      where: {
+        purchaserEmail: userEmail,
+        paymentStatus: 'pending',
+      },
+    });
+
+    if (pendingOrders > 0) {
+      return {
+        success: false,
+        error: 'You have pending orders. Please cancel them before deleting your account.',
+      };
+    }
+
+    // Get the profile
+    const profile = await prisma.profile.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!profile) {
+      return { success: false, error: 'Profile not found' };
+    }
+
+    // Perform deletion in a transaction
+    await prisma.$transaction(async (tx) => {
+      // 1. Orphan registrations (set profileId to null)
+      await tx.registration.updateMany({
+        where: { profileId: profile.id },
+        data: { profileId: null },
+      });
+
+      // 2. Delete all speaker proposals (including decided ones per plan)
+      await tx.speakerProposal.deleteMany({
+        where: { profileId: profile.id },
+      });
+
+      // 3. Delete all funding applications (including decided ones per plan)
+      await tx.fundingApplication.deleteMany({
+        where: { profileId: profile.id },
+      });
+
+      // 4. Delete the profile
+      await tx.profile.delete({
+        where: { id: profile.id },
+      });
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting profile:', error);
+    return {
+      success: false,
+      error: 'Failed to delete account. Please try again.',
     };
   }
 }

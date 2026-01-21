@@ -137,3 +137,115 @@ export async function updateScholarshipApplication(
     };
   }
 }
+
+/**
+ * Delete a speaker proposal.
+ * Only pending proposals can be deleted.
+ */
+export async function deleteSpeakerProposal(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    // Fetch the proposal and verify ownership
+    const proposal = await prisma.speakerProposal.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!proposal) {
+      return { success: false, error: 'Proposal not found' };
+    }
+
+    // Verify ownership
+    const userEmail = user.email.toLowerCase();
+    const isOwner =
+      proposal.email.toLowerCase() === userEmail ||
+      proposal.profile?.email.toLowerCase() === userEmail;
+
+    if (!isOwner) {
+      return { success: false, error: 'Not authorized to delete this proposal' };
+    }
+
+    // Only allow deleting pending proposals
+    if (proposal.status !== 'pending') {
+      return { success: false, error: 'Only pending proposals can be deleted' };
+    }
+
+    // Delete the proposal
+    await prisma.speakerProposal.delete({
+      where: { id },
+    });
+
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/applications');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting speaker proposal:', error);
+    return {
+      success: false,
+      error: 'Failed to delete proposal. Please try again.',
+    };
+  }
+}
+
+/**
+ * Delete a scholarship application.
+ * Only pending applications can be deleted.
+ */
+export async function deleteScholarshipApplication(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    // Fetch the application and verify ownership
+    const application = await prisma.fundingApplication.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!application) {
+      return { success: false, error: 'Application not found' };
+    }
+
+    // Verify ownership
+    const userEmail = user.email.toLowerCase();
+    const isOwner =
+      application.email.toLowerCase() === userEmail ||
+      application.profile?.email.toLowerCase() === userEmail;
+
+    if (!isOwner) {
+      return { success: false, error: 'Not authorized to delete this application' };
+    }
+
+    // Only allow deleting pending applications
+    if (application.status !== 'pending') {
+      return { success: false, error: 'Only pending applications can be deleted' };
+    }
+
+    // Delete the application
+    await prisma.fundingApplication.delete({
+      where: { id },
+    });
+
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/applications');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting scholarship application:', error);
+    return {
+      success: false,
+      error: 'Failed to delete application. Please try again.',
+    };
+  }
+}
