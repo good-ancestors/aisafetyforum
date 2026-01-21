@@ -19,7 +19,7 @@ export default function AuthPage() {
             {pathname === 'sign-in' ? 'Sign in to your account' : 'Create your account'}
           </p>
         </div>
-        <NeonAuthUIProvider authClient={authClient}>
+        <NeonAuthUIProvider authClient={authClient} emailOTP>
           <AuthView pathname={pathname} />
         </NeonAuthUIProvider>
       </div>

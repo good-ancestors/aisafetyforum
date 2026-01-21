@@ -14,7 +14,7 @@ export default function Footer() {
       <div className="max-w-[900px] mx-auto text-center">
         {/* Sponsor Appreciation */}
         <p className="text-sm opacity-80 mb-4">
-          We appreciate the support of our <a href="/sponsor" className="underline hover:text-[#00d4ff]">sponsors</a>:
+          We appreciate the support of our <a href="/sponsorship" className="underline hover:text-[#00d4ff]">sponsors</a>:
         </p>
 
         {/* Sponsor Logos */}

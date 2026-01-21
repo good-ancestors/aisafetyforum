@@ -59,7 +59,7 @@ export default function CTA() {
             <p className="text-sm opacity-90 mb-6">
               Scholarships with travel and accommodation support available.
             </p>
-            <Link href="/scholarship" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors">
+            <Link href="/scholarships" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors">
               Apply Now
             </Link>
           </div>

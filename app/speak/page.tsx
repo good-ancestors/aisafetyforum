@@ -55,7 +55,7 @@ export default function Speak() {
                 We offer scholarships with travel and accommodation support.
               </p>
               <Link
-                href="/scholarship"
+                href="/scholarships"
                 className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
               >
                 Apply for a scholarship →

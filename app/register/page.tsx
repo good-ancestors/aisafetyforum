@@ -3,8 +3,26 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { eventConfig } from '@/lib/config';
 import MultiTicketRegistrationForm from '@/components/MultiTicketRegistrationForm';
+import { getCurrentUser } from '@/lib/auth/server';
+import { prisma } from '@/lib/prisma';
 
-export default function Register() {
+export default async function Register() {
+  // Get current user's profile for prefilling
+  const user = await getCurrentUser();
+  let profile = null;
+
+  if (user) {
+    profile = await prisma.profile.findUnique({
+      where: { email: user.email.toLowerCase() },
+      select: {
+        email: true,
+        name: true,
+        title: true,
+        organisation: true,
+      },
+    });
+  }
+
   return (
     <>
       <Header />
@@ -22,7 +40,14 @@ export default function Register() {
           </div>
 
           {/* Registration Form */}
-          <MultiTicketRegistrationForm />
+          <MultiTicketRegistrationForm
+            initialProfile={profile ? {
+              email: profile.email,
+              name: profile.name || '',
+              role: profile.title || '',
+              organisation: profile.organisation || '',
+            } : undefined}
+          />
 
           {/* Cancellation Policy */}
           <div className="bg-[#f0f4f8] rounded-lg p-6 mt-8">
@@ -52,7 +77,7 @@ export default function Register() {
                 We offer scholarships with travel and accommodation support. If approved, we&apos;ll refund any ticket you&apos;ve already purchased.
               </p>
               <Link
-                href="/scholarship"
+                href="/scholarships"
                 className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
               >
                 Apply for a scholarship →

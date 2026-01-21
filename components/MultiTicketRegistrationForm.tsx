@@ -16,22 +16,40 @@ type AttendeeFormData = {
   freeTicketReason?: string | null;
 };
 
-export default function MultiTicketRegistrationForm() {
+interface InitialProfile {
+  email: string;
+  name: string;
+  role: string;
+  organisation: string;
+}
+
+interface MultiTicketRegistrationFormProps {
+  initialProfile?: InitialProfile;
+}
+
+export default function MultiTicketRegistrationForm({ initialProfile }: MultiTicketRegistrationFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Purchaser info (defaults to first attendee)
-  const [purchaserEmail, setPurchaserEmail] = useState('');
-  const [purchaserName, setPurchaserName] = useState('');
-  const [purchaserRole, setPurchaserRole] = useState('');
-  const [purchaserOrg, setPurchaserOrg] = useState('');
+  // Purchaser info (defaults to first attendee, prefilled from profile if available)
+  const [purchaserEmail, setPurchaserEmail] = useState(initialProfile?.email || '');
+  const [purchaserName, setPurchaserName] = useState(initialProfile?.name || '');
+  const [purchaserRole, setPurchaserRole] = useState(initialProfile?.role || '');
+  const [purchaserOrg, setPurchaserOrg] = useState(initialProfile?.organisation || '');
   const [purchaserIsAttendee, setPurchaserIsAttendee] = useState(true);
   const [purchaserFreeTicket, setPurchaserFreeTicket] = useState<string | null>(null);
 
-  // Attendees list
+  // Attendees list (prefilled with profile data if available)
   const [attendees, setAttendees] = useState<AttendeeFormData[]>([
-    { email: '', name: '', role: '', organisation: '', ticketType: '', freeTicketReason: null },
+    {
+      email: initialProfile?.email || '',
+      name: initialProfile?.name || '',
+      role: initialProfile?.role || '',
+      organisation: initialProfile?.organisation || '',
+      ticketType: '',
+      freeTicketReason: null,
+    },
   ]);
 
   // Coupon
@@ -808,7 +826,7 @@ export default function MultiTicketRegistrationForm() {
           {totals.total > 0 && isFormValid && (
             <p className="text-sm text-[#5c6670] mt-4 text-center">
               {paymentMethod === 'invoice'
-                ? 'Invoice will be sent via Stripe'
+                ? 'Invoice will be sent via email'
                 : 'Secure checkout powered by Stripe'}
             </p>
           )}

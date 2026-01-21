@@ -160,6 +160,9 @@ model Profile {
   bluesky      String?
   website      String?
 
+  // Admin role
+  isAdmin      Boolean  @default(false)
+
   // Relationships
   registrations       Registration[]
   speakerProposals    SpeakerProposal[]

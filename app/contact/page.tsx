@@ -72,12 +72,12 @@ export default function ContactPage() {
                     </a>
                   </li>
                   <li>
-                    <a href="/scholarship" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
+                    <a href="/scholarships" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
                       → Apply for a Scholarship
                     </a>
                   </li>
                   <li>
-                    <a href="/sponsor" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
+                    <a href="/sponsorship" className="text-[#0047ba] hover:text-[#00d4ff] transition-colors">
                       → Become a Sponsor
                     </a>
                   </li>

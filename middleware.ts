@@ -4,8 +4,8 @@ export default async function middleware(request: NextRequest) {
   // Only run auth middleware if NEON_AUTH_BASE_URL is configured
   if (!process.env.NEON_AUTH_BASE_URL) {
     // If auth is not configured, redirect to home or allow access
-    // For now, redirect unauthenticated dashboard access to home
-    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    // For now, redirect unauthenticated dashboard/admin access to home
+    if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin')) {
       return NextResponse.redirect(new URL('/', request.url));
     }
     return NextResponse.next();
@@ -21,6 +21,6 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Protect dashboard routes - require authentication
-  matcher: ['/dashboard/:path*'],
+  // Protect dashboard and admin routes - require authentication
+  matcher: ['/dashboard/:path*', '/admin/:path*'],
 };
