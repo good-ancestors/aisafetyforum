@@ -13,7 +13,7 @@ export default async function DashboardLayout({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/auth/sign-in');
+    redirect('/auth/email-otp');
   }
 
   const userIsAdmin = await isAdmin(user.email);

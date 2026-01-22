@@ -57,7 +57,7 @@ export default function RegistrationList({ registrations }: RegistrationListProp
   const [cancelDialog, setCancelDialog] = useState<{
     regId: string;
     canRefund: boolean;
-    name: string;
+    registration: Registration;
   } | null>(null);
 
   const handleCancelRegistration = (withRefund: boolean) => {
@@ -211,7 +211,7 @@ export default function RegistrationList({ registrations }: RegistrationListProp
                             reg.order?.paymentMethod === 'card' &&
                             reg.status === 'paid' &&
                             (reg.amountPaid || 0) > 0,
-                          name: reg.name,
+                          registration: reg,
                         })
                       }
                       disabled={isPending}
@@ -228,31 +228,133 @@ export default function RegistrationList({ registrations }: RegistrationListProp
       </div>
 
       {/* Cancel Registration Dialog */}
-      {cancelDialog && (
-        <ConfirmationDialog
-          isOpen={!!cancelDialog}
-          onClose={() => setCancelDialog(null)}
-          onConfirm={() => handleCancelRegistration(false)}
-          title="Cancel Ticket"
-          message={
-            cancelDialog.canRefund
-              ? `Cancel the ticket for ${cancelDialog.name}? You can choose to issue a refund.`
-              : `Cancel the ticket for ${cancelDialog.name}?`
-          }
-          confirmLabel="Cancel Only"
-          variant="danger"
-          isLoading={isPending}
-          extraAction={
-            cancelDialog.canRefund
-              ? {
-                  label: 'Cancel & Refund',
-                  onClick: () => handleCancelRegistration(true),
-                  variant: 'danger',
-                }
-              : undefined
-          }
-        />
-      )}
+      {cancelDialog && (() => {
+        const reg = cancelDialog.registration;
+        const ticketPrice = reg.amountPaid || reg.ticketPrice || 0;
+        const refundAmount = (ticketPrice / 100).toFixed(2);
+        const regIsPending = reg.status === 'pending';
+        const regIsPaid = reg.status === 'paid';
+        const isCardPayment = reg.order?.paymentMethod === 'card';
+        const isInvoicePayment = reg.order?.paymentMethod === 'invoice';
+        const isFreeTicket = ticketPrice === 0;
+
+        return (
+          <ConfirmationDialog
+            isOpen={!!cancelDialog}
+            onClose={() => setCancelDialog(null)}
+            onConfirm={() => handleCancelRegistration(false)}
+            title="Cancel Ticket"
+            message={
+              <div className="space-y-4">
+                <p className="text-[--text-body]">
+                  Are you sure you want to cancel this ticket?
+                </p>
+
+                {/* Ticket details */}
+                <div className="bg-[--bg-light] p-3 rounded-lg text-sm space-y-1">
+                  <p><span className="text-[--text-muted]">Attendee:</span> <strong>{reg.name}</strong></p>
+                  <p><span className="text-[--text-muted]">Email:</span> {reg.email}</p>
+                  <p><span className="text-[--text-muted]">Ticket:</span> {reg.ticketType}</p>
+                  {ticketPrice > 0 && (
+                    <p><span className="text-[--text-muted]">Price paid:</span> ${refundAmount} AUD</p>
+                  )}
+                  {reg.order && (
+                    <>
+                      <p><span className="text-[--text-muted]">Payment method:</span> {isCardPayment ? 'Credit/Debit Card' : 'Invoice'}</p>
+                      <p><span className="text-[--text-muted]">Order:</span> #{reg.order.id.slice(-8).toUpperCase()}</p>
+                    </>
+                  )}
+                  <p><span className="text-[--text-muted]">Status:</span> {reg.status}</p>
+                </div>
+
+                {/* Refund status messaging */}
+                {regIsPending ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <p className="font-medium text-blue-800">No payment received</p>
+                        <p className="text-sm text-blue-700">
+                          This ticket has not been paid yet. Cancelling will simply mark it as cancelled with no refund needed.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : isFreeTicket ? (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <p className="font-medium text-gray-800">No refund needed</p>
+                        <p className="text-sm text-gray-700">
+                          This is a complimentary ticket. No refund will be issued.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : regIsPaid && isCardPayment ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <p className="font-medium text-green-800">Automatic refund available</p>
+                        <p className="text-sm text-green-700">
+                          You can issue a partial refund of <strong>${refundAmount} AUD</strong> to the original payment method via Stripe.
+                          The refund typically takes 5-10 business days to process.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : regIsPaid && isInvoicePayment ? (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div>
+                        <p className="font-medium text-amber-800">Manual refund required</p>
+                        <p className="text-sm text-amber-700">
+                          This ticket was paid by invoice. If a refund of <strong>${refundAmount} AUD</strong> is needed,
+                          it must be processed manually (e.g., bank transfer).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                <p className="text-xs text-[--text-muted]">
+                  This action cannot be undone. The attendee will no longer have access to the event.
+                </p>
+              </div>
+            }
+            confirmLabel={
+              regIsPending || isFreeTicket
+                ? "Cancel ticket"
+                : isInvoicePayment
+                  ? "Cancel ticket (no auto-refund)"
+                  : "Cancel without refund"
+            }
+            cancelLabel="Keep ticket"
+            variant="danger"
+            isLoading={isPending}
+            extraAction={
+              cancelDialog.canRefund
+                ? {
+                    label: `Cancel & refund $${refundAmount}`,
+                    onClick: () => handleCancelRegistration(true),
+                    variant: 'danger',
+                  }
+                : undefined
+            }
+          />
+        );
+      })()}
     </div>
   );
 }

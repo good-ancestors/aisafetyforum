@@ -8,7 +8,7 @@ export default async function ProfilePage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/auth/sign-in');
+    redirect('/auth/email-otp');
   }
 
   const profile = await prisma.profile.findUnique({

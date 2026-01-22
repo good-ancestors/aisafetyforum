@@ -22,7 +22,6 @@ export interface OrderCardProps {
   invoiceDueDate?: Date | null;
   orgName?: string | null;
   orgABN?: string | null;
-  variant?: 'compact' | 'full';
   actions?: React.ReactNode;
 }
 
@@ -37,7 +36,6 @@ export default function OrderCard({
   invoiceDueDate,
   orgName,
   orgABN,
-  variant = 'full',
   actions,
 }: OrderCardProps) {
   const orderId = `#${id.slice(-8).toUpperCase()}`;
@@ -54,39 +52,6 @@ export default function OrderCard({
     </span>
   );
 
-  if (variant === 'compact') {
-    return (
-      <div className="border border-[--border] rounded-lg p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <p className="font-semibold">Order {orderId}</p>
-            <p className="text-sm text-[--text-muted]">
-              {registrations.length} ticket(s) • ${(totalAmount / 100).toFixed(2)} AUD
-            </p>
-          </div>
-          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-            {paymentStatus}
-          </span>
-        </div>
-        <div className="space-y-2">
-          {registrations.map((reg) => (
-            <div
-              key={reg.id}
-              className="flex justify-between items-center text-sm bg-[--bg-light] p-2 rounded"
-            >
-              <div>
-                <span className="font-medium">{reg.name}</span>
-                <span className="text-[--text-muted] ml-2">({reg.email})</span>
-              </div>
-              <span className="text-[--text-muted]">{reg.ticketType}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Full variant - different styling for pending vs paid
   const containerClass = isPending
     ? 'border border-amber-200 rounded-lg overflow-hidden bg-amber-50/50'
     : 'border border-[--border] rounded-lg overflow-hidden';
@@ -108,25 +73,26 @@ export default function OrderCard({
       {/* Order Header */}
       <div className={headerClass}>
         <div className="flex justify-between items-start">
-          <div>
-            <p className="font-semibold text-[--navy]">Order {orderId}</p>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold text-[--navy]">Order {orderId}</span>
+              {statusBadge}
+            </div>
             <p className="text-xs text-[--text-muted]">
-              {new Date(createdAt).toLocaleDateString()} •{' '}
-              {isInvoice ? 'Invoice' : 'Card Payment'}
+              {registrations.length} ticket(s) • ${(totalAmount / 100).toFixed(2)} AUD
+            </p>
+            <p className="text-xs text-[--text-muted]">
+              {new Date(createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' })} • {isInvoice ? 'Invoice' : 'Card Payment'}
               {isPending && invoiceDueDate && (
-                <> • Due {new Date(invoiceDueDate).toLocaleDateString()}</>
+                <> • Due {new Date(invoiceDueDate).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' })}</>
               )}
             </p>
           </div>
-          <div className="flex items-start gap-4">
-            <div className="text-right">
-              <p className="font-semibold text-[--navy]">
-                ${(totalAmount / 100).toFixed(2)} AUD
-              </p>
-              {statusBadge}
+          {actions && (
+            <div className="ml-4">
+              {actions}
             </div>
-            {actions}
-          </div>
+          )}
         </div>
       </div>
 

@@ -14,7 +14,7 @@ export default async function middleware(request: NextRequest) {
   // Dynamically import neonAuthMiddleware to avoid build-time failures
   const { neonAuthMiddleware } = await import('@neondatabase/auth/next/server');
   const authMiddleware = neonAuthMiddleware({
-    loginUrl: '/auth/sign-in',
+    loginUrl: '/auth/email-otp',
   });
 
   return authMiddleware(request);

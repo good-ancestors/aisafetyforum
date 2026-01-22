@@ -12,7 +12,7 @@ export default async function EditScholarshipPage({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/auth/sign-in');
+    redirect('/auth/email-otp');
   }
 
   const { id } = await params;

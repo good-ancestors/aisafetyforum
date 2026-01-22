@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import AuthModal from './AuthModal';
+import { authClient } from '@/lib/auth/client';
 
 interface HeaderClientProps {
   user: {
@@ -14,7 +17,15 @@ interface HeaderClientProps {
 export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  async function handleSignOut() {
+    await authClient.signOut();
+    router.push('/');
+    router.refresh();
+  }
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -137,23 +148,28 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
                       </>
                     )}
                     <div className="border-t border-[#e0e4e8] my-2" />
-                    <Link
-                      href="/api/auth/sign-out"
-                      className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      onClick={() => setIsUserMenuOpen(false)}
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        handleSignOut();
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
                       Sign out
-                    </Link>
+                    </button>
                   </div>
                 )}
               </div>
             ) : (
-              <Link
-                href="/auth/sign-in"
-                className="px-4 py-2 text-[0.95rem] font-medium text-[#1a1a1a] hover:text-[#0047ba] transition-colors"
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="w-10 h-10 rounded-full border-2 border-dashed border-[#a8b0b8] flex items-center justify-center text-[#a8b0b8] hover:border-[#0047ba] hover:text-[#0047ba] transition-colors"
+                aria-label="Sign in"
               >
-                Sign in
-              </Link>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
             )}
           </nav>
 
@@ -274,25 +290,34 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
                     </li>
                   )}
                   <li className="p-4 pt-2">
-                    <Link
-                      href="/api/auth/sign-out"
-                      className="block text-center px-6 py-3 text-[0.95rem] font-semibold text-red-600 border border-red-200 rounded-md hover:bg-red-50 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleSignOut();
+                      }}
+                      className="block w-full text-center px-6 py-3 text-[0.95rem] font-semibold text-red-600 border border-red-200 rounded-md hover:bg-red-50 transition-colors"
                     >
                       Sign out
-                    </Link>
+                    </button>
                   </li>
                 </>
               ) : (
                 <>
                   <li className="border-t border-[#e0e4e8] mt-2">
-                    <Link
-                      href="/auth/sign-in"
-                      className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsAuthModalOpen(true);
+                      }}
+                      className="w-full text-left text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors flex items-center gap-3"
                     >
+                      <span className="w-8 h-8 rounded-full border-2 border-dashed border-[#a8b0b8] flex items-center justify-center text-[#a8b0b8]">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </span>
                       Sign in
-                    </Link>
+                    </button>
                   </li>
                   <li className="p-4 pt-2">
                     <Link
@@ -310,6 +335,8 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
         )}
       </header>
 
+      {/* Auth Modal */}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </>
   );
 }

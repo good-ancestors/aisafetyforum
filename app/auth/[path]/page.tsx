@@ -1,28 +1,32 @@
 'use client';
 
-import { AuthView, NeonAuthUIProvider } from '@neondatabase/auth/react/ui';
-import { authClient } from '@/lib/auth/client';
-import { useParams } from 'next/navigation';
+import AuthForm from '@/components/AuthForm';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function AuthPage() {
-  const params = useParams();
-  const pathname = params.path as string;
-
   return (
-    <div className="min-h-screen bg-[--bg-cream] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="font-serif text-2xl font-bold text-[--navy]">
-            Australian AI Safety Forum
-          </h1>
-          <p className="text-[--text-muted] mt-2">
-            {pathname === 'sign-in' ? 'Sign in to your account' : 'Create your account'}
-          </p>
+    <div className="min-h-screen bg-[#f9fafb] flex flex-col">
+      {/* Simple header with logo */}
+      <header className="p-4 sm:p-6">
+        <Link href="/" className="inline-block">
+          <Image
+            src="/logo.png"
+            alt="AI Safety Forum Australia"
+            width={200}
+            height={100}
+            className="h-[40px] w-auto"
+            priority
+          />
+        </Link>
+      </header>
+
+      {/* Centered auth form */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6">
+          <AuthForm redirectTo="/dashboard" />
         </div>
-        <NeonAuthUIProvider authClient={authClient} emailOTP>
-          <AuthView pathname={pathname} />
-        </NeonAuthUIProvider>
-      </div>
+      </main>
     </div>
   );
 }
