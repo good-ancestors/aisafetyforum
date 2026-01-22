@@ -561,6 +561,360 @@ export async function toggleAdminStatus(
   }
 }
 
+/**
+ * Admin: Change email for any user by profile ID.
+ * Updates Profile, neon_auth.user, and all related records.
+ */
+export async function adminChangeEmail(
+  profileId: string,
+  newEmail: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await requireAdmin();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
+    const normalizedNewEmail = newEmail.toLowerCase().trim();
+
+    // Validate email format
+    if (!normalizedNewEmail || !normalizedNewEmail.includes('@')) {
+      return { success: false, error: 'Invalid email address' };
+    }
+
+    // Get the profile
+    const profile = await prisma.profile.findUnique({
+      where: { id: profileId },
+    });
+
+    if (!profile) {
+      return { success: false, error: 'Profile not found' };
+    }
+
+    const oldEmail = profile.email.toLowerCase();
+
+    // No change needed
+    if (normalizedNewEmail === oldEmail) {
+      return { success: true };
+    }
+
+    // Check if new email is already taken by another profile
+    const existingProfile = await prisma.profile.findUnique({
+      where: { email: normalizedNewEmail },
+    });
+
+    if (existingProfile && existingProfile.id !== profileId) {
+      return { success: false, error: 'This email is already in use by another account' };
+    }
+
+    // Update everything in a transaction
+    await prisma.$transaction(async (tx) => {
+      // 1. Update Profile email
+      await tx.profile.update({
+        where: { id: profileId },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 2. Update neon_auth.user email (raw query since it's in a different schema)
+      if (profile.neonAuthUserId) {
+        await tx.$executeRaw`
+          UPDATE neon_auth."user"
+          SET email = ${normalizedNewEmail}, "updatedAt" = NOW()
+          WHERE id = ${profile.neonAuthUserId}::uuid
+        `;
+      }
+
+      // 3. Update email on registrations linked to this profile
+      await tx.registration.updateMany({
+        where: { profileId: profileId },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 4. Update email on speaker proposals linked to this profile
+      await tx.speakerProposal.updateMany({
+        where: { profileId: profileId },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 5. Update email on funding applications linked to this profile
+      await tx.fundingApplication.updateMany({
+        where: { profileId: profileId },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 6. Update purchaserEmail on orders (where they were the purchaser)
+      await tx.order.updateMany({
+        where: { purchaserEmail: oldEmail },
+        data: { purchaserEmail: normalizedNewEmail },
+      });
+
+      // 7. Update FreeTicketEmail if they had a free ticket entry
+      const freeTicket = await tx.freeTicketEmail.findUnique({
+        where: { email: oldEmail },
+      });
+      if (freeTicket) {
+        // Check if new email already has a free ticket entry
+        const existingFreeTicket = await tx.freeTicketEmail.findUnique({
+          where: { email: normalizedNewEmail },
+        });
+        if (!existingFreeTicket) {
+          await tx.freeTicketEmail.update({
+            where: { email: oldEmail },
+            data: { email: normalizedNewEmail },
+          });
+        }
+      }
+    });
+
+    revalidatePath('/admin/profiles');
+    revalidatePath('/admin/registrations');
+    revalidatePath('/admin/orders');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error changing email (admin):', error);
+    return { success: false, error: 'Failed to change email' };
+  }
+}
+
+// ============================================
+// Auth Users Admin (neon_auth.user)
+// ============================================
+
+/**
+ * Type for neon_auth.user records
+ */
+export type NeonAuthUser = {
+  id: string;
+  email: string;
+  name: string | null;
+  emailVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/**
+ * Combined view of auth users with their profiles
+ */
+export type AuthUserWithProfile = NeonAuthUser & {
+  profile: {
+    id: string;
+    isAdmin: boolean;
+    organisation: string | null;
+    title: string | null;
+    _count: {
+      registrations: number;
+      speakerProposals: number;
+      fundingApplications: number;
+    };
+  } | null;
+};
+
+/**
+ * Get all authenticated users from neon_auth.user with their linked profiles.
+ * This shows everyone who has signed up, even if they haven't created a profile yet.
+ */
+export async function getAllAuthUsers(): Promise<AuthUserWithProfile[]> {
+  const admin = await requireAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
+  // Get all users from neon_auth.user
+  const authUsers = await prisma.$queryRaw<NeonAuthUser[]>`
+    SELECT
+      id,
+      email,
+      name,
+      "emailVerified",
+      "createdAt",
+      "updatedAt"
+    FROM neon_auth."user"
+    ORDER BY "createdAt" DESC
+  `;
+
+  // Get all profiles with their counts
+  const profiles = await prisma.profile.findMany({
+    where: {
+      neonAuthUserId: { in: authUsers.map(u => u.id) }
+    },
+    select: {
+      id: true,
+      neonAuthUserId: true,
+      isAdmin: true,
+      organisation: true,
+      title: true,
+      _count: {
+        select: {
+          registrations: true,
+          speakerProposals: true,
+          fundingApplications: true,
+        },
+      },
+    },
+  });
+
+  // Create a map for quick lookup
+  const profileMap = new Map(
+    profiles.map(p => [p.neonAuthUserId, p])
+  );
+
+  // Combine auth users with their profiles
+  return authUsers.map(authUser => ({
+    ...authUser,
+    profile: profileMap.get(authUser.id) || null,
+  }));
+}
+
+/**
+ * Get auth user stats
+ */
+export async function getAuthUserStats() {
+  const admin = await requireAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
+  const [authUsers, profilesLinked, admins] = await Promise.all([
+    prisma.$queryRaw<[{ count: bigint }]>`
+      SELECT COUNT(*) as count FROM neon_auth."user"
+    `,
+    prisma.profile.count({ where: { neonAuthUserId: { not: null } } }),
+    prisma.profile.count({ where: { isAdmin: true } }),
+  ]);
+
+  return {
+    totalAuthUsers: Number(authUsers[0].count),
+    profilesLinked,
+    admins,
+    unlinked: Number(authUsers[0].count) - profilesLinked,
+  };
+}
+
+/**
+ * Create a profile for an auth user who doesn't have one yet.
+ * This allows admins to grant permissions to users before they complete their profile.
+ */
+export async function createProfileForAuthUser(
+  authUserId: string,
+  data?: { isAdmin?: boolean }
+): Promise<{ success: boolean; error?: string; profileId?: string }> {
+  try {
+    const admin = await requireAdmin();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
+    // Get the auth user
+    const authUsers = await prisma.$queryRaw<NeonAuthUser[]>`
+      SELECT id, email, name FROM neon_auth."user" WHERE id = ${authUserId}::uuid
+    `;
+
+    if (authUsers.length === 0) {
+      return { success: false, error: 'Auth user not found' };
+    }
+
+    const authUser = authUsers[0];
+
+    // Check if profile already exists
+    const existing = await prisma.profile.findFirst({
+      where: {
+        OR: [
+          { neonAuthUserId: authUserId },
+          { email: authUser.email.toLowerCase() },
+        ],
+      },
+    });
+
+    if (existing) {
+      // Link if not already linked
+      if (!existing.neonAuthUserId) {
+        await prisma.profile.update({
+          where: { id: existing.id },
+          data: { neonAuthUserId: authUserId },
+        });
+      }
+      return { success: true, profileId: existing.id };
+    }
+
+    // Create new profile
+    const profile = await prisma.profile.create({
+      data: {
+        neonAuthUserId: authUserId,
+        email: authUser.email.toLowerCase(),
+        name: authUser.name,
+        isAdmin: data?.isAdmin ?? false,
+      },
+    });
+
+    revalidatePath('/admin/profiles');
+    return { success: true, profileId: profile.id };
+  } catch (error) {
+    console.error('Error creating profile for auth user:', error);
+    return { success: false, error: 'Failed to create profile' };
+  }
+}
+
+/**
+ * Toggle admin status for an auth user.
+ * Creates a profile if one doesn't exist.
+ */
+export async function toggleAuthUserAdmin(
+  authUserId: string
+): Promise<{ success: boolean; error?: string; isAdmin?: boolean }> {
+  try {
+    const admin = await requireAdmin();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
+    // Find or create profile
+    let profile = await prisma.profile.findUnique({
+      where: { neonAuthUserId: authUserId },
+    });
+
+    if (!profile) {
+      // Try to find by email from auth user
+      const authUsers = await prisma.$queryRaw<NeonAuthUser[]>`
+        SELECT id, email, name FROM neon_auth."user" WHERE id = ${authUserId}::uuid
+      `;
+
+      if (authUsers.length === 0) {
+        return { success: false, error: 'Auth user not found' };
+      }
+
+      const authUser = authUsers[0];
+
+      // Check if there's a profile with this email
+      profile = await prisma.profile.findUnique({
+        where: { email: authUser.email.toLowerCase() },
+      });
+
+      if (profile) {
+        // Link existing profile
+        profile = await prisma.profile.update({
+          where: { id: profile.id },
+          data: { neonAuthUserId: authUserId },
+        });
+      } else {
+        // Create new profile
+        profile = await prisma.profile.create({
+          data: {
+            neonAuthUserId: authUserId,
+            email: authUser.email.toLowerCase(),
+            name: authUser.name,
+            isAdmin: true, // They're being made admin
+          },
+        });
+        revalidatePath('/admin/profiles');
+        return { success: true, isAdmin: true };
+      }
+    }
+
+    // Toggle admin status
+    const updated = await prisma.profile.update({
+      where: { id: profile.id },
+      data: { isAdmin: !profile.isAdmin },
+    });
+
+    revalidatePath('/admin/profiles');
+    return { success: true, isAdmin: updated.isAdmin };
+  } catch (error) {
+    console.error('Error toggling auth user admin status:', error);
+    return { success: false, error: 'Failed to update admin status' };
+  }
+}
+
 // ============================================
 // Discount Codes Admin
 // ============================================

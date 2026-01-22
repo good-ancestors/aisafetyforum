@@ -1,20 +1,12 @@
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from './server';
+import { getCurrentProfile } from './profile';
 
 /**
  * Check if the current user is an admin.
  * Returns the profile if admin, null otherwise.
  */
 export async function requireAdmin() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return null;
-  }
-
-  const profile = await prisma.profile.findUnique({
-    where: { email: user.email.toLowerCase() },
-  });
+  const profile = await getCurrentProfile();
 
   if (!profile?.isAdmin) {
     return null;

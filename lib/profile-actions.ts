@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth/server';
+import { getCurrentProfile } from '@/lib/auth/profile';
 import { revalidatePath } from 'next/cache';
 
 export interface ProfileUpdateData {
@@ -13,6 +14,117 @@ export interface ProfileUpdateData {
   twitter: string;
   bluesky: string;
   website: string;
+}
+
+/**
+ * Change the email address for a user.
+ * Updates the Profile, neon_auth.user, and all related records.
+ *
+ * This keeps the user identity (neonAuthUserId) the same while changing
+ * their email everywhere it's stored.
+ */
+export async function changeEmail(
+  newEmail: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const profile = await getCurrentProfile();
+    if (!profile) {
+      return { success: false, error: 'Not authenticated or no profile found' };
+    }
+
+    const normalizedNewEmail = newEmail.toLowerCase().trim();
+    const oldEmail = profile.email.toLowerCase();
+
+    // Validate email format
+    if (!normalizedNewEmail || !normalizedNewEmail.includes('@')) {
+      return { success: false, error: 'Invalid email address' };
+    }
+
+    // No change needed
+    if (normalizedNewEmail === oldEmail) {
+      return { success: true };
+    }
+
+    // Check if new email is already taken by another profile
+    const existingProfile = await prisma.profile.findUnique({
+      where: { email: normalizedNewEmail },
+    });
+
+    if (existingProfile && existingProfile.id !== profile.id) {
+      return { success: false, error: 'This email is already in use by another account' };
+    }
+
+    // Update everything in a transaction
+    await prisma.$transaction(async (tx) => {
+      // 1. Update Profile email
+      await tx.profile.update({
+        where: { id: profile.id },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 2. Update neon_auth.user email (raw query since it's in a different schema)
+      if (profile.neonAuthUserId) {
+        await tx.$executeRaw`
+          UPDATE neon_auth."user"
+          SET email = ${normalizedNewEmail}, "updatedAt" = NOW()
+          WHERE id = ${profile.neonAuthUserId}::uuid
+        `;
+      }
+
+      // 3. Update email on registrations linked to this profile
+      await tx.registration.updateMany({
+        where: { profileId: profile.id },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 4. Update email on speaker proposals linked to this profile
+      await tx.speakerProposal.updateMany({
+        where: { profileId: profile.id },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 5. Update email on funding applications linked to this profile
+      await tx.fundingApplication.updateMany({
+        where: { profileId: profile.id },
+        data: { email: normalizedNewEmail },
+      });
+
+      // 6. Update purchaserEmail on orders (where they were the purchaser)
+      await tx.order.updateMany({
+        where: { purchaserEmail: oldEmail },
+        data: { purchaserEmail: normalizedNewEmail },
+      });
+
+      // 7. Update FreeTicketEmail if they had a free ticket entry
+      const freeTicket = await tx.freeTicketEmail.findUnique({
+        where: { email: oldEmail },
+      });
+      if (freeTicket) {
+        // Check if new email already has a free ticket entry
+        const existingFreeTicket = await tx.freeTicketEmail.findUnique({
+          where: { email: normalizedNewEmail },
+        });
+        if (!existingFreeTicket) {
+          await tx.freeTicketEmail.update({
+            where: { email: oldEmail },
+            data: { email: normalizedNewEmail },
+          });
+        }
+      }
+    });
+
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/profile');
+    revalidatePath('/admin/profiles');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error changing email:', error);
+    return {
+      success: false,
+      error: 'Failed to change email. Please try again.',
+    };
+  }
 }
 
 export async function updateProfile(

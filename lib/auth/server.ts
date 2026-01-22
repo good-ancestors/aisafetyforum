@@ -30,3 +30,17 @@ export async function getCurrentUser() {
   const { user } = await getSession();
   return user;
 }
+
+/**
+ * Auth user type from Neon Auth (Better Auth).
+ * Based on the neon_auth.user table schema.
+ */
+export type AuthUser = {
+  id: string;       // UUID from neon_auth.user
+  email: string;
+  name: string | null;
+  emailVerified: boolean;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};

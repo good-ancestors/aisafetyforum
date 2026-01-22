@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,29 +7,26 @@ datasource db {
 }
 
 model SpeakerProposal {
-  id           String   @id @default(cuid())
-  email        String
-  name         String
-  organisation String
-  title        String
-  // Bio and links stored on Profile; these fields kept for legacy data
-  bio          String?  // Legacy: now stored on Profile
-  linkedin     String?  // Legacy: now stored on Profile
-  twitter      String?  // Legacy: now stored on Profile
-  bluesky      String?  // Legacy: now stored on Profile
-  website      String?  // Legacy: now stored on Profile
-  format       String   // Keynote, Lightning talk, Workshop, Panel, Flexible
-  abstract     String
-  travelSupport String  // No, Yes, Maybe
-  anythingElse String?
-  acceptedTerms Boolean @default(true)
-  status       String   @default("pending") // pending, accepted, rejected
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Link to unified profile
-  profileId    String?
-  profile      Profile? @relation(fields: [profileId], references: [id])
+  id            String   @id @default(cuid())
+  email         String
+  name          String
+  organisation  String
+  title         String
+  bio           String?
+  linkedin      String?
+  twitter       String?
+  bluesky       String?
+  website       String?
+  format        String
+  abstract      String
+  travelSupport String
+  anythingElse  String?
+  acceptedTerms Boolean  @default(true)
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  profileId     String?
+  profile       Profile? @relation(fields: [profileId], references: [id])
 
   @@index([email])
   @@index([status])
@@ -43,32 +34,29 @@ model SpeakerProposal {
 }
 
 model FundingApplication {
-  id           String   @id @default(cuid())
-  email        String
-  name         String
-  location     String   // Legacy field, no longer collected for new applications
-  organisation String
-  role         String
-  // Bio and links now stored on Profile; these fields kept for legacy data
-  bio          String?  // Legacy: now stored on Profile
-  linkedin     String?  // Legacy: now stored on Profile
-  twitter      String?  // Legacy: now stored on Profile
-  bluesky      String?  // Legacy: now stored on Profile
-  website      String?  // Legacy: now stored on Profile
-  whyAttend    String
-  travelSupport String?  // No, Yes, Maybe - whether travel support is needed
-  amount       String   // Travel estimate (e.g., "$250 flight + $200 accommodation")
-  backgroundInfo String[] @default([]) // Self-identification checkboxes (student, civil_society, etc.)
-  day1         Boolean  @default(true)  // Legacy field, defaults to true for new applications
-  day2         Boolean  @default(true)  // Legacy field, defaults to true for new applications
-  acceptedTerms Boolean @default(true)  // Legacy field, implied by submission for new applications
-  status       String   @default("pending") // pending, approved, rejected
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Link to unified profile
-  profileId    String?
-  profile      Profile? @relation(fields: [profileId], references: [id])
+  id             String   @id @default(cuid())
+  email          String
+  name           String
+  location       String
+  organisation   String
+  role           String
+  whyAttend      String
+  amount         String
+  day1           Boolean  @default(true)
+  day2           Boolean  @default(true)
+  acceptedTerms  Boolean  @default(true)
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  profileId      String?
+  backgroundInfo String[] @default([])
+  bio            String?
+  bluesky        String?
+  linkedin       String?
+  travelSupport  String?
+  twitter        String?
+  website        String?
+  profile        Profile? @relation(fields: [profileId], references: [id])
 
   @@index([email])
   @@index([status])
@@ -80,27 +68,23 @@ model Registration {
   email           String
   name            String
   organisation    String?
-  ticketType      String        // Standard, Academic, Concession
-  ticketPrice     Int?          // Price for this specific ticket in cents (new)
+  ticketType      String
+  ticketPrice     Int?
   stripeSessionId String?       @unique
   stripePaymentId String?
-  amountPaid      Int           // Amount in cents (after discount) - legacy, used for single-ticket
-  originalAmount  Int           // Original price before discount - legacy
-  discountAmount  Int           @default(0) // Discount applied in cents - legacy
+  amountPaid      Int
+  originalAmount  Int
+  discountAmount  Int           @default(0)
   couponId        String?
-  coupon          DiscountCode? @relation(fields: [couponId], references: [id])
-  status          String        @default("pending") // pending, paid, cancelled, refunded
-  attendeeDetails Json?         // Additional attendee info (dietary, accessibility, etc)
+  status          String        @default("pending")
+  attendeeDetails Json?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-
-  // Link to unified profile (nullable during migration)
   profileId       String?
-  profile         Profile?      @relation(fields: [profileId], references: [id])
-
-  // Link to order (nullable during migration, for multi-ticket support)
   orderId         String?
+  coupon          DiscountCode? @relation(fields: [couponId], references: [id])
   order           Order?        @relation(fields: [orderId], references: [id])
+  profile         Profile?      @relation(fields: [profileId], references: [id])
 
   @@index([email])
   @@index([status])
@@ -111,103 +95,85 @@ model Registration {
 }
 
 model DiscountCode {
-  id              String         @id @default(cuid())
-  code            String         @unique // e.g. "SPEAKER2026", "ORGANIZER", "EARLYBIRD"
-  description     String         // Human-readable description
-  type            String         // "percentage", "fixed", "free"
-  value           Int            // Percentage (0-100) or fixed amount in cents
-  validFor        String[]       // Empty = all tickets, or ["standard", "academic", "concession"]
-  allowedEmails   String[]       // Empty = any email, or specific emails allowed
-  maxUses         Int?           // null = unlimited, or specific number
-  currentUses     Int            @default(0)
-  active          Boolean        @default(true)
-  validFrom       DateTime?      // null = immediately valid
-  validUntil      DateTime?      // null = never expires
-  registrations   Registration[] // Legacy: individual registration coupons
-  orders          Order[]        // New: order-level coupons
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id            String         @id @default(cuid())
+  code          String         @unique
+  description   String
+  type          String
+  value         Int
+  validFor      String[]
+  allowedEmails String[]
+  maxUses       Int?
+  currentUses   Int            @default(0)
+  active        Boolean        @default(true)
+  validFrom     DateTime?
+  validUntil    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  orders        Order[]
+  registrations Registration[]
 
   @@index([code])
   @@index([active])
 }
 
 model FreeTicketEmail {
-  id          String   @id @default(cuid())
-  email       String   @unique // Email that gets free ticket
-  reason      String   // Why they get free access (e.g. "Accepted speaker", "Organizer", "VIP")
-  active      Boolean  @default(true)
-  notified    Boolean  @default(false) // Track if we've sent them an email notification
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  reason    String
+  active    Boolean  @default(true)
+  notified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
   @@index([active])
 }
 
-// Central profile - one per person, linked by email
+// Central profile - one per person, linked by email and optionally neon_auth user
 model Profile {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  title        String?  // Job title/role
-  organisation String?
-
-  // Bio and social links (centralized, used across forms)
-  bio          String?
-  linkedin     String?
-  twitter      String?
-  bluesky      String?
-  website      String?
-
-  // Admin role
-  isAdmin      Boolean  @default(false)
-
-  // Relationships
+  id                  String               @id @default(cuid())
+  neonAuthUserId      String?              @unique // Links to neon_auth.user.id (UUID) - set when user authenticates
+  email               String               @unique
+  name                String?
+  title               String?
+  organisation        String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  bio                 String?
+  bluesky             String?
+  isAdmin             Boolean              @default(false)
+  linkedin            String?
+  twitter             String?
+  website             String?
+  fundingApplications FundingApplication[]
   registrations       Registration[]
   speakerProposals    SpeakerProposal[]
-  fundingApplications FundingApplication[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([email])
+  @@index([neonAuthUserId])
 }
 
-// Order = a purchase (can contain multiple tickets)
 model Order {
-  id             String   @id @default(cuid())
-  purchaserEmail String   // Who paid (may differ from attendees)
-  purchaserName  String
-
-  // Payment
-  paymentMethod  String   @default("card") // card, invoice
-  paymentStatus  String   @default("pending") // pending, paid, cancelled, failed
-  stripeSessionId String? @unique // For card payments (Checkout Session)
-  stripePaymentId String? // Payment Intent ID
-  stripeInvoiceId String? @unique // For Stripe invoice payments (legacy)
-
-  // Manual invoice (bank transfer)
-  invoiceNumber  String?  @unique // e.g., "AISF26-0001"
-  invoiceDueDate DateTime? // When payment is due
-
-  // Totals (in cents)
-  totalAmount    Int
-  discountAmount Int      @default(0)
-
-  // For invoices (org billing details)
-  orgName        String?
-  orgABN         String?
-  poNumber       String?
-
-  // Coupon applied to order
-  couponId       String?
-  coupon         DiscountCode? @relation(fields: [couponId], references: [id])
-
-  registrations  Registration[]
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String         @id @default(cuid())
+  purchaserEmail  String
+  purchaserName   String
+  paymentMethod   String         @default("card")
+  paymentStatus   String         @default("pending")
+  stripeSessionId String?        @unique
+  stripePaymentId String?
+  stripeInvoiceId String?        @unique
+  totalAmount     Int
+  discountAmount  Int            @default(0)
+  orgName         String?
+  orgABN          String?
+  poNumber        String?
+  couponId        String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  invoiceDueDate  DateTime?
+  invoiceNumber   String?        @unique
+  coupon          DiscountCode?  @relation(fields: [couponId], references: [id])
+  registrations   Registration[]
 
   @@index([purchaserEmail])
   @@index([paymentStatus])
