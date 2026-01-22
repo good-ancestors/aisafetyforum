@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { requireStripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { sendConfirmationEmail } from '@/lib/brevo';
+import { redactEmail, isProduction } from '@/lib/security';
 import Stripe from 'stripe';
 
 export async function POST(req: Request) {
@@ -29,7 +30,11 @@ export async function POST(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     console.error('❌ Webhook signature verification failed:', message);
-    return NextResponse.json({ error: `Webhook Error: ${message}` }, { status: 400 });
+    // Don't expose internal error details in production
+    return NextResponse.json(
+      { error: isProduction() ? 'Webhook verification failed' : `Webhook Error: ${message}` },
+      { status: 400 }
+    );
   }
 
   // Handle the event
@@ -93,9 +98,9 @@ export async function POST(req: Request) {
                 purchaserName: order.purchaserName,
               });
 
-              console.log(`✅ Confirmation email sent to ${reg.email}`);
+              console.log(`✅ Confirmation email sent to ${isProduction() ? redactEmail(reg.email) : reg.email}`);
             } catch (emailError) {
-              console.error(`❌ Error sending confirmation email to ${reg.email}:`, emailError);
+              console.error(`❌ Error sending confirmation email to ${isProduction() ? redactEmail(reg.email) : reg.email}:`, emailError);
             }
           }
         } else {
@@ -149,7 +154,7 @@ export async function POST(req: Request) {
                 transactionId: session.payment_intent as string,
               });
 
-              console.log(`✅ Confirmation email sent to ${registration.email}`);
+              console.log(`✅ Confirmation email sent to ${isProduction() ? redactEmail(registration.email) : registration.email}`);
             } catch (emailError) {
               console.error('❌ Error sending confirmation email:', emailError);
             }
@@ -301,9 +306,9 @@ export async function POST(req: Request) {
                 purchaserName: order.purchaserName,
               });
 
-              console.log(`✅ Confirmation email sent to ${reg.email} (invoice payment)`);
+              console.log(`✅ Confirmation email sent to ${isProduction() ? redactEmail(reg.email) : reg.email} (invoice payment)`);
             } catch (emailError) {
-              console.error(`❌ Error sending confirmation email to ${reg.email}:`, emailError);
+              console.error(`❌ Error sending confirmation email to ${isProduction() ? redactEmail(reg.email) : reg.email}:`, emailError);
             }
           }
         } else {

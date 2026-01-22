@@ -3,6 +3,7 @@
 import { requireStripe } from './stripe';
 import { prisma } from './prisma';
 import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
+import { siteConfig } from './config';
 import Stripe from 'stripe';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
@@ -209,7 +210,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
 
     // Final fallback
     if (!baseUrl) {
-      baseUrl = 'https://aisafetyforum.vercel.app';
+      baseUrl = siteConfig.url;
     }
 
     // Ensure baseUrl has protocol
@@ -534,7 +535,7 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
       }
     }
     if (!baseUrl) {
-      baseUrl = 'https://aisafetyforum.vercel.app';
+      baseUrl = siteConfig.url;
     }
     const fullBaseUrl = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
 

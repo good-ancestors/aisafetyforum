@@ -3,11 +3,20 @@ import { getCurrentUser } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/auth/admin';
 import { prisma } from '@/lib/prisma';
 import { eventConfig } from '@/lib/config';
+import { checkRateLimit, getClientIdentifier, rateLimitPresets } from '@/lib/rate-limit';
+import { escapeHtml } from '@/lib/security';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request);
+  const rateLimit = checkRateLimit(`invoice:${clientId}`, rateLimitPresets.document);
+  if (!rateLimit.success) {
+    return new NextResponse('Too many requests', { status: 429 });
+  }
+
   const { id } = await params;
 
   const user = await getCurrentUser();
@@ -98,7 +107,7 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     .map(
       ([type, { count, unitPrice, total }]) => `
       <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${type} Ticket${count > 1 ? ` (x${count})` : ''}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(type)} Ticket${count > 1 ? ` (x${count})` : ''}</td>
         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(unitPrice / 100).toFixed(2)}</td>
         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(total / 100).toFixed(2)}</td>
       </tr>
@@ -110,9 +119,9 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     .map(
       (reg) => `
       <tr>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${reg.name}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${reg.email}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${reg.ticketType}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.name)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.email)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.ticketType)}</td>
       </tr>
     `
     )
@@ -288,11 +297,11 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
   <div class="details-grid">
     <div class="detail-section">
       <h3>Bill To</h3>
-      <p><strong>${order.purchaserName}</strong></p>
-      ${order.orgName ? `<p>${order.orgName}</p>` : ''}
-      ${order.orgABN ? `<p>ABN: ${order.orgABN}</p>` : ''}
-      <p>${order.purchaserEmail}</p>
-      ${order.poNumber ? `<p>PO Number: ${order.poNumber}</p>` : ''}
+      <p><strong>${escapeHtml(order.purchaserName)}</strong></p>
+      ${order.orgName ? `<p>${escapeHtml(order.orgName)}</p>` : ''}
+      ${order.orgABN ? `<p>ABN: ${escapeHtml(order.orgABN)}</p>` : ''}
+      <p>${escapeHtml(order.purchaserEmail)}</p>
+      ${order.poNumber ? `<p>PO Number: ${escapeHtml(order.poNumber)}</p>` : ''}
     </div>
     <div class="detail-section" style="text-align: right;">
       <h3>Invoice Details</h3>

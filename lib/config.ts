@@ -1,3 +1,10 @@
+// Site configuration
+export const siteConfig = {
+  // The canonical URL for the site (used as fallback when headers unavailable)
+  // Set via NEXT_PUBLIC_SITE_URL env var, or defaults to production URL
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://aisafetyforum.au',
+} as const;
+
 // Event configuration
 export const eventConfig = {
   year: '2026',
