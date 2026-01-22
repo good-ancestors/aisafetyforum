@@ -34,15 +34,20 @@ export async function GET(
     return new NextResponse('Unauthorized', { status: 403 });
   }
 
-  // Check if this is an invoice order
-  if (order.paymentMethod !== 'invoice') {
-    return new NextResponse('This is not an invoice order', { status: 400 });
+  // Check if this is a card payment (receipt) order
+  if (order.paymentMethod !== 'card') {
+    return new NextResponse('This is not a card payment order. Use the invoice endpoint for invoice orders.', { status: 400 });
   }
 
-  // Generate HTML invoice
-  const invoiceHtml = generateInvoiceHtml(order);
+  // Check if paid
+  if (order.paymentStatus !== 'paid') {
+    return new NextResponse('Order not paid', { status: 400 });
+  }
 
-  return new NextResponse(invoiceHtml, {
+  // Generate HTML receipt
+  const receiptHtml = generateReceiptHtml(order);
+
+  return new NextResponse(receiptHtml, {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
     },
@@ -53,15 +58,11 @@ interface OrderWithDetails {
   id: string;
   purchaserEmail: string;
   purchaserName: string;
-  invoiceNumber: string | null;
-  invoiceDueDate: Date | null;
   totalAmount: number;
   discountAmount: number;
-  orgName: string | null;
-  orgABN: string | null;
-  poNumber: string | null;
   paymentStatus: string;
   createdAt: Date;
+  stripePaymentId: string | null;
   registrations: Array<{
     id: string;
     name: string;
@@ -75,9 +76,8 @@ interface OrderWithDetails {
   } | null;
 }
 
-function generateInvoiceHtml(order: OrderWithDetails): string {
+function generateReceiptHtml(order: OrderWithDetails): string {
   const subtotal = order.totalAmount + order.discountAmount;
-  const isPaid = order.paymentStatus === 'paid';
 
   // GST calculation (prices include 10% GST)
   const gstAmount = Math.round(order.totalAmount / 11);
@@ -118,13 +118,15 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     )
     .join('');
 
+  const receiptNumber = `REC-${order.id.slice(-8).toUpperCase()}`;
+
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice ${order.invoiceNumber || order.id.slice(-8).toUpperCase()}</title>
+  <title>Tax Receipt ${receiptNumber}</title>
   <style>
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -138,7 +140,7 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
       margin: 0 auto;
       padding: 40px 20px;
     }
-    .invoice-header {
+    .receipt-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -151,15 +153,15 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
       font-weight: bold;
       color: #0a1f5c;
     }
-    .invoice-title {
+    .receipt-title {
       text-align: right;
     }
-    .invoice-title h1 {
+    .receipt-title h1 {
       margin: 0;
       font-size: 32px;
       color: #0a1f5c;
     }
-    .invoice-number {
+    .receipt-number {
       color: #6b7280;
       margin-top: 4px;
     }
@@ -170,14 +172,8 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
       font-size: 12px;
       font-weight: 600;
       margin-top: 8px;
-    }
-    .status-paid {
       background: #dcfce7;
       color: #166534;
-    }
-    .status-pending {
-      background: #fef3c7;
-      color: #92400e;
     }
     .details-grid {
       display: grid;
@@ -231,16 +227,6 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
       margin-top: 8px;
       padding-top: 16px;
     }
-    .payment-info {
-      background: #f0f4f8;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 40px;
-    }
-    .payment-info h3 {
-      margin: 0 0 12px 0;
-      color: #0a1f5c;
-    }
     .footer {
       margin-top: 60px;
       padding-top: 20px;
@@ -269,35 +255,30 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
 <body>
   <button class="print-button no-print" onclick="window.print()">Print / Save PDF</button>
 
-  <div class="invoice-header">
+  <div class="receipt-header">
     <div class="logo">
       Australian AI Safety Forum<br>
       <span style="font-size: 14px; font-weight: normal; color: #6b7280;">${eventConfig.year}</span><br>
       <span style="font-size: 12px; font-weight: normal; color: #6b7280;">Organised by ${eventConfig.organization.name}</span><br>
       <span style="font-size: 12px; font-weight: normal; color: #6b7280;">ABN: ${eventConfig.organization.abn}</span>
     </div>
-    <div class="invoice-title">
-      <h1>TAX INVOICE</h1>
-      <p class="invoice-number">${order.invoiceNumber || `#${order.id.slice(-8).toUpperCase()}`}</p>
-      <span class="status-badge ${isPaid ? 'status-paid' : 'status-pending'}">
-        ${isPaid ? 'PAID' : 'AWAITING PAYMENT'}
-      </span>
+    <div class="receipt-title">
+      <h1>TAX RECEIPT</h1>
+      <p class="receipt-number">${receiptNumber}</p>
+      <span class="status-badge">PAID</span>
     </div>
   </div>
 
   <div class="details-grid">
     <div class="detail-section">
-      <h3>Bill To</h3>
+      <h3>Receipt For</h3>
       <p><strong>${order.purchaserName}</strong></p>
-      ${order.orgName ? `<p>${order.orgName}</p>` : ''}
-      ${order.orgABN ? `<p>ABN: ${order.orgABN}</p>` : ''}
       <p>${order.purchaserEmail}</p>
-      ${order.poNumber ? `<p>PO Number: ${order.poNumber}</p>` : ''}
     </div>
     <div class="detail-section" style="text-align: right;">
-      <h3>Invoice Details</h3>
+      <h3>Receipt Details</h3>
       <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-      ${order.invoiceDueDate ? `<p><strong>Due Date:</strong> ${new Date(order.invoiceDueDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
+      <p><strong>Payment Method:</strong> Credit Card</p>
     </div>
   </div>
 
@@ -339,7 +320,7 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
       <span>$${(gstAmount / 100).toFixed(2)} AUD</span>
     </div>
     <div class="total-row grand-total">
-      <span>Total ${isPaid ? 'Paid' : 'Due'} (inc GST)</span>
+      <span>Total Paid (inc GST)</span>
       <span>$${(order.totalAmount / 100).toFixed(2)} AUD</span>
     </div>
   </div>
@@ -358,27 +339,10 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     </tbody>
   </table>
 
-  ${
-    !isPaid
-      ? `
-  <div class="payment-info">
-    <h3>Payment Instructions</h3>
-    <p>Please pay by bank transfer to:</p>
-    <p><strong>Account Name:</strong> ${eventConfig.organization.bankDetails.accountName}</p>
-    <p><strong>BSB:</strong> ${eventConfig.organization.bankDetails.bsb}</p>
-    <p><strong>Account Number:</strong> ${eventConfig.organization.bankDetails.accountNumber}</p>
-    <p><strong>Bank:</strong> ${eventConfig.organization.bankDetails.bank}</p>
-    <p><strong>Reference:</strong> ${order.invoiceNumber || order.id.slice(-8).toUpperCase()}</p>
-    ${order.invoiceDueDate ? `<p style="margin-top: 12px;"><strong>Please pay by:</strong> ${new Date(order.invoiceDueDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
-  </div>
-  `
-      : ''
-  }
-
   <div class="footer">
     <p>Australian AI Safety Forum ${eventConfig.year}</p>
     <p>${eventConfig.datesLong} • ${eventConfig.venueLong}</p>
-    <p>Questions? Contact us at info@aisafetyforum.au</p>
+    <p>Questions? Contact us at ${eventConfig.organization.email}</p>
   </div>
 </body>
 </html>
