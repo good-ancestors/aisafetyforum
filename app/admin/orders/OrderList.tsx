@@ -5,16 +5,6 @@ import { adminCancelOrder } from '@/lib/admin-actions';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 
 // Consistent date formatting to avoid hydration mismatches
-function formatDate(date: Date): string {
-  const d = new Date(date);
-  return d.toLocaleDateString('en-AU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'Australia/Sydney',
-  });
-}
-
 function formatDateTime(date: Date): string {
   const d = new Date(date);
   return d.toLocaleDateString('en-AU', {

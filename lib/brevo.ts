@@ -432,3 +432,82 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR`.replace(/\n/g, '\r\n');
 }
+
+/**
+ * Send a contact form notification email to the team
+ */
+interface ContactFormEmailParams {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export async function sendContactFormNotification(params: ContactFormEmailParams): Promise<void> {
+  try {
+    const apiInstance = getBrevoClient();
+
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+    sendSmtpEmail.subject = `[Contact Form] ${params.subject}`;
+    sendSmtpEmail.sender = {
+      name: 'AI Safety Forum',
+      email: 'noreply@aisafetyforum.au',
+    };
+    sendSmtpEmail.to = [
+      { email: eventConfig.organization.email, name: 'AI Safety Forum Team' },
+    ];
+    sendSmtpEmail.replyTo = { email: params.email, name: params.name };
+    sendSmtpEmail.htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Contact Form Submission</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+  <div style="background: linear-gradient(135deg, #0a1f5c 0%, #0047ba 100%); padding: 30px; border-radius: 8px 8px 0 0;">
+    <h1 style="color: white; margin: 0; font-size: 24px;">New Contact Form Submission</h1>
+  </div>
+
+  <div style="background: #f9fafb; padding: 30px; border: 1px solid #e0e4e8; border-top: none; border-radius: 0 0 8px 8px;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 10px 0; border-bottom: 1px solid #e0e4e8; font-weight: bold; width: 100px;">From:</td>
+        <td style="padding: 10px 0; border-bottom: 1px solid #e0e4e8;">${escapeHtml(params.name)} &lt;${escapeHtml(params.email)}&gt;</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 0; border-bottom: 1px solid #e0e4e8; font-weight: bold;">Subject:</td>
+        <td style="padding: 10px 0; border-bottom: 1px solid #e0e4e8;">${escapeHtml(params.subject)}</td>
+      </tr>
+    </table>
+
+    <div style="margin-top: 20px;">
+      <p style="font-weight: bold; margin-bottom: 10px;">Message:</p>
+      <div style="background: white; padding: 20px; border-radius: 4px; border: 1px solid #e0e4e8; white-space: pre-wrap;">${escapeHtml(params.message)}</div>
+    </div>
+
+    <p style="margin-top: 20px; font-size: 14px; color: #5c6670;">
+      Reply directly to this email to respond to ${escapeHtml(params.name)}.
+    </p>
+  </div>
+</body>
+</html>
+    `;
+
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('Contact form notification sent to team');
+  } catch (error) {
+    console.error('Error sending contact form notification:', error);
+    throw error;
+  }
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}

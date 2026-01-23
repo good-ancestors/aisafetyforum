@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { deleteProfile, getProfileDeletionInfo } from '@/lib/profile-actions';
@@ -32,7 +32,7 @@ export default function DeleteAccountSection() {
       }
       setDeletionInfo(info);
       setShowDialog(true);
-    } catch (err) {
+    } catch {
       setError('Failed to check account status');
     } finally {
       setCheckingInfo(false);
@@ -54,7 +54,7 @@ export default function DeleteAccountSection() {
       // Sign out the user after successful deletion
       await authClient.signOut();
       router.push('/');
-    } catch (err) {
+    } catch {
       setError('Failed to delete account');
     } finally {
       setLoading(false);

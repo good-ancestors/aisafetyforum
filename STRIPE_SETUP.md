@@ -96,33 +96,66 @@ NEXT_PUBLIC_BASE_URL="https://your-domain.com" # Your production URL
 
 ## Database Schema
 
-The registration data is stored in the `Registration` table:
+Registration data uses two tables: `Order` (payment info) and `Registration` (individual tickets):
 
 ```prisma
+model Order {
+  id              String         @id @default(cuid())
+  purchaserEmail  String
+  purchaserName   String
+  paymentMethod   String         @default("card")  // "card" or "invoice"
+  paymentStatus   String         @default("pending")
+  stripeSessionId String?        @unique
+  stripePaymentId String?
+  totalAmount     Int            // Amount in cents
+  discountAmount  Int            @default(0)
+  orgName         String?        // For invoice orders
+  orgABN          String?
+  poNumber        String?
+  invoiceNumber   String?        @unique
+  invoiceDueDate  DateTime?
+  couponId        String?
+  registrations   Registration[]
+}
+
 model Registration {
   id              String   @id @default(cuid())
   email           String
   name            String
   organisation    String?
-  ticketType      String
+  ticketType      String   // "standard", "academic", "concession"
+  ticketPrice     Int?
   stripeSessionId String?  @unique
   stripePaymentId String?
   amountPaid      Int
-  status          String   @default("pending")
-  attendeeDetails Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  originalAmount  Int
+  discountAmount  Int      @default(0)
+  status          String   @default("pending")  // "pending", "paid", "cancelled"
+  orderId         String?
+  couponId        String?
+  profileId       String?
 }
 ```
 
 ## Viewing Registrations
 
-You can query registrations directly in your database or build an admin panel.
-
-Example query to see all paid registrations:
+Use the admin dashboard at `/admin/orders` and `/admin/registrations`, or query directly:
 
 ```sql
-SELECT * FROM "Registration" WHERE status = 'paid' ORDER BY "createdAt" DESC;
+-- All paid orders with total revenue
+SELECT
+  id, "purchaserEmail", "purchaserName", "totalAmount" / 100 as total_aud,
+  "paymentStatus", "paymentMethod", "createdAt"
+FROM "Order"
+WHERE "paymentStatus" = 'paid'
+ORDER BY "createdAt" DESC;
+
+-- All paid registrations
+SELECT
+  r.name, r.email, r."ticketType", r."amountPaid" / 100 as paid_aud
+FROM "Registration" r
+WHERE r.status = 'paid'
+ORDER BY r."createdAt" DESC;
 ```
 
 ## Troubleshooting
@@ -150,11 +183,18 @@ SELECT * FROM "Registration" WHERE status = 'paid' ORDER BY "createdAt" DESC;
 - Verify webhook signatures (already implemented)
 - Keep Stripe API keys secure
 
-## Next Steps
+## What's Already Implemented
 
-Consider adding:
-- Email confirmations (using Resend or similar)
-- Admin dashboard for viewing registrations
-- Export registrations to CSV
-- Refund handling UI
-- Ticket check-in system
+- Email confirmations via Brevo (see [EMAIL_RECEIPT_SETUP.md](./EMAIL_RECEIPT_SETUP.md))
+- Admin dashboard at `/admin` for managing orders and registrations
+- Discount codes and free tickets (see [COUPON_SYSTEM.md](./COUPON_SYSTEM.md))
+- Invoice payment option for organizations
+- PDF receipt and invoice generation
+- Refund handling via admin dashboard
+
+## Related Documentation
+
+- [WEBHOOK_SETUP.md](./WEBHOOK_SETUP.md) - Webhook configuration
+- [COUPON_SYSTEM.md](./COUPON_SYSTEM.md) - Discount code management
+- [EMAIL_RECEIPT_SETUP.md](./EMAIL_RECEIPT_SETUP.md) - Email configuration
+- [PRE_LAUNCH_CHECKLIST.md](./PRE_LAUNCH_CHECKLIST.md) - Production setup

@@ -16,13 +16,28 @@ These environment variables must be set in Vercel for the deployment to succeed:
 
 > **Note:** See [NEON_DATABASE_SETUP.md](./NEON_DATABASE_SETUP.md) for detailed Neon configuration
 
+### Authentication (Neon Auth)
+- `NEON_AUTH_BASE_URL` - Neon Auth base URL for your project
+  - Example: `https://auth.neon.tech/...`
+  - Used for email OTP authentication
+- `NEON_JWKS_URL` - JWKS URL for JWT validation
+  - Example: `https://auth.neon.tech/.well-known/jwks.json`
+  - Used to verify authentication tokens
+
 ### Stripe
-- `STRIPE_SECRET_KEY` - Stripe secret key (starts with `sk_test_` for test mode)
-- `STRIPE_PUBLISHABLE_KEY` - Stripe publishable key (starts with `pk_test_` for test mode)
+- `STRIPE_SECRET_KEY` - Stripe secret key (starts with `sk_test_` for test mode, `sk_live_` for production)
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key (starts with `pk_test_` or `pk_live_`)
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook signing secret (starts with `whsec_`)
-- `STRIPE_PRICE_STANDARD` - Stripe price ID for standard tickets
-- `STRIPE_PRICE_ACADEMIC` - Stripe price ID for academic tickets
-- `STRIPE_PRICE_CONCESSION` - Stripe price ID for concession tickets
+
+**Regular Ticket Prices:**
+- `STRIPE_PRICE_STANDARD` - Standard ticket ($595)
+- `STRIPE_PRICE_ACADEMIC` - Academic ticket ($245)
+- `STRIPE_PRICE_CONCESSION` - Concession ticket ($75)
+
+**Early Bird Prices:**
+- `STRIPE_PRICE_STANDARD_EARLYBIRD` - Early bird standard ($357)
+- `STRIPE_PRICE_ACADEMIC_EARLYBIRD` - Early bird academic ($147)
+- `STRIPE_PRICE_CONCESSION_EARLYBIRD` - Early bird concession ($45)
 
 ### Email
 - `BREVO_API_KEY` - Brevo (SendInBlue) API key for transactional emails

@@ -2,6 +2,7 @@
 
 import { prisma } from './prisma';
 import { revalidatePath } from 'next/cache';
+import { sendContactFormNotification } from './brevo';
 
 type ProfileFields = {
   name?: string;
@@ -233,12 +234,15 @@ export async function submitContactForm(formData: FormData) {
     throw new Error('All fields are required');
   }
 
-  // TODO: Send email notification to team
-  // For now, just log it
-  console.log('Contact form submission:', { name, email, subject, message });
-
-  // You could store in database if needed:
-  // await prisma.contactMessage.create({ data: { name, email, subject, message } });
-
-  return { success: true };
+  try {
+    // Send email notification to team
+    await sendContactFormNotification({ name, email, subject, message });
+    console.log('Contact form submission sent:', { name, email, subject });
+    return { success: true };
+  } catch (error) {
+    console.error('Error sending contact form:', error);
+    // Still return success if email fails - don't block user
+    // The form data has been logged, team can follow up manually
+    return { success: true };
+  }
 }

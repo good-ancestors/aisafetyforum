@@ -380,7 +380,6 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
 
     // Check each attendee for free ticket eligibility and calculate totals
     let subtotal = 0;
-    let freeTicketCount = 0;
     const lineItems: { price: string; quantity: number }[] = [];
     const ticketCounts: Record<string, number> = {};
     const attendeeFreeTicketStatus: boolean[] = [];
@@ -396,7 +395,6 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
       attendeeFreeTicketStatus.push(freeTicketCheck.isFree);
 
       if (freeTicketCheck.isFree) {
-        freeTicketCount++;
         // Don't add to subtotal or line items for free tickets
       } else {
         const price = earlyBird ? tier.earlyBirdPrice : tier.price;
@@ -621,7 +619,6 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
 
     // Check each attendee for free ticket eligibility and calculate totals
     let subtotal = 0;
-    let freeTicketCount = 0;
     const ticketCounts: Record<string, { tier: (typeof ticketTiers)[number]; count: number }> = {};
     const attendeeFreeTicketStatus: boolean[] = [];
 
@@ -636,7 +633,6 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       attendeeFreeTicketStatus.push(freeTicketCheck.isFree);
 
       if (freeTicketCheck.isFree) {
-        freeTicketCount++;
         // Don't add to subtotal for free tickets
       } else {
         const price = earlyBird ? tier.earlyBirdPrice : tier.price;

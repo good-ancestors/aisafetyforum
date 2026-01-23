@@ -10,13 +10,20 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const [key, setKey] = useState(0);
+  const [formKey, setFormKey] = useState(0);
+  const prevIsOpenRef = useRef(isOpen);
 
-  // Reset form when modal opens
+  // Reset form when modal opens (transition from closed to open)
+  // This is an intentional pattern: we need to change the key prop to reset
+  // the AuthForm component when the modal opens. The alternative (keeping
+  // the form state) would show stale data from the previous session.
   useEffect(() => {
-    if (isOpen) {
-      setKey(prev => prev + 1);
+    if (isOpen && !prevIsOpenRef.current) {
+      // Modal just opened - increment key to reset form
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormKey(k => k + 1);
     }
+    prevIsOpenRef.current = isOpen;
   }, [isOpen]);
 
   // Close on escape key
@@ -66,7 +73,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </button>
 
         <div className="p-6 pt-8">
-          <AuthForm key={key} onSuccess={onClose} />
+          <AuthForm key={formKey} onSuccess={onClose} />
         </div>
       </div>
     </div>

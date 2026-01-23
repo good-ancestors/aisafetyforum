@@ -11,9 +11,11 @@
 * **Fonts**: Public Sans for body text, Libre Baskerville for headings
 
 ## Project Structure
-* Pages use Next.js App Router: `/src/app/[route]/page.tsx`
-* Components in `/src/components/`
-* Global styles in `/src/app/globals.css` with CSS custom properties
+* Pages use Next.js App Router: `/app/[route]/page.tsx`
+* Components in `/components/`
+* Utilities and server actions in `/lib/`
+* Database schema in `/prisma/schema.prisma`
+* Global styles in `/app/globals.css` with CSS custom properties
 * Static assets in `/public/`
 
 ## Design System

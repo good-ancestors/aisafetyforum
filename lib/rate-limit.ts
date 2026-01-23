@@ -1,7 +1,21 @@
 /**
  * Simple in-memory rate limiter for API routes
- * Note: This is per-instance. For production with multiple instances,
- * consider using Redis or a distributed rate limiter.
+ *
+ * IMPORTANT: This is a per-instance rate limiter. On Vercel with multiple
+ * serverless function instances, rate limits are NOT shared across instances.
+ * This means:
+ * - A user could potentially exceed limits by hitting different instances
+ * - The effective rate limit is (configured limit × number of instances)
+ *
+ * For MVP launch, this provides basic protection against abuse. For stricter
+ * rate limiting, consider upgrading to:
+ * - Vercel KV (https://vercel.com/docs/storage/vercel-kv)
+ * - Upstash Redis (@upstash/ratelimit package)
+ *
+ * The current implementation is still valuable for:
+ * - Protecting against rapid-fire requests to a single instance
+ * - Basic abuse prevention
+ * - Development and testing
  */
 
 interface RateLimitEntry {

@@ -116,7 +116,6 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
 
     for (let i = 0; i < attendees.length; i++) {
       const attendee = attendees[i];
-      const email = i === 0 && purchaserIsAttendee ? purchaserEmail : attendee.email;
       const hasFreeTicket = i === 0 && purchaserIsAttendee ? purchaserFreeTicket : attendee.freeTicketReason;
 
       if (attendee.ticketType) {

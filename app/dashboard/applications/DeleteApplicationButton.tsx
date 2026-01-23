@@ -40,7 +40,7 @@ export default function DeleteApplicationButton({
 
       setShowDialog(false);
       router.refresh();
-    } catch (err) {
+    } catch {
       setError('Failed to delete application');
     } finally {
       setLoading(false);
