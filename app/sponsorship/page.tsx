@@ -1,6 +1,17 @@
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import { eventConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Sponsorship',
+  description: `Become a sponsor of the Australian AI Safety Forum ${eventConfig.year}. Support Australia's premier AI safety conference and connect with leading researchers and policymakers.`,
+  openGraph: {
+    title: `Sponsorship - Australian AI Safety Forum ${eventConfig.year}`,
+    description: "Support Australia's premier AI safety conference. Multiple sponsorship tiers available.",
+  },
+};
 
 export default function SponsorPage() {
   const sponsorshipTiers = [

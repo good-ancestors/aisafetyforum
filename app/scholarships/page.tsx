@@ -3,6 +3,16 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import ScholarshipApplicationForm from '@/components/ScholarshipApplicationForm';
 import { eventConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Scholarships',
+  description: `Apply for a scholarship to attend the Australian AI Safety Forum ${eventConfig.year}. Scholarships cover registration and may include travel and accommodation support.`,
+  openGraph: {
+    title: `Scholarships - Australian AI Safety Forum ${eventConfig.year}`,
+    description: 'Apply for financial support to attend the forum. Scholarships cover registration, travel, and accommodation.',
+  },
+};
 
 export default function Scholarship() {
   return (

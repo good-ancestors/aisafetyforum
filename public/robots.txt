@@ -1,0 +1,14 @@
+# AI Safety Forum Australia
+# https://aisafetyforum.au
+
+User-agent: *
+Allow: /
+
+# Disallow protected routes
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://aisafetyforum.au/sitemap.xml

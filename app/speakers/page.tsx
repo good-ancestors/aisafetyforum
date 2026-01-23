@@ -4,6 +4,16 @@ import Header from '@/components/Header';
 import Speakers from '@/components/Speakers';
 import VideoCarousel from '@/components/VideoCarousel';
 import { eventConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Speakers',
+  description: `Speakers at the Australian AI Safety Forum ${eventConfig.year}. Leading researchers, policymakers, and industry experts presenting on AI safety science and governance.`,
+  openGraph: {
+    title: `Speakers - Australian AI Safety Forum ${eventConfig.year}`,
+    description: 'Leading researchers, policymakers, and industry experts on AI safety.',
+  },
+};
 
 export default function SpeakersPage() {
   return (

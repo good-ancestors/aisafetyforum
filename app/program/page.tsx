@@ -5,6 +5,16 @@ import Program from '@/components/Program';
 import Topics from '@/components/Topics';
 import VideoCarousel from '@/components/VideoCarousel';
 import { eventConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Program',
+  description: `Program for the Australian AI Safety Forum ${eventConfig.year}. Keynotes, workshops, panels, and lightning talks on AI safety science and governance.`,
+  openGraph: {
+    title: `Program - Australian AI Safety Forum ${eventConfig.year}`,
+    description: 'Keynotes, workshops, panels, and lightning talks on AI safety science and governance.',
+  },
+};
 
 export default function ProgramPage() {
   return (

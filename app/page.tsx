@@ -1,5 +1,6 @@
 import About from '@/components/About';
 import CTA from '@/components/CTA';
+import { EventSchema, OrganizationSchema } from '@/components/EventSchema';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
@@ -12,6 +13,8 @@ import VideoCarousel from '@/components/VideoCarousel';
 export default function Home() {
   return (
     <>
+      <EventSchema />
+      <OrganizationSchema />
       <Header />
       <main>
         <Hero />

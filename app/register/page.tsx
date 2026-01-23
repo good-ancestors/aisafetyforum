@@ -5,6 +5,16 @@ import MultiTicketRegistrationForm from '@/components/MultiTicketRegistrationFor
 import { getCurrentUser } from '@/lib/auth/server';
 import { eventConfig } from '@/lib/config';
 import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Register',
+  description: `Register for the Australian AI Safety Forum ${eventConfig.year}. ${eventConfig.datesLong} at ${eventConfig.venueLong}. Early bird pricing available.`,
+  openGraph: {
+    title: `Register for the Australian AI Safety Forum ${eventConfig.year}`,
+    description: `Secure your ticket for Australia's premier AI safety conference. ${eventConfig.datesLong} in Sydney.`,
+  },
+};
 
 export default async function Register() {
   // Get current user's profile for prefilling

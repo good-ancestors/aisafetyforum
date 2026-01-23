@@ -3,6 +3,16 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import SpeakerProposalForm from '@/components/SpeakerProposalForm';
 import { eventConfig } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Call for Speakers',
+  description: `Submit your proposal to speak at the Australian AI Safety Forum ${eventConfig.year}. Share your expertise on AI safety science and governance with leading researchers and policymakers.`,
+  openGraph: {
+    title: `Call for Speakers - Australian AI Safety Forum ${eventConfig.year}`,
+    description: 'Submit your session ideas on AI safety science and governance. Accepted speakers receive free registration and travel support.',
+  },
+};
 
 export default function Speak() {
   return (
