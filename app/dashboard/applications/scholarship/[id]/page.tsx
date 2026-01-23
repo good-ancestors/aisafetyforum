@@ -1,7 +1,7 @@
+import Link from 'next/link';
+import { redirect, notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
-import { redirect, notFound } from 'next/navigation';
-import Link from 'next/link';
 import ScholarshipEditForm from './ScholarshipEditForm';
 
 export default async function EditScholarshipPage({

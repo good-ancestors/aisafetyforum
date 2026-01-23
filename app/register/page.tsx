@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { eventConfig } from '@/lib/config';
+import Header from '@/components/Header';
 import MultiTicketRegistrationForm from '@/components/MultiTicketRegistrationForm';
 import { getCurrentUser } from '@/lib/auth/server';
+import { eventConfig } from '@/lib/config';
 import { prisma } from '@/lib/prisma';
 
 export default async function Register() {

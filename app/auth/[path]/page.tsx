@@ -1,8 +1,8 @@
 'use client';
 
-import AuthForm from '@/components/AuthForm';
 import Image from 'next/image';
 import Link from 'next/link';
+import AuthForm from '@/components/AuthForm';
 
 export default function AuthPage() {
   return (

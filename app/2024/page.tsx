@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 export default function Forum2024() {
   return (
@@ -9,11 +9,11 @@ export default function Forum2024() {
       <main>
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-[#0a1f5c] via-[#1a3a8f] to-[#0047ba] text-white overflow-hidden py-20">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]" />
 
           <div className="max-w-[1200px] mx-auto px-8 relative text-center">
             <div className="inline-flex items-center gap-2 bg-[rgba(0,212,255,0.15)] border border-[rgba(0,212,255,0.3)] px-4 py-2 rounded text-sm font-semibold mb-6 uppercase tracking-wider">
-              <span className="w-2 h-2 bg-[#00d4ff] rounded-full shadow-[0_0_10px_var(--cyan)]"></span>
+              <span className="w-2 h-2 bg-[#00d4ff] rounded-full shadow-[0_0_10px_var(--cyan)]" />
               Inaugural Forum
             </div>
             <h1 className="font-serif text-[clamp(2.5rem,5vw,3.5rem)] font-bold leading-tight mb-6">

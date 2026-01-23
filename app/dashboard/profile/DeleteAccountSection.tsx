@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
-import { deleteProfile, getProfileDeletionInfo } from '@/lib/profile-actions';
 import { authClient } from '@/lib/auth/client';
+import { deleteProfile, getProfileDeletionInfo } from '@/lib/profile-actions';
 
 export default function DeleteAccountSection() {
   const router = useRouter();

@@ -1,8 +1,8 @@
 'use server';
 
-import { prisma } from './prisma';
 import { revalidatePath } from 'next/cache';
 import { sendContactFormNotification } from './brevo';
+import { prisma } from './prisma';
 
 type ProfileFields = {
   name?: string;

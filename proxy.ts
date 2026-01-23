@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export default async function proxy(request: NextRequest) {
   // Only run auth middleware if NEON_AUTH_BASE_URL is configured

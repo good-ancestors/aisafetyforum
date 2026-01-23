@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import Speakers from '@/components/Speakers';
 import VideoCarousel from '@/components/VideoCarousel';
 import { eventConfig } from '@/lib/config';
@@ -12,7 +12,7 @@ export default function SpeakersPage() {
       <main>
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-[#0a1f5c] via-[#1a3a8f] to-[#0047ba] text-white overflow-hidden py-16">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]" />
 
           <div className="max-w-[1200px] mx-auto px-8 relative text-center">
             <h1 className="font-serif text-[clamp(2rem,5vw,3rem)] font-bold leading-tight mb-4">

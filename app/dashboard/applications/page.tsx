@@ -1,8 +1,8 @@
+import { redirect } from 'next/navigation';
+import ScholarshipApplicationsSection from '@/components/dashboard/ScholarshipApplicationsSection';
+import SpeakerProposalsSection from '@/components/dashboard/SpeakerProposalsSection';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
-import SpeakerProposalsSection from '@/components/dashboard/SpeakerProposalsSection';
-import ScholarshipApplicationsSection from '@/components/dashboard/ScholarshipApplicationsSection';
 
 export default async function ApplicationsPage() {
   const user = await getCurrentUser();

@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import TicketCard from './TicketCard';
 import CancelTicketButton from '@/app/dashboard/tickets/CancelTicketButton';
+import TicketCard from './TicketCard';
 
 interface Registration {
   id: string;

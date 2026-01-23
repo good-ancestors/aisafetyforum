@@ -1,11 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import AuthModal from './AuthModal';
+import { useState, useRef, useEffect } from 'react';
 import { authClient } from '@/lib/auth/client';
+import AuthModal from './AuthModal';
 
 interface HeaderClientProps {
   user: {

@@ -1,8 +1,8 @@
+import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
-import ProfileForm from './ProfileForm';
 import DeleteAccountSection from './DeleteAccountSection';
+import ProfileForm from './ProfileForm';
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();

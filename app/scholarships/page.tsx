@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import ScholarshipApplicationForm from '@/components/ScholarshipApplicationForm';
 import { eventConfig } from '@/lib/config';
 

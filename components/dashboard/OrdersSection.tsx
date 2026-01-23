@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import OrderCard from './OrderCard';
-import ReceiptButton from '@/app/dashboard/tickets/ReceiptButton';
-import InvoiceButton from '@/app/dashboard/tickets/InvoiceButton';
 import CancelOrderButton from '@/app/dashboard/tickets/CancelOrderButton';
+import InvoiceButton from '@/app/dashboard/tickets/InvoiceButton';
+import ReceiptButton from '@/app/dashboard/tickets/ReceiptButton';
+import OrderCard from './OrderCard';
 
 interface OrderRegistration {
   id: string;

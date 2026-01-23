@@ -1,9 +1,9 @@
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import OrdersSection from '@/components/dashboard/OrdersSection';
+import TicketsSection from '@/components/dashboard/TicketsSection';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import TicketsSection from '@/components/dashboard/TicketsSection';
-import OrdersSection from '@/components/dashboard/OrdersSection';
 
 export default async function TicketsPage() {
   const user = await getCurrentUser();

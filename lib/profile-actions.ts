@@ -1,9 +1,9 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth/server';
-import { getCurrentProfile } from '@/lib/auth/profile';
 import { revalidatePath } from 'next/cache';
+import { getCurrentProfile } from '@/lib/auth/profile';
+import { getCurrentUser } from '@/lib/auth/server';
+import { prisma } from '@/lib/prisma';
 
 export interface ProfileUpdateData {
   name: string;

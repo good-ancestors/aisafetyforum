@@ -1,14 +1,14 @@
 'use server';
 
-import { requireStripe } from './stripe';
-import { prisma } from './prisma';
-import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
+import { headers } from 'next/headers';
 import { siteConfig } from './config';
-import Stripe from 'stripe';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
-import { headers } from 'next/headers';
+import { prisma } from './prisma';
+import { requireStripe } from './stripe';
+import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
 import type { InvoiceLineItem, InvoiceAttendee } from './invoice-pdf';
+import type Stripe from 'stripe';
 
 export type RegistrationFormData = {
   email: string;

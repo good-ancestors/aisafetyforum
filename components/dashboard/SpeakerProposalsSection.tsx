@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import SpeakerProposalCard from './SpeakerProposalCard';
 import DeleteApplicationButton from '@/app/dashboard/applications/DeleteApplicationButton';
+import SpeakerProposalCard from './SpeakerProposalCard';
 
 interface SpeakerProposal {
   id: string;

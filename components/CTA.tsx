@@ -4,7 +4,7 @@ import { eventConfig } from '@/lib/config';
 export default function CTA() {
   return (
     <section id="register" className="relative bg-gradient-to-br from-[#0a1f5c] to-[#0047ba] text-white overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]" />
 
       <div className="max-w-[1200px] mx-auto px-8 py-16 relative">
         <div className="text-center mb-12">
@@ -18,7 +18,7 @@ export default function CTA() {
           {/* Register */}
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 text-center hover:bg-white/15 transition-colors">
             <div className="w-12 h-12 rounded-lg bg-[#00d4ff]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-4">
-              <div className="w-6 h-6 rounded border-2 border-[#00d4ff]"></div>
+              <div className="w-6 h-6 rounded border-2 border-[#00d4ff]" />
             </div>
             <h3 className="font-bold text-xl mb-3">Register</h3>
             <p className="text-sm opacity-90 mb-6">
@@ -33,9 +33,9 @@ export default function CTA() {
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 text-center hover:bg-white/15 transition-colors">
             <div className="w-12 h-12 rounded-lg bg-[#00d4ff]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-4">
               <div className="flex flex-col gap-1">
-                <div className="w-5 h-0.5 bg-[#00d4ff]"></div>
-                <div className="w-5 h-0.5 bg-[#00d4ff]"></div>
-                <div className="w-5 h-0.5 bg-[#00d4ff]"></div>
+                <div className="w-5 h-0.5 bg-[#00d4ff]" />
+                <div className="w-5 h-0.5 bg-[#00d4ff]" />
+                <div className="w-5 h-0.5 bg-[#00d4ff]" />
               </div>
             </div>
             <h3 className="font-bold text-xl mb-3">Propose a Talk</h3>
@@ -51,7 +51,7 @@ export default function CTA() {
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 text-center hover:bg-white/15 transition-colors">
             <div className="w-12 h-12 rounded-lg bg-[#00d4ff]/20 border border-[#00d4ff]/30 flex items-center justify-center mx-auto mb-4">
               <div className="relative w-6 h-6">
-                <div className="absolute inset-0 border-2 border-[#00d4ff] rounded-full"></div>
+                <div className="absolute inset-0 border-2 border-[#00d4ff] rounded-full" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#00d4ff] text-xs font-bold">$</div>
               </div>
             </div>

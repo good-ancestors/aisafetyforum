@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { Public_Sans, Libre_Baskerville } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
 
 const publicSans = Public_Sans({

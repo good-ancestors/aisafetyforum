@@ -406,7 +406,7 @@ function generateCalendarInvite(params: { name: string; email: string }): string
   // Format dates for iCalendar (YYYYMMDD format with time)
   const startDate = `${eventConfig.day1.isoDate.replace(/-/g, '')}T${eventConfig.startTime.replace(':', '')}00`;
   const endDate = `${eventConfig.day2.isoDate.replace(/-/g, '')}T${eventConfig.endTime.replace(':', '')}00`;
-  const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const now = `${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]  }Z`;
 
   return `BEGIN:VCALENDAR
 VERSION:2.0

@@ -1,8 +1,8 @@
-import { requireAdmin } from '@/lib/auth/admin';
 import { redirect } from 'next/navigation';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import DashboardNav from '@/components/dashboard/DashboardNav';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { requireAdmin } from '@/lib/auth/admin';
 
 export default async function AdminLayout({
   children,

@@ -1,8 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { authClient } from '@/lib/auth/client';
-import { useRouter } from 'next/navigation';
 
 interface AuthFormProps {
   onSuccess?: () => void;

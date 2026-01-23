@@ -1,7 +1,7 @@
 'use client';
 
-import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback } from 'react';
 
 interface Video {
@@ -72,7 +72,7 @@ export default function VideoCarousel() {
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       className="w-full h-full"
-                    ></iframe>
+                     />
                   </div>
                   <div className="p-4">
                     <h3 className="text-sm font-semibold text-[#0a1f5c]">

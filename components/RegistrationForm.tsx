@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createCheckoutSession, type RegistrationFormData } from '@/lib/registration-actions';
+import { useState } from 'react';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { checkFreeTicketEmail } from '@/lib/free-ticket-actions';
+import { createCheckoutSession, type RegistrationFormData } from '@/lib/registration-actions';
 import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 
 export default function RegistrationForm() {

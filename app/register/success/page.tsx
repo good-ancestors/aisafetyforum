@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import TaxReceipt from '@/components/TaxReceipt';
-import { getRegistrationBySessionId, getRegistrationById } from '@/lib/registration-actions';
 import { eventConfig } from '@/lib/config';
-import { requireStripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { getRegistrationBySessionId, getRegistrationById } from '@/lib/registration-actions';
+import { requireStripe } from '@/lib/stripe';
 
 export default async function RegistrationSuccess({
   searchParams,

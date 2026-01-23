@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Document,
   Page,
@@ -7,6 +6,7 @@ import {
   StyleSheet,
   renderToBuffer,
 } from '@react-pdf/renderer';
+import React from 'react';
 import { eventConfig } from './config';
 
 // Styles for PDF

@@ -1,5 +1,5 @@
-import { getCurrentUser } from '@/lib/auth/server';
 import { isAdmin } from '@/lib/auth/admin';
+import { getCurrentUser } from '@/lib/auth/server';
 import HeaderClient from './HeaderClient';
 
 export default async function Header() {

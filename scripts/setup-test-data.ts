@@ -8,8 +8,8 @@
  */
 
 import 'dotenv/config';
-import { prisma } from '../lib/prisma';
 import { addFreeTicketEmail } from '../lib/free-ticket-actions';
+import { prisma } from '../lib/prisma';
 
 async function main() {
   console.log('🧪 Setting up test data...\n');

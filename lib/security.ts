@@ -25,7 +25,7 @@ export function redactEmail(email: string): string {
   if (!domain) return '***@***';
 
   const visibleChars = Math.min(2, localPart.length);
-  const redactedLocal = localPart.slice(0, visibleChars) + '***';
+  const redactedLocal = `${localPart.slice(0, visibleChars)  }***`;
 
   return `${redactedLocal}@${domain}`;
 }

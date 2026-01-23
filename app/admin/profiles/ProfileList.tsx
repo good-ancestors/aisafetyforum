@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { toggleAdminStatus, deleteProfile } from '@/lib/admin-actions';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { toggleAdminStatus, deleteProfile } from '@/lib/admin-actions';
 
 // Consistent date formatting to avoid hydration mismatches
 function formatDate(date: Date): string {

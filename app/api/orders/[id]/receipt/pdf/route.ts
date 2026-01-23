@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { isAdmin } from '@/lib/auth/admin';
-import { prisma } from '@/lib/prisma';
+import { getCurrentUser } from '@/lib/auth/server';
 import { eventConfig } from '@/lib/config';
+import { prisma } from '@/lib/prisma';
 import { checkRateLimit, getClientIdentifier, rateLimitPresets } from '@/lib/rate-limit';
 import { escapeHtml } from '@/lib/security';
 

@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import ScholarshipApplicationCard from './ScholarshipApplicationCard';
 import DeleteApplicationButton from '@/app/dashboard/applications/DeleteApplicationButton';
+import ScholarshipApplicationCard from './ScholarshipApplicationCard';
 
 interface ScholarshipApplication {
   id: string;

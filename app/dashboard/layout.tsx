@@ -1,9 +1,9 @@
-import { getCurrentUser } from '@/lib/auth/server';
-import { isAdmin } from '@/lib/auth/admin';
 import { redirect } from 'next/navigation';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import DashboardNav from '@/components/dashboard/DashboardNav';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { isAdmin } from '@/lib/auth/admin';
+import { getCurrentUser } from '@/lib/auth/server';
 
 export default async function DashboardLayout({
   children,

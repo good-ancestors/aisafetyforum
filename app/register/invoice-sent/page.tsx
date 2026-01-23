@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getOrderById } from '@/lib/registration-actions';
+import Header from '@/components/Header';
 import { eventConfig } from '@/lib/config';
 import { calculateGST } from '@/lib/invoice-pdf';
+import { getOrderById } from '@/lib/registration-actions';
 import InvoiceDownloadButton from './InvoiceDownloadButton';
 
 export default async function InvoiceSentPage({

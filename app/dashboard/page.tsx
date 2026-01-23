@@ -1,11 +1,11 @@
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import OrdersSection from '@/components/dashboard/OrdersSection';
+import ScholarshipApplicationsSection from '@/components/dashboard/ScholarshipApplicationsSection';
+import SpeakerProposalsSection from '@/components/dashboard/SpeakerProposalsSection';
+import TicketsSection from '@/components/dashboard/TicketsSection';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import TicketsSection from '@/components/dashboard/TicketsSection';
-import OrdersSection from '@/components/dashboard/OrdersSection';
-import SpeakerProposalsSection from '@/components/dashboard/SpeakerProposalsSection';
-import ScholarshipApplicationsSection from '@/components/dashboard/ScholarshipApplicationsSection';
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();

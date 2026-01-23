@@ -1,8 +1,8 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUser } from '@/lib/auth/server';
+import { prisma } from '@/lib/prisma';
 
 export interface SpeakerProposalUpdateData {
   format: string;

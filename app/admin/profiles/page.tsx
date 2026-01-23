@@ -1,6 +1,6 @@
 import { getAllProfiles, getProfileStats, getAllAuthUsers, getAuthUserStats } from '@/lib/admin-actions';
-import ProfileList from './ProfileList';
 import AuthUserList from './AuthUserList';
+import ProfileList from './ProfileList';
 
 export default async function AdminProfilesPage({
   searchParams,

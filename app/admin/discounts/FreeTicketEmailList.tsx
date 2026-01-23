@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
 import {
   addFreeTicketEmail,
   addBulkFreeTicketEmails,
@@ -8,7 +9,6 @@ import {
   deleteFreeTicketEmail,
   updateFreeTicketEmail,
 } from '@/lib/admin-actions';
-import ConfirmationDialog from '@/components/ConfirmationDialog';
 
 // Consistent date formatting to avoid hydration mismatches
 function formatDate(date: Date): string {
