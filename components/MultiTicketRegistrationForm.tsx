@@ -2,19 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { AttendeeCard, OrderSummary, PaymentMethodSelector, type AttendeeFormData } from '@/components/registration';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { checkFreeTicketEmail } from '@/lib/free-ticket-actions';
 import { createMultiTicketCheckout, createInvoiceOrder, type MultiTicketFormData } from '@/lib/registration-actions';
 import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
-
-type AttendeeFormData = {
-  email: string;
-  name: string;
-  role: string;
-  organisation: string;
-  ticketType: TicketTierId | '';
-  freeTicketReason?: string | null;
-};
 
 interface InitialProfile {
   email: string;
@@ -464,156 +456,23 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
           </div>
 
           <div className="space-y-6">
-            {attendees.map((attendee, index) => {
-              const email = index === 0 && purchaserIsAttendee ? purchaserEmail : attendee.email;
-              const name = index === 0 && purchaserIsAttendee ? purchaserName : attendee.name;
-              const role = index === 0 && purchaserIsAttendee ? purchaserRole : attendee.role;
-              const organisation = index === 0 && purchaserIsAttendee ? purchaserOrg : attendee.organisation;
-              const freeReason = index === 0 && purchaserIsAttendee ? purchaserFreeTicket : attendee.freeTicketReason;
-
-              return (
-                <div
-                  key={index}
-                  className="border border-[#e0e4e8] rounded-lg p-4 relative"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="font-bold text-[#0a1f5c]">
-                      Attendee {index + 1}
-                      {index === 0 && purchaserIsAttendee && (
-                        <span className="ml-2 text-xs font-normal text-[#5c6670]">(You)</span>
-                      )}
-                    </h3>
-                    {attendees.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeAttendee(index)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => updateAttendee(index, 'email', e.target.value)}
-                        onBlur={() => handleAttendeeEmailBlur(index)}
-                        disabled={index === 0 && purchaserIsAttendee}
-                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
-                      />
-                      {freeReason && (
-                        <div className="mt-2 text-sm text-green-700 flex items-center gap-1">
-                          <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span>Complimentary ticket</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
-                        Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={name}
-                        onChange={(e) => updateAttendee(index, 'name', e.target.value)}
-                        disabled={index === 0 && purchaserIsAttendee}
-                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
-                        Role / Title
-                      </label>
-                      <input
-                        type="text"
-                        value={role}
-                        onChange={(e) => updateAttendee(index, 'role', e.target.value)}
-                        disabled={index === 0 && purchaserIsAttendee}
-                        placeholder="e.g., Research Scientist"
-                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
-                        Organisation
-                      </label>
-                      <input
-                        type="text"
-                        value={organisation}
-                        onChange={(e) => updateAttendee(index, 'organisation', e.target.value)}
-                        disabled={index === 0 && purchaserIsAttendee}
-                        placeholder="Your organisation"
-                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Ticket Type - Radio Card Style */}
-                  <div>
-                    <label className="block text-sm font-medium text-[#0a1f5c] mb-2">
-                      Ticket Type *
-                    </label>
-                    <div className="space-y-2">
-                      {ticketTiers.map((tier) => (
-                        <label
-                          key={tier.id}
-                          className={`flex items-center justify-between p-3 border-l-4 ${tier.borderColor} bg-[#f9fafb] rounded cursor-pointer hover:bg-[#f0f4f8] transition-colors ${
-                            attendee.ticketType === tier.id ? 'ring-2 ring-[#00d4ff]' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="radio"
-                              name={`ticketType-${index}`}
-                              value={tier.id}
-                              checked={attendee.ticketType === tier.id}
-                              onChange={(e) => updateAttendee(index, 'ticketType', e.target.value)}
-                              className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
-                            />
-                            <div>
-                              <div className="font-bold text-[#0a1f5c] text-sm">{tier.name}</div>
-                              <div className="text-xs text-[#5c6670]">{tier.description}</div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            {freeReason ? (
-                              <>
-                                <div className="text-xs text-[#5c6670] line-through">
-                                  {earlyBird ? tier.earlyBirdPriceDisplay : tier.priceDisplay}
-                                </div>
-                                <div className="font-bold text-green-600">$0.00</div>
-                              </>
-                            ) : earlyBird ? (
-                              <>
-                                <div className="text-xs text-[#5c6670] line-through">{tier.priceDisplay}</div>
-                                <div className={`font-bold ${tier.textColor}`}>{tier.earlyBirdPriceDisplay}</div>
-                              </>
-                            ) : (
-                              <div className={`font-bold ${tier.textColor}`}>{tier.priceDisplay}</div>
-                            )}
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {attendees.map((attendee, index) => (
+              <AttendeeCard
+                key={index}
+                index={index}
+                attendee={attendee}
+                isPurchaserAttendee={purchaserIsAttendee}
+                purchaserEmail={purchaserEmail}
+                purchaserName={purchaserName}
+                purchaserRole={purchaserRole}
+                purchaserOrg={purchaserOrg}
+                purchaserFreeTicket={purchaserFreeTicket}
+                totalAttendees={attendees.length}
+                onUpdateAttendee={updateAttendee}
+                onRemoveAttendee={removeAttendee}
+                onEmailBlur={handleAttendeeEmailBlur}
+              />
+            ))}
           </div>
         </section>
 
@@ -671,136 +530,19 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
 
         {/* Payment Method */}
         {totals.total > 0 && (
-          <section>
-            <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
-              Payment Method
-            </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label
-                  className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
-                    paymentMethod === 'card'
-                      ? 'border-[#00d4ff] bg-[#00d4ff]/5'
-                      : 'border-[#e0e4e8] hover:border-[#a8b0b8]'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="card"
-                    checked={paymentMethod === 'card'}
-                    onChange={(e) => setPaymentMethod(e.target.value as 'card' | 'invoice')}
-                    className="w-4 h-4 text-[#00d4ff] focus:ring-[#00d4ff]"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-[#0a1f5c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
-                      <span className="font-bold text-[#0a1f5c]">Pay by Card</span>
-                    </div>
-                    <p className="text-sm text-[#5c6670] mt-1">
-                      Pay now via Stripe
-                    </p>
-                  </div>
-                </label>
-
-                <label
-                  className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
-                    paymentMethod === 'invoice'
-                      ? 'border-[#00d4ff] bg-[#00d4ff]/5'
-                      : 'border-[#e0e4e8] hover:border-[#a8b0b8]'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="invoice"
-                    checked={paymentMethod === 'invoice'}
-                    onChange={(e) => setPaymentMethod(e.target.value as 'card' | 'invoice')}
-                    className="w-4 h-4 text-[#00d4ff] focus:ring-[#00d4ff]"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-[#0a1f5c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <span className="font-bold text-[#0a1f5c]">Request Invoice</span>
-                    </div>
-                    <p className="text-sm text-[#5c6670] mt-1">
-                      Tax invoice with 14 days to pay
-                    </p>
-                  </div>
-                </label>
-              </div>
-
-              {paymentMethod === 'invoice' && (
-                <div className="space-y-4 pt-4 border-t border-[#e0e4e8]">
-                  <p className="text-sm text-[#5c6670]">
-                    We&apos;ll email a PDF tax invoice with GST breakdown and bank transfer details to <strong>{purchaserEmail || 'your email'}</strong>.
-                    Payment is due within 14 days. Tickets will be confirmed once payment is received.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="orgABN" className="block text-sm font-medium text-[#0a1f5c] mb-1">
-                        ABN (optional)
-                      </label>
-                      <input
-                        type="text"
-                        id="orgABN"
-                        value={orgABN}
-                        onChange={(e) => setOrgABN(e.target.value)}
-                        placeholder="e.g., 12 345 678 901"
-                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="poNumber" className="block text-sm font-medium text-[#0a1f5c] mb-1">
-                        PO Number (optional)
-                      </label>
-                      <input
-                        type="text"
-                        id="poNumber"
-                        value={poNumber}
-                        onChange={(e) => setPoNumber(e.target.value)}
-                        placeholder="Your purchase order number"
-                        className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
+          <PaymentMethodSelector
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={setPaymentMethod}
+            purchaserEmail={purchaserEmail}
+            orgABN={orgABN}
+            onOrgABNChange={setOrgABN}
+            poNumber={poNumber}
+            onPoNumberChange={setPoNumber}
+          />
         )}
 
         {/* Order Summary */}
-        <section className="bg-[#f0f4f8] rounded-lg p-6">
-          <h2 className="text-lg font-bold text-[#0a1f5c] mb-4">Order Summary</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-[#5c6670]">Subtotal ({attendees.length} ticket{attendees.length !== 1 ? 's' : ''})</span>
-              <span className="font-medium">${(totals.subtotal / 100).toFixed(2)}</span>
-            </div>
-            {totals.freeTicketCount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Complimentary tickets ({totals.freeTicketCount})</span>
-                <span>$0.00</span>
-              </div>
-            )}
-            {totals.discountAmount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Discount</span>
-                <span>-${(totals.discountAmount / 100).toFixed(2)}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-lg font-bold text-[#0a1f5c] pt-2 border-t border-[#e0e4e8]">
-              <span>Total</span>
-              <span>${(totals.total / 100).toFixed(2)} AUD</span>
-            </div>
-            <p className="text-xs text-[#5c6670]">All prices include GST (10%)</p>
-          </div>
-        </section>
+        <OrderSummary totals={totals} ticketCount={attendees.length} />
 
         {/* Submit Button */}
         <div>
