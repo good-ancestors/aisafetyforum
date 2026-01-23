@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   // Only run auth middleware if NEON_AUTH_BASE_URL is configured
   if (!process.env.NEON_AUTH_BASE_URL) {
     // If auth is not configured, redirect to home or allow access
