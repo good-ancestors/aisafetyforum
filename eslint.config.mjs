@@ -57,8 +57,12 @@ const eslintConfig = defineConfig([
       ],
 
       // === Code Quality ===
-      // Function length - off: form components are naturally long
-      "max-lines-per-function": "off",
+      // Function length - 200 lines catches genuinely problematic functions
+      // while allowing reasonable React components
+      "max-lines-per-function": [
+        "warn",
+        { max: 200, skipBlankLines: true, skipComments: true },
+      ],
 
       // Limit cyclomatic complexity - warns on very complex functions
       complexity: ["warn", { max: 20 }],
@@ -122,8 +126,8 @@ const eslintConfig = defineConfig([
       // Enforce strict equality
       eqeqeq: ["error", "always", { null: "ignore" }],
 
-      // Console - off: logging is acceptable
-      "no-console": "off",
+      // Console - allow standard logging levels, flag debug/trace
+      "no-console": ["warn", { allow: ["log", "warn", "error", "info"] }],
 
       // Async/await - off: Next.js patterns don't always use await
       "require-await": "off",

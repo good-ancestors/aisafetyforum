@@ -53,6 +53,11 @@ Verify all production environment variables are set:
 - [ ] SSL certificate verified
 - [ ] www redirect configured (if desired)
 
+### 6. SEO Assets
+- [ ] Create `public/og-image.png` (1200x630px) for social sharing previews
+  - Should include event name, dates, and branding
+  - Used for Open Graph/Twitter Cards when sharing links
+
 ---
 
 ## Pre-Launch Testing
@@ -130,6 +135,26 @@ For MVP, this provides basic protection. For stricter limiting, consider upgradi
 - `cookie` in next-auth dev dependencies (not runtime)
 
 These do not affect the production runtime and can be addressed in a future update.
+
+### Code Quality (Post-Launch Refactoring)
+The following components exceed the 200-line limit and should be refactored when time permits:
+
+**High Priority (>400 lines):**
+- [ ] `MultiTicketRegistrationForm.tsx` (728 lines) - Split into subcomponents for ticket selection, attendee details, payment options
+- [ ] `DiscountCodeList.tsx` (437 lines) - Extract modal forms and table rendering
+- [ ] `ScholarshipApplicationForm.tsx` (403 lines) - Split form sections into subcomponents
+
+**Medium Priority (200-400 lines):**
+- [ ] `SponsorPage` (370 lines) - Extract sponsor tier cards and committee sections
+- [ ] `FreeTicketEmailList.tsx` (377 lines) - Extract modal and table components
+- [ ] `RegistrationForm.tsx` (353 lines) - Split into form sections
+- [ ] `SpeakerProposalForm.tsx` (327 lines) - Split into form sections
+- [ ] `OrderList.tsx` (323 lines) - Extract modal and table components
+- [ ] `HeaderClient.tsx` (314 lines) - Extract mobile menu and auth modal
+- [ ] `ApplicationsTabs.tsx` (307 lines) - Extract tab content components
+- [ ] `RegistrationList.tsx` (297 lines) - Extract table and modal components
+
+These are warnings, not errors. The code works correctly but could benefit from better organization.
 
 ---
 
