@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getCurrentProfile } from '@/lib/auth/profile';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
+import { isValidEmail } from '@/lib/security';
 
 export interface ProfileUpdateData {
   name: string;
@@ -36,7 +37,7 @@ export async function changeEmail(
     const oldEmail = profile.email.toLowerCase();
 
     // Validate email format
-    if (!normalizedNewEmail || !normalizedNewEmail.includes('@')) {
+    if (!isValidEmail(normalizedNewEmail)) {
       return { success: false, error: 'Invalid email address' };
     }
 
@@ -132,7 +133,18 @@ export async function updateProfile(
   data: ProfileUpdateData
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Verify the authenticated user owns this profile
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
     const normalizedEmail = email.toLowerCase();
+
+    // Prevent users from updating other users' profiles
+    if (user.email.toLowerCase() !== normalizedEmail) {
+      return { success: false, error: 'Unauthorized: Cannot update another user\'s profile' };
+    }
 
     await prisma.profile.upsert({
       where: { email: normalizedEmail },

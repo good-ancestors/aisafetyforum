@@ -9,6 +9,9 @@ import { prisma } from './prisma';
  * Get all orders with invoice payment method
  */
 export async function getInvoiceOrders(status?: 'pending' | 'paid' | 'all') {
+  const admin = await requireAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
   const where = {
     paymentMethod: 'invoice',
     ...(status && status !== 'all' ? { paymentStatus: status } : {}),
@@ -35,6 +38,9 @@ export async function getInvoiceOrders(status?: 'pending' | 'paid' | 'all') {
  */
 export async function markInvoiceAsPaid(orderId: string) {
   try {
+    const admin = await requireAdmin();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
     // Get the order with registrations
     const order = await prisma.order.findUnique({
       where: { id: orderId },
@@ -109,6 +115,9 @@ export async function markInvoiceAsPaid(orderId: string) {
  */
 export async function resendInvoiceEmail(orderId: string) {
   try {
+    const admin = await requireAdmin();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {

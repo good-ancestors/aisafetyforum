@@ -3,6 +3,22 @@
  */
 
 /**
+ * Validate email format using a standard regex pattern.
+ * This catches common issues like missing TLD, invalid characters, etc.
+ * Note: For complete validation, verify the email exists (e.g., send confirmation).
+ */
+export function isValidEmail(email: string): boolean {
+  if (!email || typeof email !== 'string') return false;
+
+  // Standard email regex - balances strictness with real-world compatibility
+  // Allows: letters, numbers, dots, hyphens, underscores in local part
+  // Requires: @ symbol, domain with at least one dot, 2+ char TLD
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  return emailRegex.test(email.trim());
+}
+
+/**
  * HTML-escape a string to prevent XSS attacks
  * Use this when inserting user data into HTML templates
  */
