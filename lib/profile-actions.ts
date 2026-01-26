@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getCurrentProfile } from '@/lib/auth/profile';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
+import { isValidEmail } from '@/lib/security';
 
 export interface ProfileUpdateData {
   name: string;
@@ -36,7 +37,7 @@ export async function changeEmail(
     const oldEmail = profile.email.toLowerCase();
 
     // Validate email format
-    if (!normalizedNewEmail || !normalizedNewEmail.includes('@')) {
+    if (!isValidEmail(normalizedNewEmail)) {
       return { success: false, error: 'Invalid email address' };
     }
 

@@ -240,9 +240,12 @@ export async function submitContactForm(formData: FormData) {
     console.log('Contact form submission sent:', { name, email, subject });
     return { success: true };
   } catch (error) {
-    console.error('Error sending contact form:', error);
-    // Still return success if email fails - don't block user
-    // The form data has been logged, team can follow up manually
-    return { success: true };
+    console.error('Error sending contact form:', error, { name, email, subject });
+    // Return partial success - user's message was received but delivery had issues
+    // Log contains the submission details for manual follow-up
+    return {
+      success: true,
+      warning: 'Your message was received, but there may be a delay in our response. If urgent, please email us directly.',
+    };
   }
 }
