@@ -132,7 +132,18 @@ export async function updateProfile(
   data: ProfileUpdateData
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Verify the authenticated user owns this profile
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
     const normalizedEmail = email.toLowerCase();
+
+    // Prevent users from updating other users' profiles
+    if (user.email.toLowerCase() !== normalizedEmail) {
+      return { success: false, error: 'Unauthorized: Cannot update another user\'s profile' };
+    }
 
     await prisma.profile.upsert({
       where: { email: normalizedEmail },
