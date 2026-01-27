@@ -4,6 +4,8 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { getCurrentProfile } from '@/lib/auth/profile';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: {
