@@ -2,7 +2,8 @@
 
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
-import { useCallback } from 'react';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
 
 interface Video {
   id: string;
@@ -19,6 +20,69 @@ const videos: Video[] = [
   { id: 'lg9gpXMkwTU', title: 'Frontier AI Safety Governance - Seth Lazar' },
   { id: 'qHqv3GvWBTM', title: 'ASI Safety via AIXI - Marcus Hutter' },
 ];
+
+function VideoCard({ video }: { video: Video }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  if (isPlaying) {
+    return (
+      <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+        <div className="aspect-video bg-[#0a1f5c]">
+          <iframe
+            width="100%"
+            height="100%"
+            src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+        <div className="p-4">
+          <h3 className="text-sm font-semibold text-[#0a1f5c]">
+            {video.title}
+          </h3>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <button
+        onClick={() => setIsPlaying(true)}
+        className="relative aspect-video w-full bg-[#0a1f5c] group cursor-pointer"
+        aria-label={`Play ${video.title}`}
+      >
+        {/* Thumbnail using Next.js Image with YouTube thumbnail */}
+        <Image
+          src={`/video-thumbnails/${video.id}.jpg`}
+          alt={video.title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 85vw, (max-width: 768px) 60vw, (max-width: 1024px) 45vw, (max-width: 1280px) 35vw, 28vw"
+          onError={(e) => {
+            // Fallback to a solid background if thumbnail doesn't exist
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        {/* Play button overlay */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+          <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </button>
+      <div className="p-4">
+        <h3 className="text-sm font-semibold text-[#0a1f5c]">
+          {video.title}
+        </h3>
+      </div>
+    </div>
+  );
+}
 
 export default function VideoCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -62,24 +126,7 @@ export default function VideoCarousel() {
                 key={video.id}
                 className="flex-[0_0_85%] sm:flex-[0_0_60%] md:flex-[0_0_45%] lg:flex-[0_0_35%] xl:flex-[0_0_28%] min-w-0 px-2"
               >
-                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                  <div className="aspect-video bg-[#0a1f5c]">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${video.id}`}
-                      title={video.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                     />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-[#0a1f5c]">
-                      {video.title}
-                    </h3>
-                  </div>
-                </div>
+                <VideoCard video={video} />
               </div>
             ))}
           </div>

@@ -53,7 +53,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "frame-src https://js.stripe.com https://hooks.stripe.com",
+              "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://youtube.com",
               "connect-src 'self' https://api.stripe.com https://*.neon.tech https://*.brevo.com",
               "object-src 'none'",
               "base-uri 'self'",
