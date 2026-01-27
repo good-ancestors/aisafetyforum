@@ -53,7 +53,8 @@ export default function DeleteAccountSection() {
 
       // Sign out the user after successful deletion
       await authClient.signOut({ fetchOptions: { credentials: 'include' } });
-      router.push('/');
+      // Hard redirect to clear all client state (dialog, auth, etc.)
+      window.location.href = '/';
     } catch {
       setError('Failed to delete account');
     } finally {
