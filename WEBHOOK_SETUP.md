@@ -63,9 +63,9 @@ All environments currently use Stripe **test mode**. When moving to production, 
    - **Endpoint URL**: `https://aisafetyforum-staging.vercel.app/api/webhooks/stripe`
    - **Description**: `Staging - AI Safety Forum`
    - **Events to send**: Select these events:
-     - `checkout.session.completed`
-     - `checkout.session.expired`
-     - `payment_intent.payment_failed`
+     - `checkout.session.completed` (required - triggers order completion)
+     - `checkout.session.expired` (optional - marks abandoned checkouts)
+     - `payment_intent.payment_failed` (optional - marks failed payments)
 
 5. Click **Add endpoint**
 
@@ -219,9 +219,15 @@ When ready to accept real payments:
 **File**: `app/api/webhooks/stripe/route.ts`
 
 **Handled Events**:
-- `checkout.session.completed` - Marks registration as paid
-- `checkout.session.expired` - Marks registration as cancelled
-- `payment_intent.payment_failed` - Marks registration as failed
+- `checkout.session.completed` - Completes order (marks paid + sends emails via `completeOrder()`)
+- `checkout.session.expired` - Marks order as cancelled
+- `payment_intent.payment_failed` - Marks order as failed
+
+**Order Completion Flow**:
+The webhook calls `completeOrder()` from `lib/order-completion.ts` which:
+1. Marks the order and all registrations as paid
+2. Sends receipt email to purchaser
+3. Sends ticket confirmation to each attendee
 
 **Security**:
 - Verifies webhook signatures using `STRIPE_WEBHOOK_SECRET`

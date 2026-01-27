@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from './auth/admin';
-import { sendConfirmationEmail } from './brevo';
+import { completeOrder } from './order-completion';
 import { prisma } from './prisma';
 
 /**
@@ -41,16 +41,9 @@ export async function markInvoiceAsPaid(orderId: string) {
     const admin = await requireAdmin();
     if (!admin) return { success: false, error: 'Unauthorized' };
 
-    // Get the order with registrations
+    // Get the order to check status
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: {
-        registrations: {
-          include: {
-            profile: true,
-          },
-        },
-      },
     });
 
     if (!order) {
@@ -61,44 +54,14 @@ export async function markInvoiceAsPaid(orderId: string) {
       return { success: false, error: 'Order is already marked as paid' };
     }
 
-    // Update order and registrations in a transaction
-    await prisma.$transaction([
-      prisma.order.update({
-        where: { id: orderId },
-        data: { paymentStatus: 'paid' },
-      }),
-      ...order.registrations.map((reg) =>
-        prisma.registration.update({
-          where: { id: reg.id },
-          data: { status: 'paid' },
-        })
-      ),
-    ]);
+    // Use unified completion logic (marks as paid + sends receipt + sends confirmations)
+    const result = await completeOrder(orderId, {
+      transactionId: `BANK-${order.invoiceNumber || order.id.slice(-8).toUpperCase()}`,
+    });
 
-    // Send confirmation emails to each attendee
-    const emailPromises = order.registrations.map((reg) =>
-      sendConfirmationEmail({
-        email: reg.email,
-        name: reg.name,
-        ticketType: reg.ticketType,
-        organisation: reg.profile?.organisation,
-        receiptNumber: order.invoiceNumber || `AISF-${order.id.slice(-8).toUpperCase()}`,
-        receiptDate: new Date().toLocaleDateString('en-AU', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-        amountPaid: (reg.ticketPrice || 0) - (reg.discountAmount || 0),
-        transactionId: `BANK-${order.invoiceNumber || order.id.slice(-8).toUpperCase()}`,
-        purchaserEmail: order.purchaserEmail,
-        purchaserName: order.purchaserName,
-      }).catch((error) => {
-        console.error(`Failed to send confirmation to ${reg.email}:`, error);
-        return null;
-      })
-    );
-
-    await Promise.all(emailPromises);
+    if (!result.success) {
+      return { success: false, error: result.error || 'Failed to complete order' };
+    }
 
     return { success: true };
   } catch (error) {

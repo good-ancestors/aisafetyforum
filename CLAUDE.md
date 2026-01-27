@@ -50,9 +50,11 @@ Borders:
 * Font loading: Use next/font/google for optimal loading
 
 ### Styling Approach
-* Tailwind utility-first with custom CSS variables defined in `:root`
-* Use canonical Tailwind syntax: `bg-[--navy]` for CSS variables
-* Gradients: Use linear-gradient() for navy-to-blue and cyan accents
+* Tailwind 4 with `@theme` directive in `globals.css` for design system colors
+* Use Tailwind utility classes directly: `bg-navy`, `text-cyan`, `border-border`
+* CSS variables in `:root` are for arbitrary value fallbacks only: `bg-[--bg-light]`
+* **IMPORTANT**: Tailwind 4 generates utilities from `@theme { --color-navy: #xxx }` → `bg-navy`
+* Gradients: Use `bg-gradient-to-r from-navy to-brand-blue` or linear-gradient() in custom CSS
 
 ## Design Principles
 

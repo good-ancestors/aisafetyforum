@@ -73,11 +73,15 @@ Brevo sends branded confirmation emails with:
 
 ### When Emails Are Sent
 
-Emails are sent automatically via webhook when:
-- Payment is successful (`checkout.session.completed` event)
-- Registration status updates to "paid"
+Emails are sent automatically when an order is completed:
+- Stripe payment successful (`checkout.session.completed` webhook)
+- Free ticket registration (immediate completion)
+- Admin marks invoice as paid (bank transfer received)
 
-See: `app/api/webhooks/stripe/route.ts:57-82`
+All flows use the unified `completeOrder()` function in `lib/order-completion.ts` which:
+1. Marks order and registrations as paid
+2. Sends receipt email to purchaser via `sendReceiptEmail()`
+3. Sends ticket confirmation to each attendee via `sendTicketConfirmationEmail()`
 
 ### Testing Emails
 
@@ -187,8 +191,12 @@ export const eventConfig = {
 
 ### Email Templates (`lib/brevo.ts`)
 
+Two separate email types are sent:
+1. **Receipt email** (`sendReceiptEmail()`) - Payment details, sent to purchaser only
+2. **Ticket confirmation** (`sendTicketConfirmationEmail()`) - Event details + calendar invite, sent to each attendee
+
 To customize email content:
-1. Edit `sendConfirmationEmail()` function
+1. Edit the appropriate function in `lib/brevo.ts`
 2. Update HTML and text content
 3. Modify calendar invite details in `generateCalendarInvite()`
 
@@ -231,20 +239,9 @@ The system automatically generates .ics calendar files with:
 
 4. **Test Brevo Connection**:
    ```bash
-   # Create test script
-   npx ts-node -e "
-   import { sendConfirmationEmail } from './lib/brevo';
-   sendConfirmationEmail({
-     email: 'your@email.com',
-     name: 'Test User',
-     ticketType: 'Standard',
-     organisation: null,
-     receiptNumber: 'AISF-TEST123',
-     receiptDate: '20 January 2026',
-     amountPaid: 59500,
-     transactionId: 'pi_test123',
-   }).then(() => console.log('Success')).catch(console.error);
-   "
+   # Test by completing a free ticket registration
+   # or trigger via Stripe CLI:
+   stripe trigger checkout.session.completed
    ```
 
 ### Tax Receipt Not Showing
@@ -302,7 +299,7 @@ Before going live:
 For issues:
 - **Brevo**: [Brevo Support](https://help.brevo.com)
 - **Stripe**: [Stripe Support](https://support.stripe.com)
-- **Code**: Check `app/api/webhooks/stripe/route.ts` and `lib/brevo.ts`
+- **Code**: Check `lib/order-completion.ts` (completion flow) and `lib/brevo.ts` (email templates)
 
 Related documentation:
 - [WEBHOOK_SETUP.md](./WEBHOOK_SETUP.md) - Webhook configuration
