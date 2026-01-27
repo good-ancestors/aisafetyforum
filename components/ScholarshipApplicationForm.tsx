@@ -58,19 +58,19 @@ export default function ScholarshipApplicationForm() {
 
   if (submitted) {
     return (
-      <div className="bg-white rounded-lg p-8 border border-[#e0e4e8] text-center">
-        <div className="w-16 h-16 bg-[#00d4ff] rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="bg-white rounded-lg p-8 border border-border text-center">
+        <div className="w-16 h-16 bg-cyan rounded-full flex items-center justify-center mx-auto mb-4">
           <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-3">Thanks!</h2>
-        <p className="text-[#333333] mb-6">
+        <h2 className="font-serif text-2xl font-bold text-navy mb-3">Thanks!</h2>
+        <p className="text-body mb-6">
           We&apos;ve received your scholarship application. You&apos;ll hear from us soon.
         </p>
         <button
           onClick={() => setSubmitted(false)}
-          className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
+          className="text-brand-blue hover:text-teal font-medium text-sm underline"
         >
           Submit another application
         </button>
@@ -79,7 +79,7 @@ export default function ScholarshipApplicationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-[#e0e4e8]">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-border">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
           <p className="font-medium">Error</p>
@@ -89,13 +89,13 @@ export default function ScholarshipApplicationForm() {
 
       <div className="space-y-6">
         {/* About You Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">About You</h3>
+        <div className="border-b-2 border-navy pb-2">
+          <h3 className="font-bold text-lg text-navy">About You</h3>
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="email" className="block text-sm font-bold text-navy mb-2">
             Email *
           </label>
           <input
@@ -103,13 +103,13 @@ export default function ScholarshipApplicationForm() {
             id="email"
             name="email"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="name" className="block text-sm font-bold text-navy mb-2">
             Name *
           </label>
           <input
@@ -117,16 +117,16 @@ export default function ScholarshipApplicationForm() {
             id="name"
             name="name"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Role */}
         <div>
-          <label htmlFor="role" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="role" className="block text-sm font-bold text-navy mb-2">
             Your role or title *
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             e.g. &quot;Research Fellow&quot;, &quot;PhD Student, Computer Science&quot;, or &quot;Policy Analyst&quot;
           </p>
           <input
@@ -135,16 +135,16 @@ export default function ScholarshipApplicationForm() {
             name="role"
             required
             placeholder="e.g. Research Fellow"
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Organisation */}
         <div>
-          <label htmlFor="organisation" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="organisation" className="block text-sm font-bold text-navy mb-2">
             Organisation
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             Optional — your university, employer, or leave blank if independent
           </p>
           <input
@@ -152,16 +152,16 @@ export default function ScholarshipApplicationForm() {
             id="organisation"
             name="organisation"
             placeholder="e.g. Australian National University"
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Bio */}
         <div>
-          <label htmlFor="bio" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="bio" className="block text-sm font-bold text-navy mb-2">
             Short bio *
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             A few sentences about your background and interest in AI safety. (Around 75 words)
           </p>
           <textarea
@@ -171,16 +171,16 @@ export default function ScholarshipApplicationForm() {
             maxLength={450}
             rows={4}
             placeholder="e.g. Your research focus, current work, or relevant experience..."
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Profile Links */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Profile links
           </label>
-          <p className="text-sm text-[#5c6670] mb-3">
+          <p className="text-sm text-muted mb-3">
             Optional — add any professional profiles you&apos;d like to share
           </p>
           <div className="space-y-3">
@@ -189,43 +189,43 @@ export default function ScholarshipApplicationForm() {
               id="linkedin"
               name="linkedin"
               placeholder="LinkedIn URL (e.g. linkedin.com/in/yourname)"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
             <input
               type="url"
               id="twitter"
               name="twitter"
               placeholder="X/Twitter URL (e.g. x.com/yourhandle)"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
             <input
               type="url"
               id="bluesky"
               name="bluesky"
               placeholder="Bluesky URL (e.g. bsky.app/profile/yourname)"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
             <input
               type="url"
               id="website"
               name="website"
               placeholder="Personal website or academic profile URL"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
           </div>
         </div>
 
         {/* Application Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">Your Application</h3>
+        <div className="border-b-2 border-navy pb-2 pt-2">
+          <h3 className="font-bold text-lg text-navy">Your Application</h3>
         </div>
 
         {/* Self-identification */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Help us understand your background
           </label>
-          <p className="text-sm text-[#5c6670] mb-3">
+          <p className="text-sm text-muted mb-3">
             Optional — select any that apply. This helps us prioritise scholarships for underrepresented groups.
           </p>
           <div className="space-y-2">
@@ -234,100 +234,100 @@ export default function ScholarshipApplicationForm() {
                 type="checkbox"
                 name="background_student"
                 value="student"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I am a student (undergraduate, postgraduate, or PhD)</span>
+              <span className="text-sm text-body">I am a student (undergraduate, postgraduate, or PhD)</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_civil_society"
                 value="civil_society"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I work in civil society, non-profit, or public interest</span>
+              <span className="text-sm text-body">I work in civil society, non-profit, or public interest</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_independent"
                 value="independent"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I am an independent researcher or practitioner</span>
+              <span className="text-sm text-body">I am an independent researcher or practitioner</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_lmic"
                 value="lmic"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I am from a low or middle-income country</span>
+              <span className="text-sm text-body">I am from a low or middle-income country</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_gender"
                 value="gender_diverse"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I identify as a woman, non-binary, or gender diverse</span>
+              <span className="text-sm text-body">I identify as a woman, non-binary, or gender diverse</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_first_nations"
                 value="first_nations"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I identify as First Nations or Indigenous</span>
+              <span className="text-sm text-body">I identify as First Nations or Indigenous</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_cald"
                 value="cald"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I am from a culturally or linguistically diverse background</span>
+              <span className="text-sm text-body">I am from a culturally or linguistically diverse background</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_neurodiverse"
                 value="neurodiverse"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I am neurodiverse</span>
+              <span className="text-sm text-body">I am neurodiverse</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_disability"
                 value="disability"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I have a disability or chronic health condition</span>
+              <span className="text-sm text-body">I have a disability or chronic health condition</span>
             </label>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 name="background_other_barriers"
                 value="other_barriers"
-                className="w-4 h-4 mt-0.5 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
               />
-              <span className="text-sm text-[#333333]">I face other barriers to attending (please specify in pitch)</span>
+              <span className="text-sm text-body">I face other barriers to attending (please specify in pitch)</span>
             </label>
           </div>
         </div>
 
         {/* Scholarship Pitch */}
         <div>
-          <label htmlFor="whyAttend" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="whyAttend" className="block text-sm font-bold text-navy mb-2">
             Scholarship pitch *
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             Tell us how attending the forum would support your work and why a scholarship would make a difference for you. (Around 150 words)
           </p>
           <textarea
@@ -336,21 +336,21 @@ export default function ScholarshipApplicationForm() {
             required
             maxLength={900}
             rows={5}
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Travel Support Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">Travel Support</h3>
+        <div className="border-b-2 border-navy pb-2 pt-2">
+          <h3 className="font-bold text-lg text-navy">Travel Support</h3>
         </div>
 
         {/* Travel Support */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-3">
+          <label className="block text-sm font-bold text-navy mb-3">
             Would travel support help you attend? *
           </label>
-          <p className="text-sm text-[#5c6670] mb-3">
+          <p className="text-sm text-muted mb-3">
             We have limited funding available. Let us know if support would make a difference, or if you just need the free registration.
           </p>
           <div className="space-y-2">
@@ -362,9 +362,9 @@ export default function ScholarshipApplicationForm() {
                 value="No"
                 required
                 onChange={(e) => setTravelSupport(e.target.value)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
-              <label htmlFor="travelNo" className="text-sm text-[#333333]">
+              <label htmlFor="travelNo" className="text-sm text-body">
                 No thanks, I just need the free registration
               </label>
             </div>
@@ -375,9 +375,9 @@ export default function ScholarshipApplicationForm() {
                 name="travelSupport"
                 value="Yes"
                 onChange={(e) => setTravelSupport(e.target.value)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
-              <label htmlFor="travelYes" className="text-sm text-[#333333]">
+              <label htmlFor="travelYes" className="text-sm text-body">
                 Yes, I&apos;d need travel support to attend
               </label>
             </div>
@@ -388,9 +388,9 @@ export default function ScholarshipApplicationForm() {
                 name="travelSupport"
                 value="Maybe"
                 onChange={(e) => setTravelSupport(e.target.value)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
-              <label htmlFor="travelMaybe" className="text-sm text-[#333333]">
+              <label htmlFor="travelMaybe" className="text-sm text-body">
                 Possibly — I&apos;d like to explore options
               </label>
             </div>
@@ -400,10 +400,10 @@ export default function ScholarshipApplicationForm() {
         {/* Travel Estimate (conditional) */}
         {(travelSupport === 'Yes' || travelSupport === 'Maybe') && (
           <div>
-            <label htmlFor="travelEstimate" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+            <label htmlFor="travelEstimate" className="block text-sm font-bold text-navy mb-2">
               Rough estimate of support needed
             </label>
-            <p className="text-sm text-[#5c6670] mb-2">
+            <p className="text-sm text-muted mb-2">
               Include where you&apos;re travelling from and accommodation needs. Example: &quot;$250 domestic economy flight from Melbourne & $200 for 2 nights at Sydney Central YHA&quot;
             </p>
             <textarea
@@ -411,7 +411,7 @@ export default function ScholarshipApplicationForm() {
               name="travelEstimate"
               rows={2}
               placeholder="e.g. $400 domestic flight from Brisbane & $300 for 2 nights accommodation"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
             />
           </div>
         )}
@@ -421,7 +421,7 @@ export default function ScholarshipApplicationForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full px-8 py-4 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-8 py-4 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Application'}
           </button>

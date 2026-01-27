@@ -50,12 +50,12 @@ export default function AttendeeCard({
   const earlyBird = isEarlyBirdActive();
 
   return (
-    <div className="border border-[#e0e4e8] rounded-lg p-4 relative">
+    <div className="border border-border rounded-lg p-4 relative">
       <div className="flex justify-between items-start mb-4">
-        <h3 className="font-bold text-[#0a1f5c]">
+        <h3 className="font-bold text-navy">
           Attendee {index + 1}
           {isFirstAndPurchaser && (
-            <span className="ml-2 text-xs font-normal text-[#5c6670]">(You)</span>
+            <span className="ml-2 text-xs font-normal text-muted">(You)</span>
           )}
         </h3>
         {totalAttendees > 1 && (
@@ -71,7 +71,7 @@ export default function AttendeeCard({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label className="block text-sm font-medium text-navy mb-1">
             Email *
           </label>
           <input
@@ -81,7 +81,7 @@ export default function AttendeeCard({
             onChange={(e) => onUpdateAttendee(index, 'email', e.target.value)}
             onBlur={() => onEmailBlur(index)}
             disabled={isFirstAndPurchaser}
-            className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100"
           />
           {freeReason && (
             <div className="mt-2 text-sm text-green-700 flex items-center gap-1">
@@ -94,7 +94,7 @@ export default function AttendeeCard({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label className="block text-sm font-medium text-navy mb-1">
             Name *
           </label>
           <input
@@ -103,14 +103,14 @@ export default function AttendeeCard({
             value={name}
             onChange={(e) => onUpdateAttendee(index, 'name', e.target.value)}
             disabled={isFirstAndPurchaser}
-            className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label className="block text-sm font-medium text-navy mb-1">
             Role / Title
           </label>
           <input
@@ -119,12 +119,12 @@ export default function AttendeeCard({
             onChange={(e) => onUpdateAttendee(index, 'role', e.target.value)}
             disabled={isFirstAndPurchaser}
             placeholder="e.g., Research Scientist"
-            className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label className="block text-sm font-medium text-navy mb-1">
             Organisation
           </label>
           <input
@@ -133,22 +133,22 @@ export default function AttendeeCard({
             onChange={(e) => onUpdateAttendee(index, 'organisation', e.target.value)}
             disabled={isFirstAndPurchaser}
             placeholder="Your organisation"
-            className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100"
           />
         </div>
       </div>
 
       {/* Ticket Type - Radio Card Style */}
       <div>
-        <label className="block text-sm font-medium text-[#0a1f5c] mb-2">
+        <label className="block text-sm font-medium text-navy mb-2">
           Ticket Type *
         </label>
         <div className="space-y-2">
           {ticketTiers.map((tier) => (
             <label
               key={tier.id}
-              className={`flex items-center justify-between p-3 border-l-4 ${tier.borderColor} bg-[#f9fafb] rounded cursor-pointer hover:bg-[#f0f4f8] transition-colors ${
-                attendee.ticketType === tier.id ? 'ring-2 ring-[#00d4ff]' : ''
+              className={`flex items-center justify-between p-3 border-l-4 ${tier.borderColor} bg-cream rounded cursor-pointer hover:bg-light transition-colors ${
+                attendee.ticketType === tier.id ? 'ring-2 ring-cyan' : ''
               }`}
             >
               <div className="flex items-center gap-3">
@@ -158,24 +158,24 @@ export default function AttendeeCard({
                   value={tier.id}
                   checked={attendee.ticketType === tier.id}
                   onChange={(e) => onUpdateAttendee(index, 'ticketType', e.target.value)}
-                  className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                  className="w-4 h-4 text-cyan border-border focus:ring-cyan"
                 />
                 <div>
-                  <div className="font-bold text-[#0a1f5c] text-sm">{tier.name}</div>
-                  <div className="text-xs text-[#5c6670]">{tier.description}</div>
+                  <div className="font-bold text-navy text-sm">{tier.name}</div>
+                  <div className="text-xs text-muted">{tier.description}</div>
                 </div>
               </div>
               <div className="text-right">
                 {freeReason ? (
                   <>
-                    <div className="text-xs text-[#5c6670] line-through">
+                    <div className="text-xs text-muted line-through">
                       {earlyBird ? tier.earlyBirdPriceDisplay : tier.priceDisplay}
                     </div>
                     <div className="font-bold text-green-600">$0.00</div>
                   </>
                 ) : earlyBird ? (
                   <>
-                    <div className="text-xs text-[#5c6670] line-through">{tier.priceDisplay}</div>
+                    <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
                     <div className={`font-bold ${tier.textColor}`}>{tier.earlyBirdPriceDisplay}</div>
                   </>
                 ) : (

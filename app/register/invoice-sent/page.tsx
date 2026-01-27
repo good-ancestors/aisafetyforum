@@ -18,17 +18,17 @@ export default async function InvoiceSentPage({
     return (
       <>
         <Header />
-        <main className="bg-[#f9fafb] py-16 px-8 min-h-[60vh]">
+        <main className="bg-cream py-16 px-8 min-h-[60vh]">
           <div className="max-w-[600px] mx-auto text-center">
-            <h1 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-4">
+            <h1 className="font-serif text-2xl font-bold text-navy mb-4">
               Order Not Found
             </h1>
-            <p className="text-[#5c6670] mb-8">
+            <p className="text-muted mb-8">
               We couldn&apos;t find your order. Please contact us if you need assistance.
             </p>
             <Link
               href="/register"
-              className="inline-block bg-[#0a1f5c] text-white px-6 py-3 rounded hover:bg-[#1a3a8f] transition-colors"
+              className="inline-block bg-navy text-white px-6 py-3 rounded hover:bg-navy-light transition-colors"
             >
               Back to Registration
             </Link>
@@ -45,17 +45,17 @@ export default async function InvoiceSentPage({
     return (
       <>
         <Header />
-        <main className="bg-[#f9fafb] py-16 px-8 min-h-[60vh]">
+        <main className="bg-cream py-16 px-8 min-h-[60vh]">
           <div className="max-w-[600px] mx-auto text-center">
-            <h1 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-4">
+            <h1 className="font-serif text-2xl font-bold text-navy mb-4">
               Order Not Found
             </h1>
-            <p className="text-[#5c6670] mb-8">
+            <p className="text-muted mb-8">
               We couldn&apos;t find your order. Please contact us if you need assistance.
             </p>
             <Link
               href="/register"
-              className="inline-block bg-[#0a1f5c] text-white px-6 py-3 rounded hover:bg-[#1a3a8f] transition-colors"
+              className="inline-block bg-navy text-white px-6 py-3 rounded hover:bg-navy-light transition-colors"
             >
               Back to Registration
             </Link>
@@ -89,19 +89,19 @@ export default async function InvoiceSentPage({
   return (
     <>
       <Header />
-      <main className="bg-[#f9fafb] py-16 px-8">
+      <main className="bg-cream py-16 px-8">
         <div className="max-w-[850px] mx-auto">
           {/* Success Header */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-[#0a1f5c] rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-[#00d4ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 bg-navy rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h1 className="font-serif text-3xl font-bold text-[#0a1f5c] mb-4">
+            <h1 className="font-serif text-3xl font-bold text-navy mb-4">
               Invoice Created!
             </h1>
-            <p className="text-lg text-[#333333]">
+            <p className="text-lg text-body">
               We&apos;ve emailed your tax invoice to <strong>{order.purchaserEmail}</strong>
             </p>
           </div>
@@ -112,56 +112,56 @@ export default async function InvoiceSentPage({
           </div>
 
           {/* Invoice Preview */}
-          <div className="bg-white rounded-lg border-2 border-[#0a1f5c] shadow-lg mb-8">
+          <div className="bg-white rounded-lg border-2 border-navy shadow-lg mb-8">
             {/* Invoice Header */}
-            <div className="p-8 border-b-2 border-[#0a1f5c]">
+            <div className="p-8 border-b-2 border-navy">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#0a1f5c] mb-1">TAX INVOICE</h2>
-                  <p className="text-[#5c6670]">Australian AI Safety Forum {eventConfig.year}</p>
+                  <h2 className="text-2xl font-bold text-navy mb-1">TAX INVOICE</h2>
+                  <p className="text-muted">Australian AI Safety Forum {eventConfig.year}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-[#0a1f5c]">{invoiceNumber}</p>
-                  <p className="text-sm text-[#5c6670]">Date: {invoiceDate}</p>
-                  <p className="text-sm text-[#5c6670]">Due: {dueDate}</p>
+                  <p className="text-lg font-bold text-navy">{invoiceNumber}</p>
+                  <p className="text-sm text-muted">Date: {invoiceDate}</p>
+                  <p className="text-sm text-muted">Due: {dueDate}</p>
                 </div>
               </div>
             </div>
 
             {/* From / To */}
-            <div className="p-8 grid grid-cols-2 gap-8 border-b border-[#e0e4e8]">
+            <div className="p-8 grid grid-cols-2 gap-8 border-b border-border">
               <div>
-                <h3 className="text-sm font-bold text-[#0a1f5c] mb-2 border-b border-[#e0e4e8] pb-1">From</h3>
+                <h3 className="text-sm font-bold text-navy mb-2 border-b border-border pb-1">From</h3>
                 <p className="font-bold text-sm">{organization.name}</p>
-                <p className="text-sm text-[#5c6670]">ABN: {organization.abn}</p>
-                <p className="text-sm text-[#5c6670]">{organization.address.line1}</p>
-                <p className="text-sm text-[#5c6670]">{organization.address.line2}</p>
-                <p className="text-sm text-[#5c6670]">{organization.address.city} {organization.address.postcode}</p>
-                <p className="text-sm text-[#5c6670]">{organization.email}</p>
+                <p className="text-sm text-muted">ABN: {organization.abn}</p>
+                <p className="text-sm text-muted">{organization.address.line1}</p>
+                <p className="text-sm text-muted">{organization.address.line2}</p>
+                <p className="text-sm text-muted">{organization.address.city} {organization.address.postcode}</p>
+                <p className="text-sm text-muted">{organization.email}</p>
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#0a1f5c] mb-2 border-b border-[#e0e4e8] pb-1">Bill To</h3>
+                <h3 className="text-sm font-bold text-navy mb-2 border-b border-border pb-1">Bill To</h3>
                 <p className="font-bold text-sm">{order.purchaserName}</p>
-                {order.orgName && <p className="text-sm text-[#5c6670]">{order.orgName}</p>}
-                {order.orgABN && <p className="text-sm text-[#5c6670]">ABN: {order.orgABN}</p>}
-                <p className="text-sm text-[#5c6670]">{order.purchaserEmail}</p>
-                {order.poNumber && <p className="text-sm text-[#5c6670] mt-2">PO Number: {order.poNumber}</p>}
+                {order.orgName && <p className="text-sm text-muted">{order.orgName}</p>}
+                {order.orgABN && <p className="text-sm text-muted">ABN: {order.orgABN}</p>}
+                <p className="text-sm text-muted">{order.purchaserEmail}</p>
+                {order.poNumber && <p className="text-sm text-muted mt-2">PO Number: {order.poNumber}</p>}
               </div>
             </div>
 
             {/* Event Info */}
-            <div className="px-8 py-4 bg-[#f0f4f8] border-b border-[#e0e4e8]">
+            <div className="px-8 py-4 bg-light border-b border-border">
               <p className="text-sm">
-                <span className="font-bold text-[#0a1f5c]">Event:</span>{' '}
-                <span className="text-[#333333]">Australian AI Safety Forum {eventConfig.year}</span>
+                <span className="font-bold text-navy">Event:</span>{' '}
+                <span className="text-body">Australian AI Safety Forum {eventConfig.year}</span>
               </p>
               <p className="text-sm">
-                <span className="font-bold text-[#0a1f5c]">Date:</span>{' '}
-                <span className="text-[#333333]">{eventConfig.datesLong}</span>
+                <span className="font-bold text-navy">Date:</span>{' '}
+                <span className="text-body">{eventConfig.datesLong}</span>
               </p>
               <p className="text-sm">
-                <span className="font-bold text-[#0a1f5c]">Location:</span>{' '}
-                <span className="text-[#333333]">{eventConfig.venueLong}</span>
+                <span className="font-bold text-navy">Location:</span>{' '}
+                <span className="text-body">{eventConfig.venueLong}</span>
               </p>
             </div>
 
@@ -169,19 +169,19 @@ export default async function InvoiceSentPage({
             <div className="p-8">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b-2 border-[#0a1f5c]">
-                    <th className="text-left py-2 font-bold text-[#0a1f5c]">Description</th>
-                    <th className="text-right py-2 font-bold text-[#0a1f5c]">Qty</th>
-                    <th className="text-right py-2 font-bold text-[#0a1f5c]">Unit Price</th>
-                    <th className="text-right py-2 font-bold text-[#0a1f5c]">Total</th>
+                  <tr className="border-b-2 border-navy">
+                    <th className="text-left py-2 font-bold text-navy">Description</th>
+                    <th className="text-right py-2 font-bold text-navy">Qty</th>
+                    <th className="text-right py-2 font-bold text-navy">Unit Price</th>
+                    <th className="text-right py-2 font-bold text-navy">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {order.registrations.map((reg) => (
-                    <tr key={reg.id} className="border-b border-[#e0e4e8]">
+                    <tr key={reg.id} className="border-b border-border">
                       <td className="py-3">
                         <p className="font-medium">{reg.ticketType}</p>
-                        <p className="text-[#5c6670]">{reg.name}</p>
+                        <p className="text-muted">{reg.name}</p>
                       </td>
                       <td className="py-3 text-right">1</td>
                       <td className="py-3 text-right">${(reg.originalAmount / 100).toFixed(2)}</td>
@@ -192,7 +192,7 @@ export default async function InvoiceSentPage({
               </table>
 
               {/* Totals */}
-              <div className="mt-6 border-t-2 border-[#0a1f5c] pt-4">
+              <div className="mt-6 border-t-2 border-navy pt-4">
                 <div className="flex justify-end">
                   <div className="w-64 space-y-2 text-sm">
                     {order.discountAmount > 0 && (
@@ -215,7 +215,7 @@ export default async function InvoiceSentPage({
                       <span>GST (10%)</span>
                       <span>${(gstAmount / 100).toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between font-bold text-lg border-t border-[#0a1f5c] pt-2 mt-2">
+                    <div className="flex justify-between font-bold text-lg border-t border-navy pt-2 mt-2">
                       <span>Total AUD</span>
                       <span>${(order.totalAmount / 100).toFixed(2)}</span>
                     </div>
@@ -225,38 +225,38 @@ export default async function InvoiceSentPage({
             </div>
 
             {/* Payment Details */}
-            <div className="px-8 py-6 bg-[#e8f4fd] border-t-2 border-[#00d4ff]">
-              <h3 className="font-bold text-[#0a1f5c] mb-3">Payment Details</h3>
+            <div className="px-8 py-6 bg-info-bg border-t-2 border-cyan">
+              <h3 className="font-bold text-navy mb-3">Payment Details</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <p className="text-[#5c6670]">Account Name</p>
+                  <p className="text-muted">Account Name</p>
                   <p className="font-medium">{bankDetails.accountName}</p>
                 </div>
                 <div>
-                  <p className="text-[#5c6670]">Bank</p>
+                  <p className="text-muted">Bank</p>
                   <p className="font-medium">{bankDetails.bank}</p>
                 </div>
                 <div>
-                  <p className="text-[#5c6670]">BSB</p>
+                  <p className="text-muted">BSB</p>
                   <p className="font-medium font-mono">{bankDetails.bsb}</p>
                 </div>
                 <div>
-                  <p className="text-[#5c6670]">Account Number</p>
+                  <p className="text-muted">Account Number</p>
                   <p className="font-medium font-mono">{bankDetails.accountNumber}</p>
                 </div>
               </div>
               <div className="mt-4 p-3 bg-white/50 rounded">
-                <p className="text-[#5c6670] text-sm">Payment Reference</p>
-                <p className="font-bold text-[#0a1f5c] font-mono">{invoiceNumber}</p>
-                <p className="text-xs text-[#5c6670] mt-1">Please use this reference so we can identify your payment</p>
+                <p className="text-muted text-sm">Payment Reference</p>
+                <p className="font-bold text-navy font-mono">{invoiceNumber}</p>
+                <p className="text-xs text-muted mt-1">Please use this reference so we can identify your payment</p>
               </div>
             </div>
           </div>
 
           {/* What happens next */}
-          <div className="bg-white rounded-lg border border-[#e0e4e8] p-6 mb-8">
-            <h2 className="font-bold text-[#0a1f5c] mb-3">What happens next?</h2>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-[#333333]">
+          <div className="bg-white rounded-lg border border-border p-6 mb-8">
+            <h2 className="font-bold text-navy mb-3">What happens next?</h2>
+            <ol className="list-decimal list-inside space-y-2 text-sm text-body">
               <li>Transfer the amount to the bank account shown above</li>
               <li>Use the payment reference <strong>{invoiceNumber}</strong> so we can identify your payment</li>
               <li>Your tickets will be confirmed once payment is received</li>
@@ -265,15 +265,15 @@ export default async function InvoiceSentPage({
           </div>
 
           {/* Contact Info */}
-          <div className="text-center text-sm text-[#5c6670]">
+          <div className="text-center text-sm text-muted">
             <p className="mb-2">
               Questions? Contact us at{' '}
-              <a href={`mailto:${organization.email}`} className="text-[#0047ba] underline">
+              <a href={`mailto:${organization.email}`} className="text-brand-blue underline">
                 {organization.email}
               </a>
             </p>
             <p>
-              <Link href="/" className="text-[#0047ba] underline">
+              <Link href="/" className="text-brand-blue underline">
                 Return to homepage
               </Link>
             </p>

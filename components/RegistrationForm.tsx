@@ -136,7 +136,7 @@ export default function RegistrationForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-[#e0e4e8]">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-border">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
           <p className="font-medium">Error</p>
@@ -147,7 +147,7 @@ export default function RegistrationForm() {
       <div className="space-y-6">
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="email" className="block text-sm font-bold text-navy mb-2">
             Email *
           </label>
           <input
@@ -156,7 +156,7 @@ export default function RegistrationForm() {
             name="email"
             required
             onBlur={(e) => handleEmailCheck(e.target.value)}
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
           {freeTicketReason && (
             <div className="mt-3 bg-green-50 border-l-4 border-green-500 rounded-lg p-3">
@@ -175,7 +175,7 @@ export default function RegistrationForm() {
 
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="name" className="block text-sm font-bold text-navy mb-2">
             Name *
           </label>
           <input
@@ -183,16 +183,16 @@ export default function RegistrationForm() {
             id="name"
             name="name"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Organisation */}
         <div>
-          <label htmlFor="organisation" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="organisation" className="block text-sm font-bold text-navy mb-2">
             Organisation
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             Optional — your university, employer, or leave blank if independent
           </p>
           <input
@@ -200,16 +200,16 @@ export default function RegistrationForm() {
             id="organisation"
             name="organisation"
             placeholder="e.g. Australian National University"
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Early Bird Banner */}
         {earlyBird && (
-          <div className="bg-gradient-to-r from-[#0a1f5c] to-[#0047ba] text-white rounded-lg p-4">
+          <div className="bg-gradient-to-r from-navy to-brand-blue text-white rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#00d4ff]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-[#00d4ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 rounded-full bg-cyan/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -223,12 +223,12 @@ export default function RegistrationForm() {
 
         {/* Ticket Type Selection */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-3">
+          <label className="block text-sm font-bold text-navy mb-3">
             Select Ticket Type *
           </label>
           <div className="space-y-3">
             {ticketTiers.map((tier) => (
-              <div key={tier.id} className={`border-l-4 ${tier.borderColor} bg-[#f0f4f8] rounded p-4`}>
+              <div key={tier.id} className={`border-l-4 ${tier.borderColor} bg-light rounded p-4`}>
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="radio"
@@ -244,30 +244,30 @@ export default function RegistrationForm() {
                         handleEmailCheck(emailInput.value);
                       }
                     }}
-                    className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff] mt-1"
+                    className="w-4 h-4 text-cyan border-border focus:ring-cyan mt-1"
                   />
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-bold text-[#0a1f5c]">{tier.name}</div>
-                        <div className="text-sm text-[#5c6670] mt-1">{tier.description}</div>
+                        <div className="font-bold text-navy">{tier.name}</div>
+                        <div className="text-sm text-muted mt-1">{tier.description}</div>
                       </div>
                       <div className="ml-4 text-right">
                         {freeTicketReason ? (
                           <>
-                            <div className="text-sm text-[#5c6670] line-through">{earlyBird ? tier.earlyBirdPriceDisplay : tier.priceDisplay}</div>
-                            <div className="text-xl font-bold text-green-600">$0.00 <span className="text-sm font-normal text-[#5c6670]">inc GST</span></div>
+                            <div className="text-sm text-muted line-through">{earlyBird ? tier.earlyBirdPriceDisplay : tier.priceDisplay}</div>
+                            <div className="text-xl font-bold text-green-600">$0.00 <span className="text-sm font-normal text-muted">inc GST</span></div>
                           </>
                         ) : earlyBird ? (
                           <>
-                            <div className="text-sm text-[#5c6670] line-through">{tier.priceDisplay}</div>
+                            <div className="text-sm text-muted line-through">{tier.priceDisplay}</div>
                             <div className={`text-xl font-bold ${tier.textColor}`}>
-                              {tier.earlyBirdPriceDisplay} <span className="text-sm font-normal text-[#5c6670]">inc GST</span>
+                              {tier.earlyBirdPriceDisplay} <span className="text-sm font-normal text-muted">inc GST</span>
                             </div>
                           </>
                         ) : (
                           <div className={`text-xl font-bold ${tier.textColor}`}>
-                            {tier.priceDisplay} <span className="text-sm font-normal text-[#5c6670]">inc GST</span>
+                            {tier.priceDisplay} <span className="text-sm font-normal text-muted">inc GST</span>
                           </div>
                         )}
                       </div>
@@ -282,10 +282,10 @@ export default function RegistrationForm() {
         {/* Coupon Code */}
         {!freeTicketReason && (
           <div>
-            <label htmlFor="couponCode" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+            <label htmlFor="couponCode" className="block text-sm font-bold text-navy mb-2">
               Have a coupon code?
             </label>
-            <p className="text-sm text-[#5c6670] mb-2">
+            <p className="text-sm text-muted mb-2">
               Enter your code for discounts or complimentary tickets
             </p>
             <div className="flex gap-2">
@@ -302,14 +302,14 @@ export default function RegistrationForm() {
                 }}
                 disabled={couponApplied}
                 placeholder="e.g. SPEAKER2026"
-                className="flex-1 px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed uppercase"
+                className="flex-1 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed uppercase"
               />
             {!couponApplied ? (
               <button
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={validatingCoupon || !couponCode.trim()}
-                className="px-6 py-2 text-sm font-bold bg-[#0a1f5c] text-white rounded-md hover:bg-[#1a3a8f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 text-sm font-bold bg-navy text-white rounded-md hover:bg-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {validatingCoupon ? 'Checking...' : 'Apply'}
               </button>
@@ -358,11 +358,11 @@ export default function RegistrationForm() {
 
         {/* Important Note */}
         {!couponApplied && (
-          <div className="bg-[#f0f4f8] rounded-lg p-6 border-l-4 border-[#0099cc]">
-            <p className="text-sm text-[#333333] mb-3">
+          <div className="bg-light rounded-lg p-6 border-l-4 border-teal">
+            <p className="text-sm text-body mb-3">
               To ensure the Forum remains sustainable and independent, we are introducing a tiered ticketing model. Revenue from industry tickets supports concession pricing and attendee scholarships.
             </p>
-            <p className="text-sm text-[#333333]">
+            <p className="text-sm text-body">
               If cost is a barrier to entry please purchase a concession ticket and consider applying for a scholarship (for free ticket and travel funding) if needed.
             </p>
           </div>
@@ -373,7 +373,7 @@ export default function RegistrationForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full px-8 py-4 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-8 py-4 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? 'Processing...'
@@ -383,7 +383,7 @@ export default function RegistrationForm() {
             }
           </button>
           {!freeTicketReason && !(discount && discount.finalAmount === 0) && (
-            <p className="text-sm text-[#5c6670] mt-4 text-center">
+            <p className="text-sm text-muted mt-4 text-center">
               Secure checkout powered by Stripe
             </p>
           )}

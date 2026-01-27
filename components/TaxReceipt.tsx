@@ -62,21 +62,21 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
   const receiptNumber = `AISF-${registration.id.slice(-8).toUpperCase()}`;
 
   return (
-    <div id="tax-receipt" className="bg-white border-2 border-[#0a1f5c] rounded-lg p-8 my-8">
+    <div id="tax-receipt" className="bg-white border-2 border-navy rounded-lg p-8 my-8">
       {/* Header */}
-      <div className="border-b-2 border-[#0a1f5c] pb-6 mb-6">
-        <h2 className="text-2xl font-bold text-[#0a1f5c] mb-2">TAX RECEIPT</h2>
-        <div className="text-sm text-[#333333]">
+      <div className="border-b-2 border-navy pb-6 mb-6">
+        <h2 className="text-2xl font-bold text-navy mb-2">TAX RECEIPT</h2>
+        <div className="text-sm text-body">
           <p className="font-bold">Receipt Number: {receiptNumber}</p>
           <p>Date: {receiptDate}</p>
         </div>
       </div>
 
       {/* Organization Details */}
-      <div className="grid md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-[#e0e4e8]">
+      <div className="grid md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-border">
         <div>
-          <h3 className="font-bold text-[#0a1f5c] mb-2">From:</h3>
-          <div className="text-sm text-[#333333]">
+          <h3 className="font-bold text-navy mb-2">From:</h3>
+          <div className="text-sm text-body">
             <p className="font-bold">{eventConfig.organization.name}</p>
             <p>ABN: {eventConfig.organization.abn}</p>
             <p className="mt-2">{eventConfig.organization.address.line1}</p>
@@ -91,8 +91,8 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
         </div>
 
         <div>
-          <h3 className="font-bold text-[#0a1f5c] mb-2">To:</h3>
-          <div className="text-sm text-[#333333]">
+          <h3 className="font-bold text-navy mb-2">To:</h3>
+          <div className="text-sm text-body">
             <p className="font-bold">{registration.name}</p>
             {registration.organisation && <p>{registration.organisation}</p>}
             <p className="mt-2">{registration.email}</p>
@@ -102,38 +102,38 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
 
       {/* Items */}
       <div className="mb-6">
-        <h3 className="font-bold text-[#0a1f5c] mb-3">Payment Details:</h3>
+        <h3 className="font-bold text-navy mb-3">Payment Details:</h3>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#e0e4e8]">
-              <th className="text-left py-2 text-[#0a1f5c]">Description</th>
-              <th className="text-right py-2 text-[#0a1f5c]">Amount (AUD)</th>
+            <tr className="border-b border-border">
+              <th className="text-left py-2 text-navy">Description</th>
+              <th className="text-right py-2 text-navy">Amount (AUD)</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-[#e0e4e8]">
-              <td className="py-3 text-[#333333]">
+            <tr className="border-b border-border">
+              <td className="py-3 text-body">
                 <div>
                   <p className="font-medium">
                     Australian AI Safety Forum {eventConfig.year} - {registration.ticketType}
                   </p>
-                  <p className="text-xs text-[#5c6670] mt-1">{eventConfig.datesLong}</p>
-                  <p className="text-xs text-[#5c6670]">{eventConfig.venueLong}</p>
+                  <p className="text-xs text-muted mt-1">{eventConfig.datesLong}</p>
+                  <p className="text-xs text-muted">{eventConfig.venueLong}</p>
                 </div>
               </td>
-              <td className="py-3 text-right text-[#333333]">
+              <td className="py-3 text-right text-body">
                 ${(registration.amountPaid / 100).toFixed(2)}
               </td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
-              <td className="py-4 text-right font-bold text-[#0a1f5c]">Total (inc. GST):</td>
-              <td className="py-4 text-right font-bold text-[#0a1f5c] text-lg">
+              <td className="py-4 text-right font-bold text-navy">Total (inc. GST):</td>
+              <td className="py-4 text-right font-bold text-navy text-lg">
                 ${(registration.amountPaid / 100).toFixed(2)}
               </td>
             </tr>
-            <tr className="text-xs text-[#5c6670]">
+            <tr className="text-xs text-muted">
               <td className="py-1 text-right">GST (10%):</td>
               <td className="py-1 text-right">
                 ${((registration.amountPaid / 100) * 0.1).toFixed(2)}
@@ -145,14 +145,14 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
 
       {/* Payment Method */}
       {registration.stripePaymentId && (
-        <div className="text-xs text-[#5c6670] mb-6">
+        <div className="text-xs text-muted mb-6">
           <p>Payment Method: Credit Card via Stripe</p>
           <p>Transaction ID: {registration.stripePaymentId}</p>
         </div>
       )}
 
       {/* Footer */}
-      <div className="pt-6 border-t border-[#e0e4e8] text-xs text-[#5c6670]">
+      <div className="pt-6 border-t border-border text-xs text-muted">
         <p className="mb-2">
           This is a tax receipt for payment received. Please retain for your records.
         </p>
@@ -160,7 +160,7 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
           For enquiries regarding this receipt, please contact{' '}
           <a
             href={`mailto:${eventConfig.organization.email}`}
-            className="text-[#0047ba] hover:underline"
+            className="text-brand-blue hover:underline"
           >
             {eventConfig.organization.email}
           </a>
@@ -171,7 +171,7 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
       <div className="mt-6 text-center">
         <button
           onClick={() => window.print()}
-          className="px-6 py-2 bg-[#0a1f5c] text-white rounded-md hover:bg-[#1a3a8f] transition-colors text-sm font-medium"
+          className="px-6 py-2 bg-navy text-white rounded-md hover:bg-navy-light transition-colors text-sm font-medium"
         >
           Print Receipt
         </button>

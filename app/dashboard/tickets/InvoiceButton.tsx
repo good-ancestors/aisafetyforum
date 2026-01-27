@@ -40,7 +40,7 @@ export default function InvoiceButton({ orderId, invoiceNumber }: InvoiceButtonP
       <button
         onClick={handleDownload}
         disabled={loading}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#0047ba] hover:text-[#0a1f5c] hover:bg-[#f0f4f8] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-brand-blue hover:text-navy hover:bg-light rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title={invoiceNumber ? `Invoice ${invoiceNumber}` : 'Download Invoice'}
       >
         {loading ? (

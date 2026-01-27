@@ -102,36 +102,36 @@ export default async function RegistrationSuccess({
   return (
     <>
       <Header />
-      <main className="bg-[#f9fafb] py-16 px-8">
+      <main className="bg-cream py-16 px-8">
         <div className="max-w-[800px] mx-auto">
           {registration && isPaid ? (
             <>
-            <div className="bg-white rounded-lg p-12 border border-[#e0e4e8] text-center">
+            <div className="bg-white rounded-lg p-12 border border-border text-center">
               {/* Success Icon */}
-              <div className="w-20 h-20 bg-[#00d4ff] rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-cyan rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
 
               {/* Success Message */}
-              <h1 className="font-serif text-3xl font-bold text-[#0a1f5c] mb-4">
+              <h1 className="font-serif text-3xl font-bold text-navy mb-4">
                 Registration Confirmed!
               </h1>
-              <p className="text-lg text-[#333333] mb-8">
+              <p className="text-lg text-body mb-8">
                 Thank you for registering for the Australian AI Safety Forum {eventConfig.year}
               </p>
 
               {/* Registration Details */}
-              <div className="bg-[#f0f4f8] rounded-lg p-6 mb-8 text-left">
-                <h2 className="font-bold text-lg text-[#0a1f5c] mb-4">
+              <div className="bg-light rounded-lg p-6 mb-8 text-left">
+                <h2 className="font-bold text-lg text-navy mb-4">
                   {order && order.registrations.length > 1 ? 'Registered Attendees' : 'Registration Details'}
                 </h2>
                 {order && order.registrations.length > 1 ? (
                   <div className="space-y-4">
                     {order.registrations.map((reg, index) => (
-                      <div key={reg.id} className={`${index > 0 ? 'pt-4 border-t border-[#e0e4e8]' : ''}`}>
-                        <div className="space-y-2 text-[#333333]">
+                      <div key={reg.id} className={`${index > 0 ? 'pt-4 border-t border-border' : ''}`}>
+                        <div className="space-y-2 text-body">
                           <div className="flex justify-between">
                             <span className="font-medium">Name:</span>
                             <span>{reg.name}</span>
@@ -149,7 +149,7 @@ export default async function RegistrationSuccess({
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-3 text-[#333333]">
+                  <div className="space-y-3 text-body">
                     <div className="flex justify-between">
                       <span className="font-medium">Name:</span>
                       <span>{registration.name}</span>
@@ -173,9 +173,9 @@ export default async function RegistrationSuccess({
               </div>
 
               {/* Next Steps */}
-              <div className="bg-[#fff3cd] rounded-lg p-6 border-l-4 border-[#ffc107] mb-8 text-left">
-                <h3 className="font-bold text-lg text-[#856404] mb-3">What&apos;s Next?</h3>
-                <ul className="space-y-2 text-sm text-[#856404]">
+              <div className="bg-amber-100 rounded-lg p-6 border-l-4 border-amber-400 mb-8 text-left">
+                <h3 className="font-bold text-lg text-amber-800 mb-3">What&apos;s Next?</h3>
+                <ul className="space-y-2 text-sm text-amber-800">
                   <li className="flex items-start gap-2">
                     <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -201,7 +201,7 @@ export default async function RegistrationSuccess({
               <div className="flex gap-4 justify-center">
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors"
                 >
                   Back to Home
                 </Link>
@@ -212,16 +212,16 @@ export default async function RegistrationSuccess({
             <TaxReceipt registration={registration} />
             </>
           ) : (
-            <div className="bg-white rounded-lg p-12 border border-[#e0e4e8] text-center">
-              <h1 className="font-serif text-3xl font-bold text-[#0a1f5c] mb-4">
+            <div className="bg-white rounded-lg p-12 border border-border text-center">
+              <h1 className="font-serif text-3xl font-bold text-navy mb-4">
                 Registration Processing
               </h1>
-              <p className="text-lg text-[#333333] mb-8">
+              <p className="text-lg text-body mb-8">
                 We&apos;re confirming your registration. Please check your email for confirmation.
               </p>
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors"
               >
                 Back to Home
               </Link>

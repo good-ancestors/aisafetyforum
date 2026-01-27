@@ -46,7 +46,7 @@ export default function ContactForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-navy mb-1">
             Name *
           </label>
           <input
@@ -54,13 +54,13 @@ export default function ContactForm() {
             id="name"
             name="name"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
             placeholder="Your name"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-navy mb-1">
             Email *
           </label>
           <input
@@ -68,13 +68,13 @@ export default function ContactForm() {
             id="email"
             name="email"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
             placeholder="your@email.com"
           />
         </div>
 
         <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label htmlFor="subject" className="block text-sm font-medium text-navy mb-1">
             Subject *
           </label>
           <input
@@ -82,13 +82,13 @@ export default function ContactForm() {
             id="subject"
             name="subject"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
             placeholder="What is your message about?"
           />
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+          <label htmlFor="message" className="block text-sm font-medium text-navy mb-1">
             Message *
           </label>
           <textarea
@@ -96,7 +96,7 @@ export default function ContactForm() {
             name="message"
             required
             rows={6}
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent resize-none"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent resize-none"
             placeholder="Your message..."
           />
         </div>
@@ -104,7 +104,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#0a1f5c] text-white px-6 py-3 rounded-md hover:bg-[#061440] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+          className="w-full bg-navy text-white px-6 py-3 rounded-md hover:bg-navy-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
         >
           {isSubmitting ? 'Sending...' : 'Send Message'}
         </button>

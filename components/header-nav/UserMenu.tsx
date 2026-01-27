@@ -41,9 +41,9 @@ export default function UserMenu({
     <div className="relative" ref={menuRef}>
       <button
         onClick={onToggle}
-        className="flex items-center gap-2 px-4 py-2 text-[0.95rem] font-medium text-[#1a1a1a] hover:text-[#0047ba] transition-colors rounded-md hover:bg-[#f0f4f8]"
+        className="flex items-center gap-2 px-4 py-2 text-[0.95rem] font-medium text-dark hover:text-brand-blue transition-colors rounded-md hover:bg-light"
       >
-        <span className="w-8 h-8 bg-[#0a1f5c] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+        <span className="w-8 h-8 bg-navy text-white rounded-full flex items-center justify-center text-sm font-semibold">
           {user.email.charAt(0).toUpperCase()}
         </span>
         <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,38 +53,38 @@ export default function UserMenu({
 
       {/* User Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-[#e0e4e8] py-2 z-50">
-          <div className="px-4 py-2 border-b border-[#e0e4e8]">
-            <p className="text-sm text-[#5c6670]">Signed in as</p>
-            <p className="text-sm font-medium text-[#1a1a1a] truncate">{user.email}</p>
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-border py-2 z-50">
+          <div className="px-4 py-2 border-b border-border">
+            <p className="text-sm text-muted">Signed in as</p>
+            <p className="text-sm font-medium text-dark truncate">{user.email}</p>
           </div>
           <Link
             href="/dashboard"
-            className="block px-4 py-2 text-sm text-[#1a1a1a] hover:bg-[#f0f4f8] transition-colors"
+            className="block px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
             onClick={onClose}
           >
             Dashboard
           </Link>
           <Link
             href="/dashboard/profile"
-            className="block px-4 py-2 text-sm text-[#1a1a1a] hover:bg-[#f0f4f8] transition-colors"
+            className="block px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
             onClick={onClose}
           >
             Profile
           </Link>
           <Link
             href="/dashboard/tickets"
-            className="block px-4 py-2 text-sm text-[#1a1a1a] hover:bg-[#f0f4f8] transition-colors"
+            className="block px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
             onClick={onClose}
           >
             My Tickets
           </Link>
           {isAdmin && (
             <>
-              <div className="border-t border-[#e0e4e8] my-2" />
+              <div className="border-t border-border my-2" />
               <Link
                 href="/admin/invoices"
-                className="flex items-center gap-2 px-4 py-2 text-sm text-[#1a1a1a] hover:bg-[#f0f4f8] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
                 onClick={onClose}
               >
                 <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">Admin</span>
@@ -92,7 +92,7 @@ export default function UserMenu({
               </Link>
             </>
           )}
-          <div className="border-t border-[#e0e4e8] my-2" />
+          <div className="border-t border-border my-2" />
           <button
             onClick={() => {
               onClose();

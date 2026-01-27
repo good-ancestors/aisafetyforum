@@ -132,17 +132,17 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
     return (
       <>
         <div className="text-center mb-6">
-          <h2 className="font-serif text-xl font-bold text-[#0a1f5c]">
+          <h2 className="font-serif text-xl font-bold text-navy">
             Sign in or create account
           </h2>
-          <p className="text-[#5c6670] text-sm mt-1">
+          <p className="text-muted text-sm mt-1">
             Enter your email to receive a verification code
           </p>
         </div>
 
         <form onSubmit={handleSendCode}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-[#1a1a1a] mb-1.5">
+            <label htmlFor="email" className="block text-sm font-medium text-dark mb-1.5">
               Email address
             </label>
             <input
@@ -153,7 +153,7 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
               placeholder="you@example.com"
               required
               autoFocus
-              className="w-full px-3 py-2.5 border border-[#e0e4e8] rounded-lg text-[#1a1a1a] placeholder:text-[#a8b0b8] focus:outline-none focus:ring-2 focus:ring-[#0047ba] focus:border-transparent transition-shadow"
+              className="w-full px-3 py-2.5 border border-border rounded-lg text-dark placeholder:text-grey focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow"
             />
           </div>
 
@@ -164,7 +164,7 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
           <button
             type="submit"
             disabled={isLoading || !email}
-            className="w-full py-2.5 px-4 bg-[#0a1f5c] text-white font-semibold rounded-lg hover:bg-[#061440] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-2.5 px-4 bg-navy text-white font-semibold rounded-lg hover:bg-navy-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? 'Sending...' : 'Send code'}
           </button>
@@ -176,17 +176,17 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
   return (
     <>
       <div className="text-center mb-6">
-        <h2 className="font-serif text-xl font-bold text-[#0a1f5c]">
+        <h2 className="font-serif text-xl font-bold text-navy">
           Check your email
         </h2>
-        <p className="text-[#5c6670] text-sm mt-1">
+        <p className="text-muted text-sm mt-1">
           We sent a 6-digit code to<br />
-          <span className="font-medium text-[#1a1a1a]">{email}</span>
+          <span className="font-medium text-dark">{email}</span>
         </p>
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-[#1a1a1a] mb-3 text-center">
+        <label className="block text-sm font-medium text-dark mb-3 text-center">
           Enter verification code
         </label>
         <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
@@ -201,7 +201,7 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
               onChange={(e) => handleOtpChange(index, e.target.value)}
               onKeyDown={(e) => handleOtpKeyDown(index, e)}
               disabled={isLoading}
-              className="w-11 h-12 text-center text-lg font-semibold border border-[#e0e4e8] rounded-lg text-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-[#0047ba] focus:border-transparent transition-shadow disabled:opacity-50"
+              className="w-11 h-12 text-center text-lg font-semibold border border-border rounded-lg text-dark focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-shadow disabled:opacity-50"
             />
           ))}
         </div>
@@ -214,7 +214,7 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
       <button
         onClick={() => handleVerifyCode(otp.join(''))}
         disabled={isLoading || otp.join('').length !== 6}
-        className="w-full py-2.5 px-4 bg-[#0a1f5c] text-white font-semibold rounded-lg hover:bg-[#061440] disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-3"
+        className="w-full py-2.5 px-4 bg-navy text-white font-semibold rounded-lg hover:bg-navy-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-3"
       >
         {isLoading ? 'Verifying...' : 'Verify code'}
       </button>
@@ -224,11 +224,11 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
           type="button"
           onClick={handleResendCode}
           disabled={isLoading}
-          className="text-[#0047ba] hover:underline disabled:opacity-50"
+          className="text-brand-blue hover:underline disabled:opacity-50"
         >
           Resend code
         </button>
-        <span className="text-[#a8b0b8] mx-2">·</span>
+        <span className="text-grey mx-2">·</span>
         <button
           type="button"
           onClick={() => {
@@ -237,7 +237,7 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
             setError('');
           }}
           disabled={isLoading}
-          className="text-[#0047ba] hover:underline disabled:opacity-50"
+          className="text-brand-blue hover:underline disabled:opacity-50"
         >
           Use different email
         </button>

@@ -27,7 +27,7 @@ function VideoCard({ video }: { video: Video }) {
   if (isPlaying) {
     return (
       <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-        <div className="aspect-video bg-[#0a1f5c]">
+        <div className="aspect-video bg-navy">
           <iframe
             width="100%"
             height="100%"
@@ -39,7 +39,7 @@ function VideoCard({ video }: { video: Video }) {
           />
         </div>
         <div className="p-4">
-          <h3 className="text-sm font-semibold text-[#0a1f5c]">
+          <h3 className="text-sm font-semibold text-navy">
             {video.title}
           </h3>
         </div>
@@ -51,7 +51,7 @@ function VideoCard({ video }: { video: Video }) {
     <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <button
         onClick={() => setIsPlaying(true)}
-        className="relative aspect-video w-full bg-[#0a1f5c] group cursor-pointer"
+        className="relative aspect-video w-full bg-navy group cursor-pointer"
         aria-label={`Play ${video.title}`}
       >
         {/* Thumbnail using Next.js Image with YouTube thumbnail */}
@@ -76,7 +76,7 @@ function VideoCard({ video }: { video: Video }) {
         </div>
       </button>
       <div className="p-4">
-        <h3 className="text-sm font-semibold text-[#0a1f5c]">
+        <h3 className="text-sm font-semibold text-navy">
           {video.title}
         </h3>
       </div>
@@ -103,21 +103,21 @@ export default function VideoCarousel() {
   }, [emblaApi]);
 
   return (
-    <section className="bg-[#f0f4f8] py-12">
+    <section className="bg-light py-12">
       <div className="max-w-[1200px] mx-auto px-8 mb-8">
-        <div className="text-xs font-semibold text-[#0099cc] uppercase tracking-widest mb-2">
+        <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">
           2024 HIGHLIGHTS
         </div>
-        <h2 className="font-serif text-[1.75rem] font-bold text-[#0a1f5c]">
+        <h2 className="font-serif text-[1.75rem] font-bold text-navy">
           Watch 2024 Sessions
         </h2>
       </div>
 
       <div className="relative w-full overflow-hidden">
         {/* Left gradient fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-[#f0f4f8] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-light to-transparent z-10 pointer-events-none" />
         {/* Right gradient fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-[#f0f4f8] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-light to-transparent z-10 pointer-events-none" />
 
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
@@ -135,7 +135,7 @@ export default function VideoCarousel() {
         {/* Navigation Buttons */}
         <button
           onClick={scrollPrev}
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-navy text-navy hover:bg-navy hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
           aria-label="Previous video"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,7 +144,7 @@ export default function VideoCarousel() {
         </button>
         <button
           onClick={scrollNext}
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-navy text-navy hover:bg-navy hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
           aria-label="Next video"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +158,7 @@ export default function VideoCarousel() {
           href="https://youtube.com/playlist?list=PLPu7GaTnxbYxu4rV7tUDJjFB92aM8TjMi&feature=shared"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-[#0047ba] hover:text-[#0a1f5c] font-medium text-sm transition-colors"
+          className="inline-flex items-center gap-2 text-brand-blue hover:text-navy font-medium text-sm transition-colors"
         >
           View All Sessions →
         </a>

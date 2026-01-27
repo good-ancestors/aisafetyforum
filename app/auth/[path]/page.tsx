@@ -6,7 +6,7 @@ import AuthForm from '@/components/AuthForm';
 
 export default function AuthPage() {
   return (
-    <div className="min-h-screen bg-[#f9fafb] flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
       {/* Simple header with logo */}
       <header className="p-4 sm:p-6">
         <Link href="/" className="inline-block">

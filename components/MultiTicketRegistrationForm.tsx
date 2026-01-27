@@ -331,7 +331,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-[#e0e4e8]">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-border">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
           <p className="font-medium">Error</p>
@@ -342,10 +342,10 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
       <div className="space-y-8">
         {/* Early Bird Banner */}
         {earlyBird && (
-          <div className="bg-gradient-to-r from-[#0a1f5c] to-[#0047ba] text-white rounded-lg p-4">
+          <div className="bg-gradient-to-r from-navy to-brand-blue text-white rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#00d4ff]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-[#00d4ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 rounded-full bg-cyan/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -359,12 +359,12 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
 
         {/* Purchaser Section */}
         <section>
-          <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
+          <h2 className="text-lg font-bold text-navy mb-4 pb-2 border-b border-border">
             Your Details (Purchaser)
           </h2>
           <div className="space-y-4">
             <div>
-              <label htmlFor="purchaserEmail" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+              <label htmlFor="purchaserEmail" className="block text-sm font-bold text-navy mb-2">
                 Email *
               </label>
               <input
@@ -374,12 +374,12 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
                 value={purchaserEmail}
                 onChange={(e) => handlePurchaserEmailChange(e.target.value)}
                 onBlur={handlePurchaserEmailBlur}
-                className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
               />
             </div>
 
             <div>
-              <label htmlFor="purchaserName" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+              <label htmlFor="purchaserName" className="block text-sm font-bold text-navy mb-2">
                 Name *
               </label>
               <input
@@ -388,13 +388,13 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
                 required
                 value={purchaserName}
                 onChange={(e) => handlePurchaserNameChange(e.target.value)}
-                className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="purchaserRole" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+                <label htmlFor="purchaserRole" className="block text-sm font-bold text-navy mb-2">
                   Role / Title
                 </label>
                 <input
@@ -403,12 +403,12 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
                   value={purchaserRole}
                   onChange={(e) => handlePurchaserRoleChange(e.target.value)}
                   placeholder="e.g., Research Scientist"
-                  className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label htmlFor="purchaserOrg" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+                <label htmlFor="purchaserOrg" className="block text-sm font-bold text-navy mb-2">
                   Organisation
                 </label>
                 <input
@@ -417,20 +417,20 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
                   value={purchaserOrg}
                   onChange={(e) => handlePurchaserOrgChange(e.target.value)}
                   placeholder="Your organisation"
-                  className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-[#f0f4f8] p-3 rounded-md">
+            <div className="flex items-center gap-3 bg-light p-3 rounded-md">
               <input
                 type="checkbox"
                 id="purchaserIsAttendee"
                 checked={purchaserIsAttendee}
                 onChange={(e) => handlePurchaserIsAttendeeChange(e.target.checked)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] rounded focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border rounded focus:ring-cyan"
               />
-              <label htmlFor="purchaserIsAttendee" className="text-sm text-[#333333]">
+              <label htmlFor="purchaserIsAttendee" className="text-sm text-body">
                 I am also attending (use my details for the first ticket)
               </label>
             </div>
@@ -439,7 +439,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
 
         {/* Attendees Section */}
         <section>
-          <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
+          <h2 className="text-lg font-bold text-navy mb-4 pb-2 border-b border-border">
             Attendees ({attendees.length} ticket{attendees.length !== 1 ? 's' : ''})
           </h2>
 
@@ -466,7 +466,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
           <button
             type="button"
             onClick={addAttendee}
-            className="mt-4 w-full py-3 text-sm font-bold text-[#0047ba] hover:text-[#0a1f5c] border border-dashed border-[#0047ba] hover:border-[#0a1f5c] rounded-md flex items-center justify-center gap-2 transition-colors"
+            className="mt-4 w-full py-3 text-sm font-bold text-brand-blue hover:text-navy border border-dashed border-brand-blue hover:border-navy rounded-md flex items-center justify-center gap-2 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -477,7 +477,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
 
         {/* Coupon Code */}
         <section>
-          <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
+          <h2 className="text-lg font-bold text-navy mb-4 pb-2 border-b border-border">
             Discount Code
           </h2>
           <div className="flex gap-2">
@@ -493,14 +493,14 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
               }}
               disabled={couponApplied}
               placeholder="Enter coupon code"
-              className="flex-1 px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent disabled:bg-gray-100 uppercase"
+              className="flex-1 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100 uppercase"
             />
             {!couponApplied ? (
               <button
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={validatingCoupon || !couponCode.trim()}
-                className="px-6 py-2 text-sm font-bold bg-[#0a1f5c] text-white rounded-md hover:bg-[#1a3a8f] transition-colors disabled:opacity-50"
+                className="px-6 py-2 text-sm font-bold bg-navy text-white rounded-md hover:bg-navy-light transition-colors disabled:opacity-50"
               >
                 {validatingCoupon ? 'Checking...' : 'Apply'}
               </button>
@@ -548,7 +548,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
           <button
             type="submit"
             disabled={isSubmitting || !isFormValid}
-            className="w-full px-8 py-4 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-8 py-4 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? 'Processing...'
@@ -559,12 +559,12 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
                   : `Pay $${(totals.total / 100).toFixed(2)} AUD`}
           </button>
           {!isFormValid && !isSubmitting && (
-            <p className="text-sm text-[#5c6670] mt-3 text-center">
+            <p className="text-sm text-muted mt-3 text-center">
               {validationErrors[0]}
             </p>
           )}
           {totals.total > 0 && isFormValid && (
-            <p className="text-sm text-[#5c6670] mt-4 text-center">
+            <p className="text-sm text-muted mt-4 text-center">
               {paymentMethod === 'invoice'
                 ? 'Invoice will be sent via email'
                 : 'Secure checkout powered by Stripe'}

@@ -80,19 +80,19 @@ export default function SpeakerProposalForm() {
 
   if (submitted) {
     return (
-      <div className="bg-white rounded-lg p-8 border border-[#e0e4e8] text-center">
-        <div className="w-16 h-16 bg-[#00d4ff] rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="bg-white rounded-lg p-8 border border-border text-center">
+        <div className="w-16 h-16 bg-cyan rounded-full flex items-center justify-center mx-auto mb-4">
           <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="font-serif text-2xl font-bold text-[#0a1f5c] mb-3">Thanks!</h2>
-        <p className="text-[#333333] mb-6">
+        <h2 className="font-serif text-2xl font-bold text-navy mb-3">Thanks!</h2>
+        <p className="text-body mb-6">
           We&apos;ve received your proposal. You&apos;ll hear from us by soon.
         </p>
         <button
           onClick={() => setSubmitted(false)}
-          className="text-[#0047ba] hover:text-[#0099cc] font-medium text-sm underline"
+          className="text-brand-blue hover:text-teal font-medium text-sm underline"
         >
           Submit another proposal
         </button>
@@ -101,7 +101,7 @@ export default function SpeakerProposalForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-[#e0e4e8]">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-8 border border-border">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
           <p className="font-medium">Error</p>
@@ -111,13 +111,13 @@ export default function SpeakerProposalForm() {
 
       <div className="space-y-6">
         {/* Session Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">Your Session Idea</h3>
+        <div className="border-b-2 border-navy pb-2">
+          <h3 className="font-bold text-lg text-navy">Your Session Idea</h3>
         </div>
 
         {/* Format */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             What format works best? *
           </label>
           <input type="hidden" name="format" value={selectedFormat} />
@@ -127,9 +127,9 @@ export default function SpeakerProposalForm() {
                 key={format.id}
                 className={`flex items-start gap-3 p-3 border-l-4 ${
                   selectedFormat === format.value
-                    ? 'border-[#00d4ff] bg-[#00d4ff]/5 ring-2 ring-[#00d4ff]'
-                    : 'border-[#0a1f5c] bg-[#f9fafb]'
-                } rounded cursor-pointer hover:bg-[#f0f4f8] transition-colors`}
+                    ? 'border-cyan bg-cyan/5 ring-2 ring-cyan'
+                    : 'border-navy bg-cream'
+                } rounded cursor-pointer hover:bg-light transition-colors`}
               >
                 <input
                   type="radio"
@@ -138,11 +138,11 @@ export default function SpeakerProposalForm() {
                   checked={selectedFormat === format.value}
                   onChange={(e) => setSelectedFormat(e.target.value)}
                   required
-                  className="mt-1 w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                  className="mt-1 w-4 h-4 text-cyan border-border focus:ring-cyan"
                 />
                 <div>
-                  <div className="font-bold text-[#0a1f5c] text-sm">{format.label}</div>
-                  <div className="text-xs text-[#5c6670]">{format.description}</div>
+                  <div className="font-bold text-navy text-sm">{format.label}</div>
+                  <div className="text-xs text-muted">{format.description}</div>
                 </div>
               </label>
             ))}
@@ -151,10 +151,10 @@ export default function SpeakerProposalForm() {
 
         {/* Abstract */}
         <div>
-          <label htmlFor="abstract" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="abstract" className="block text-sm font-bold text-navy mb-2">
             Tell us about your session idea *
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             Share what you&apos;d like to cover and why it matters. Don&apos;t worry about perfection — we&apos;re excited to hear your ideas! (Around 200 words)
           </p>
           <textarea
@@ -164,18 +164,18 @@ export default function SpeakerProposalForm() {
             maxLength={1200}
             rows={6}
             placeholder="e.g. I'd like to share recent findings on..., or lead a discussion about..."
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Profile Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">About You</h3>
+        <div className="border-b-2 border-navy pb-2 pt-2">
+          <h3 className="font-bold text-lg text-navy">About You</h3>
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="email" className="block text-sm font-bold text-navy mb-2">
             Email *
           </label>
           <input
@@ -183,13 +183,13 @@ export default function SpeakerProposalForm() {
             id="email"
             name="email"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="name" className="block text-sm font-bold text-navy mb-2">
             Name *
           </label>
           <input
@@ -197,16 +197,16 @@ export default function SpeakerProposalForm() {
             id="name"
             name="name"
             required
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Title/Role */}
         <div>
-          <label htmlFor="title" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="title" className="block text-sm font-bold text-navy mb-2">
             Your role or title *
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             e.g. &quot;Research Fellow&quot;, &quot;PhD Student, Computer Science&quot;, or &quot;Policy Analyst&quot;
           </p>
           <input
@@ -215,16 +215,16 @@ export default function SpeakerProposalForm() {
             name="title"
             required
             placeholder="e.g. Research Fellow"
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Organisation */}
         <div>
-          <label htmlFor="organisation" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="organisation" className="block text-sm font-bold text-navy mb-2">
             Organisation
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             Optional — your university, employer, or leave blank if independent
           </p>
           <input
@@ -232,16 +232,16 @@ export default function SpeakerProposalForm() {
             id="organisation"
             name="organisation"
             placeholder="e.g. Australian National University"
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Bio */}
         <div>
-          <label htmlFor="bio" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label htmlFor="bio" className="block text-sm font-bold text-navy mb-2">
             Short bio *
           </label>
-          <p className="text-sm text-[#5c6670] mb-2">
+          <p className="text-sm text-muted mb-2">
             A few sentences about your background. (Around 75 words)
           </p>
           <textarea
@@ -251,16 +251,16 @@ export default function SpeakerProposalForm() {
             maxLength={450}
             rows={4}
             placeholder="e.g. Your research focus, current work, or relevant experience..."
-            className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
         {/* Profile Links */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Profile links
           </label>
-          <p className="text-sm text-[#5c6670] mb-3">
+          <p className="text-sm text-muted mb-3">
             Optional — add any professional profiles you&apos;d like to share
           </p>
           <div className="space-y-3">
@@ -269,43 +269,43 @@ export default function SpeakerProposalForm() {
               id="linkedin"
               name="linkedin"
               placeholder="LinkedIn URL (e.g. linkedin.com/in/yourname)"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
             <input
               type="url"
               id="twitter"
               name="twitter"
               placeholder="X/Twitter URL (e.g. x.com/yourhandle)"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
             <input
               type="url"
               id="bluesky"
               name="bluesky"
               placeholder="Bluesky URL (e.g. bsky.app/profile/yourname)"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
             <input
               type="url"
               id="website"
               name="website"
               placeholder="Personal website or academic profile URL"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent text-sm"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
           </div>
         </div>
 
         {/* Travel Section Header */}
-        <div className="border-b-2 border-[#0a1f5c] pb-2 pt-2">
-          <h3 className="font-bold text-lg text-[#0a1f5c]">Travel Support</h3>
+        <div className="border-b-2 border-navy pb-2 pt-2">
+          <h3 className="font-bold text-lg text-navy">Travel Support</h3>
         </div>
 
         {/* Travel Support */}
         <div>
-          <label className="block text-sm font-bold text-[#0a1f5c] mb-3">
+          <label className="block text-sm font-bold text-navy mb-3">
             Would travel support help you attend? *
           </label>
-          <p className="text-sm text-[#5c6670] mb-3">
+          <p className="text-sm text-muted mb-3">
             We have limited funding available. Let us know if support would make a difference.
           </p>
           <div className="space-y-2">
@@ -317,9 +317,9 @@ export default function SpeakerProposalForm() {
                 value="No"
                 required
                 onChange={(e) => setTravelSupport(e.target.value)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
-              <label htmlFor="travelNo" className="text-sm text-[#333333]">
+              <label htmlFor="travelNo" className="text-sm text-body">
                 No thanks, I can cover my own travel
               </label>
             </div>
@@ -330,9 +330,9 @@ export default function SpeakerProposalForm() {
                 name="travelSupport"
                 value="Yes"
                 onChange={(e) => setTravelSupport(e.target.value)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
-              <label htmlFor="travelYes" className="text-sm text-[#333333]">
+              <label htmlFor="travelYes" className="text-sm text-body">
                 Yes, I&apos;d need support to attend
               </label>
             </div>
@@ -343,9 +343,9 @@ export default function SpeakerProposalForm() {
                 name="travelSupport"
                 value="Maybe"
                 onChange={(e) => setTravelSupport(e.target.value)}
-                className="w-4 h-4 text-[#00d4ff] border-[#e0e4e8] focus:ring-[#00d4ff]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
-              <label htmlFor="travelMaybe" className="text-sm text-[#333333]">
+              <label htmlFor="travelMaybe" className="text-sm text-body">
                 Possibly — I&apos;d like to explore options
               </label>
             </div>
@@ -355,10 +355,10 @@ export default function SpeakerProposalForm() {
         {/* Travel Estimate (conditional) */}
         {(travelSupport === 'Yes' || travelSupport === 'Maybe') && (
           <div>
-            <label htmlFor="travelEstimate" className="block text-sm font-bold text-[#0a1f5c] mb-2">
+            <label htmlFor="travelEstimate" className="block text-sm font-bold text-navy mb-2">
               Rough estimate of support needed
             </label>
-            <p className="text-sm text-[#5c6670] mb-2">
+            <p className="text-sm text-muted mb-2">
               Include where you&apos;re travelling from and accommodation needs. Example: &quot;$250 domestic economy flight from Melbourne & $200 for 2 nights at Sydney Central YHA&quot;
             </p>
             <textarea
@@ -366,7 +366,7 @@ export default function SpeakerProposalForm() {
               name="anythingElse"
               rows={2}
               placeholder="e.g. $400 domestic flight from Brisbane & $300 for 2 nights accommodation"
-              className="w-full px-4 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
             />
           </div>
         )}
@@ -376,7 +376,7 @@ export default function SpeakerProposalForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full px-8 py-4 text-base font-bold bg-[#00d4ff] text-[#061440] rounded-md hover:bg-[#00b8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-8 py-4 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Proposal'}
           </button>

@@ -34,13 +34,13 @@ export default function MobileNav({
   if (!isOpen) return null;
 
   return (
-    <nav className="md:hidden border-t border-[#e0e4e8] bg-white">
+    <nav className="md:hidden border-t border-border bg-white">
       <ul className="flex flex-col list-none">
         {navLinks.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+              className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
               onClick={onClose}
             >
               {link.label}
@@ -51,16 +51,16 @@ export default function MobileNav({
         {/* Mobile Auth Section */}
         {user ? (
           <>
-            <li className="border-t border-[#e0e4e8] mt-2 pt-2">
+            <li className="border-t border-border mt-2 pt-2">
               <div className="px-4 py-2">
-                <p className="text-xs text-[#5c6670]">Signed in as</p>
-                <p className="text-sm font-medium text-[#1a1a1a] truncate">{user.email}</p>
+                <p className="text-xs text-muted">Signed in as</p>
+                <p className="text-sm font-medium text-dark truncate">{user.email}</p>
               </div>
             </li>
             <li>
               <Link
                 href="/dashboard"
-                className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+                className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                 onClick={onClose}
               >
                 Dashboard
@@ -69,7 +69,7 @@ export default function MobileNav({
             <li>
               <Link
                 href="/dashboard/profile"
-                className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+                className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                 onClick={onClose}
               >
                 Profile
@@ -78,7 +78,7 @@ export default function MobileNav({
             <li>
               <Link
                 href="/dashboard/tickets"
-                className="block text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+                className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                 onClick={onClose}
               >
                 My Tickets
@@ -88,7 +88,7 @@ export default function MobileNav({
               <li>
                 <Link
                   href="/admin/invoices"
-                  className="flex items-center gap-2 text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors"
+                  className="flex items-center gap-2 text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                   onClick={onClose}
                 >
                   <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">Admin</span>
@@ -110,15 +110,15 @@ export default function MobileNav({
           </>
         ) : (
           <>
-            <li className="border-t border-[#e0e4e8] mt-2">
+            <li className="border-t border-border mt-2">
               <button
                 onClick={() => {
                   onClose();
                   onOpenAuthModal();
                 }}
-                className="w-full text-left text-[#1a1a1a] px-4 py-3 font-medium text-[0.95rem] hover:bg-[#f0f4f8] transition-colors flex items-center gap-3"
+                className="w-full text-left text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors flex items-center gap-3"
               >
-                <span className="w-8 h-8 rounded-full border-2 border-dashed border-[#a8b0b8] flex items-center justify-center text-[#a8b0b8]">
+                <span className="w-8 h-8 rounded-full border-2 border-dashed border-grey flex items-center justify-center text-grey">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -129,7 +129,7 @@ export default function MobileNav({
             <li className="p-4 pt-2">
               <Link
                 href="/register"
-                className="block text-center px-6 py-3 text-[0.95rem] font-semibold bg-[#0a1f5c] text-white rounded-md hover:bg-[#061440] transition-colors"
+                className="block text-center px-6 py-3 text-[0.95rem] font-semibold bg-navy text-white rounded-md hover:bg-navy-dark transition-colors"
                 onClick={onClose}
               >
                 Register

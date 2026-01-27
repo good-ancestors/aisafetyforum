@@ -22,8 +22,8 @@ export const ticketTiers = [
     earlyBirdPriceDisplay: '$357',
     stripePriceId: process.env.STRIPE_PRICE_STANDARD || '',
     stripeEarlyBirdPriceId: process.env.STRIPE_PRICE_STANDARD_EARLYBIRD || '',
-    borderColor: 'border-[#0047ba]',
-    textColor: 'text-[#0047ba]',
+    borderColor: 'border-brand-blue',
+    textColor: 'text-brand-blue',
   },
   {
     id: 'academic',
@@ -35,8 +35,8 @@ export const ticketTiers = [
     earlyBirdPriceDisplay: '$147',
     stripePriceId: process.env.STRIPE_PRICE_ACADEMIC || '',
     stripeEarlyBirdPriceId: process.env.STRIPE_PRICE_ACADEMIC_EARLYBIRD || '',
-    borderColor: 'border-[#0099cc]',
-    textColor: 'text-[#0099cc]',
+    borderColor: 'border-teal',
+    textColor: 'text-teal',
   },
   {
     id: 'concession',
@@ -48,8 +48,8 @@ export const ticketTiers = [
     earlyBirdPriceDisplay: '$45',
     stripePriceId: process.env.STRIPE_PRICE_CONCESSION || '',
     stripeEarlyBirdPriceId: process.env.STRIPE_PRICE_CONCESSION_EARLYBIRD || '',
-    borderColor: 'border-[#00d4ff]',
-    textColor: 'text-[#00d4ff]',
+    borderColor: 'border-cyan',
+    textColor: 'text-cyan',
   },
 ] as const;
 

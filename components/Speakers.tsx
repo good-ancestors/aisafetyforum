@@ -89,13 +89,13 @@ export default function Speakers() {
     <section id="speakers" className="bg-white py-16">
       <div className="max-w-[1200px] mx-auto px-8 mb-12">
         <div className="text-center">
-          <div className="text-xs font-semibold text-[#0099cc] uppercase tracking-widest mb-2">
+          <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">
             SPEAKERS
           </div>
-          <h2 className="font-serif text-[2rem] font-bold text-[#0a1f5c] mb-4">
+          <h2 className="font-serif text-[2rem] font-bold text-navy mb-4">
             Distinguished Experts in AI Safety
           </h2>
-          <p className="text-[#5c6670] max-w-[700px] mx-auto">
+          <p className="text-muted max-w-[700px] mx-auto">
             Our 2026 lineup will be announced soon. Here are some of the distinguished speakers who contributed to the 2024 inaugural forum.
           </p>
         </div>
@@ -111,8 +111,8 @@ export default function Speakers() {
           <div className="flex">
             {speakers2024.map((speaker, index) => (
               <div key={index} className="flex-[0_0_70%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_20%] xl:flex-[0_0_16%] min-w-0 px-2">
-                <div className="bg-[#f0f4f8] rounded-lg overflow-hidden border-l-4 border-[#0099cc] h-full flex flex-col">
-                  <div className="relative w-full aspect-square bg-gradient-to-br from-[#0a1f5c] to-[#0047ba] overflow-hidden">
+                <div className="bg-light rounded-lg overflow-hidden border-l-4 border-teal h-full flex flex-col">
+                  <div className="relative w-full aspect-square bg-gradient-to-br from-navy to-brand-blue overflow-hidden">
                     {speaker.image ? (
                       <Image
                         src={speaker.image}
@@ -127,10 +127,10 @@ export default function Speakers() {
                     )}
                   </div>
                   <div className="p-4 flex-1 flex flex-col">
-                    <h3 className="font-bold text-base text-[#0a1f5c] mb-1">
+                    <h3 className="font-bold text-base text-navy mb-1">
                       {speaker.name}
                     </h3>
-                    <div className="text-xs text-[#5c6670] mb-2 line-clamp-2">
+                    <div className="text-xs text-muted mb-2 line-clamp-2">
                       {speaker.affiliation}
                     </div>
 
@@ -141,7 +141,7 @@ export default function Speakers() {
                           href={speaker.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#0099cc] hover:text-[#0a1f5c] transition-colors"
+                          className="text-teal hover:text-navy transition-colors"
                           aria-label={`${speaker.name}'s website`}
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -154,7 +154,7 @@ export default function Speakers() {
                           href={speaker.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#0099cc] hover:text-[#0a1f5c] transition-colors"
+                          className="text-teal hover:text-navy transition-colors"
                           aria-label={`${speaker.name}'s LinkedIn`}
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@ export default function Speakers() {
                           href={speaker.twitter}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#0099cc] hover:text-[#0a1f5c] transition-colors"
+                          className="text-teal hover:text-navy transition-colors"
                           aria-label={`${speaker.name}'s Twitter/X`}
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -186,7 +186,7 @@ export default function Speakers() {
         {/* Navigation Buttons */}
         <button
           onClick={scrollPrev}
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-navy text-navy hover:bg-navy hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
           aria-label="Previous slide"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,7 +195,7 @@ export default function Speakers() {
         </button>
         <button
           onClick={scrollNext}
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-[#0a1f5c] text-[#0a1f5c] hover:bg-[#0a1f5c] hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-navy text-navy hover:bg-navy hover:text-white transition-colors shadow-lg flex items-center justify-center z-20"
           aria-label="Next slide"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,12 +206,12 @@ export default function Speakers() {
 
       <div className="max-w-[1200px] mx-auto px-8">
         <div className="text-center mt-12">
-          <p className="text-[#5c6670] mb-6">
+          <p className="text-muted mb-6">
             Interested in speaking at the 2026 forum?
           </p>
           <a
             href="/speak"
-            className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-semibold bg-[#0a1f5c] text-white rounded-md hover:bg-[#061440] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-semibold bg-navy text-white rounded-md hover:bg-navy-dark transition-colors"
           >
             Submit a Proposal
           </a>

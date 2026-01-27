@@ -56,15 +56,15 @@ export default function Organisers() {
   ];
 
   return (
-    <section className="bg-[#f0f4f8] py-16 px-8">
+    <section className="bg-light py-16 px-8">
       <div className="max-w-[1200px] mx-auto">
         {/* Organisers */}
         <div className="mb-16">
           <div className="text-center mb-12">
-            <div className="text-xs font-semibold text-[#0099cc] uppercase tracking-widest mb-2">
+            <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">
               ORGANISERS
             </div>
-            <h2 className="font-serif text-[2rem] font-bold text-[#0a1f5c]">
+            <h2 className="font-serif text-[2rem] font-bold text-navy">
               Organising Committee
             </h2>
           </div>
@@ -73,10 +73,10 @@ export default function Organisers() {
             {organisers.map((org, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg p-6 shadow-sm border border-[#e0e4e8] flex flex-col"
+                className="bg-white rounded-lg p-6 shadow-sm border border-border flex flex-col"
               >
                 {/* Logo */}
-                <div className="h-20 flex items-center justify-center mb-4 bg-[#f9fafb] rounded border border-[#e0e4e8] p-4 relative">
+                <div className="h-20 flex items-center justify-center mb-4 bg-cream rounded border border-border p-4 relative">
                   <Image
                     src={org.logo}
                     alt={`${org.name} logo`}
@@ -88,12 +88,12 @@ export default function Organisers() {
                   href={org.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-[#0a1f5c] hover:text-[#0047ba] transition-colors block mb-2"
+                  className="font-bold text-navy hover:text-brand-blue transition-colors block mb-2"
                 >
                   {org.name}
                 </a>
-                <div className="text-sm text-[#5c6670] mb-1">{org.lead}</div>
-                <div className="text-xs text-[#5c6670] opacity-75">{org.title}</div>
+                <div className="text-sm text-muted mb-1">{org.lead}</div>
+                <div className="text-xs text-muted opacity-75">{org.title}</div>
               </div>
             ))}
           </div>
@@ -102,10 +102,10 @@ export default function Organisers() {
         {/* Sponsors */}
         <div>
           <div className="text-center mb-12">
-            <div className="text-xs font-semibold text-[#0099cc] uppercase tracking-widest mb-2">
+            <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">
               PARTNERS
             </div>
-            <h2 className="font-serif text-[2rem] font-bold text-[#0a1f5c]">
+            <h2 className="font-serif text-[2rem] font-bold text-navy">
               Sponsors
             </h2>
           </div>
@@ -114,10 +114,10 @@ export default function Organisers() {
             {sponsors.map((sponsor, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg p-8 shadow-sm border-2 border-[#0099cc] max-w-md w-full"
+                className="bg-white rounded-lg p-8 shadow-sm border-2 border-teal max-w-md w-full"
               >
                 {/* Logo */}
-                <div className="h-24 flex items-center justify-center mb-6 bg-[#f9fafb] rounded p-4 relative">
+                <div className="h-24 flex items-center justify-center mb-6 bg-cream rounded p-4 relative">
                   <Image
                     src={sponsor.logo}
                     alt={`${sponsor.name} logo`}
@@ -130,11 +130,11 @@ export default function Organisers() {
                     href={sponsor.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-lg text-[#0a1f5c] hover:text-[#0047ba] transition-colors block mb-2"
+                    className="font-bold text-lg text-navy hover:text-brand-blue transition-colors block mb-2"
                   >
                     {sponsor.name}
                   </a>
-                  <div className="inline-block px-4 py-1 bg-gradient-to-r from-[#0099cc] to-[#00d4ff] text-white text-sm font-semibold rounded-full">
+                  <div className="inline-block px-4 py-1 bg-gradient-to-r from-teal to-cyan text-white text-sm font-semibold rounded-full">
                     {sponsor.type}
                   </div>
                 </div>
@@ -142,8 +142,8 @@ export default function Organisers() {
             ))}
 
             {/* Become a Sponsor link */}
-            <p className="text-sm text-[#5c6670] mt-4">
-              Interested in sponsoring? <a href="/sponsorship" className="text-[#0047ba] hover:text-[#0099cc] underline font-medium">Learn about sponsorship opportunities</a>
+            <p className="text-sm text-muted mt-4">
+              Interested in sponsoring? <a href="/sponsorship" className="text-brand-blue hover:text-teal underline font-medium">Learn about sponsorship opportunities</a>
             </p>
           </div>
         </div>

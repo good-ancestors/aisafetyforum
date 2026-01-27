@@ -21,7 +21,7 @@ export default function PaymentMethodSelector({
 }: PaymentMethodSelectorProps) {
   return (
     <section>
-      <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
+      <h2 className="text-lg font-bold text-navy mb-4 pb-2 border-b border-border">
         Payment Method
       </h2>
       <div className="space-y-4">
@@ -29,8 +29,8 @@ export default function PaymentMethodSelector({
           <label
             className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
               paymentMethod === 'card'
-                ? 'border-[#00d4ff] bg-[#00d4ff]/5'
-                : 'border-[#e0e4e8] hover:border-[#a8b0b8]'
+                ? 'border-cyan bg-cyan/5'
+                : 'border-border hover:border-grey'
             }`}
           >
             <input
@@ -39,16 +39,16 @@ export default function PaymentMethodSelector({
               value="card"
               checked={paymentMethod === 'card'}
               onChange={(e) => onPaymentMethodChange(e.target.value as 'card' | 'invoice')}
-              className="w-4 h-4 text-[#00d4ff] focus:ring-[#00d4ff]"
+              className="w-4 h-4 text-cyan focus:ring-cyan"
             />
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#0a1f5c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                <span className="font-bold text-[#0a1f5c]">Pay by Card</span>
+                <span className="font-bold text-navy">Pay by Card</span>
               </div>
-              <p className="text-sm text-[#5c6670] mt-1">
+              <p className="text-sm text-muted mt-1">
                 Pay now via Stripe
               </p>
             </div>
@@ -57,8 +57,8 @@ export default function PaymentMethodSelector({
           <label
             className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
               paymentMethod === 'invoice'
-                ? 'border-[#00d4ff] bg-[#00d4ff]/5'
-                : 'border-[#e0e4e8] hover:border-[#a8b0b8]'
+                ? 'border-cyan bg-cyan/5'
+                : 'border-border hover:border-grey'
             }`}
           >
             <input
@@ -67,16 +67,16 @@ export default function PaymentMethodSelector({
               value="invoice"
               checked={paymentMethod === 'invoice'}
               onChange={(e) => onPaymentMethodChange(e.target.value as 'card' | 'invoice')}
-              className="w-4 h-4 text-[#00d4ff] focus:ring-[#00d4ff]"
+              className="w-4 h-4 text-cyan focus:ring-cyan"
             />
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-[#0a1f5c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span className="font-bold text-[#0a1f5c]">Request Invoice</span>
+                <span className="font-bold text-navy">Request Invoice</span>
               </div>
-              <p className="text-sm text-[#5c6670] mt-1">
+              <p className="text-sm text-muted mt-1">
                 Tax invoice with 14 days to pay
               </p>
             </div>
@@ -84,14 +84,14 @@ export default function PaymentMethodSelector({
         </div>
 
         {paymentMethod === 'invoice' && (
-          <div className="space-y-4 pt-4 border-t border-[#e0e4e8]">
-            <p className="text-sm text-[#5c6670]">
+          <div className="space-y-4 pt-4 border-t border-border">
+            <p className="text-sm text-muted">
               We&apos;ll email a PDF tax invoice with GST breakdown and bank transfer details to <strong>{purchaserEmail || 'your email'}</strong>.
               Payment is due within 14 days. Tickets will be confirmed once payment is received.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="orgABN" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+                <label htmlFor="orgABN" className="block text-sm font-medium text-navy mb-1">
                   ABN (optional)
                 </label>
                 <input
@@ -100,11 +100,11 @@ export default function PaymentMethodSelector({
                   value={orgABN}
                   onChange={(e) => onOrgABNChange(e.target.value)}
                   placeholder="e.g., 12 345 678 901"
-                  className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
                 />
               </div>
               <div>
-                <label htmlFor="poNumber" className="block text-sm font-medium text-[#0a1f5c] mb-1">
+                <label htmlFor="poNumber" className="block text-sm font-medium text-navy mb-1">
                   PO Number (optional)
                 </label>
                 <input
@@ -113,7 +113,7 @@ export default function PaymentMethodSelector({
                   value={poNumber}
                   onChange={(e) => onPoNumberChange(e.target.value)}
                   placeholder="Your purchase order number"
-                  className="w-full px-3 py-2 border border-[#e0e4e8] rounded-md focus:outline-none focus:ring-2 focus:ring-[#00d4ff] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
                 />
               </div>
             </div>

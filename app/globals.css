@@ -1,9 +1,37 @@
 @import "tailwindcss";
 @import "@neondatabase/auth/ui/tailwind";
 
-/* Design System CSS Variables */
+/* Tailwind 4 Theme Configuration */
+@theme {
+  /* Navy palette - primary brand color */
+  --color-navy: #0a1f5c;
+  --color-navy-light: #1a3a8f;
+  --color-navy-dark: #061440;
+
+  /* Brand accent colors */
+  --color-brand-blue: #0047ba;
+  --color-cyan: #00d4ff;
+  --color-cyan-dark: #00b8e0;
+  --color-teal: #0099cc;
+  --color-grey: #a8b0b8;
+
+  /* Backgrounds */
+  --color-cream: #f9fafb;
+  --color-light: #f0f4f8;
+  --color-info-bg: #e8f4fd;
+  --color-cyan-tint: #e0f2ff;
+
+  /* Text colors */
+  --color-dark: #1a1a1a;
+  --color-body: #333333;
+  --color-muted: #5c6670;
+
+  /* Borders */
+  --color-border: #e0e4e8;
+}
+
+/* CSS Variables for use in arbitrary values and custom CSS */
 :root {
-  /* Navy palette */
   --navy: #0a1f5c;
   --navy-light: #1a3a8f;
   --navy-dark: #061440;
@@ -12,18 +40,12 @@
   --cyan-dark: #00b8e0;
   --teal: #0099cc;
   --grey: #a8b0b8;
-
-  /* Backgrounds */
   --bg-cream: #f9fafb;
   --bg-white: #ffffff;
   --bg-light: #f0f4f8;
-
-  /* Text */
   --text-dark: #1a1a1a;
   --text-body: #333333;
   --text-muted: #5c6670;
-
-  /* Borders */
   --border: #e0e4e8;
 }
 
