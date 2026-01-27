@@ -53,11 +53,11 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden lg:flex items-center gap-2">
             <ul className="flex list-none">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-dark px-5 py-3 font-medium text-[0.95rem] hover:text-brand-blue transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-5 after:right-5 after:h-0.5 after:bg-cyan after:opacity-0 hover:after:opacity-100 after:transition-opacity">
+                  <Link href={link.href} className="text-dark px-3 xl:px-5 py-3 font-medium text-[0.95rem] hover:text-brand-blue transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 xl:after:left-5 xl:after:right-5 after:h-0.5 after:bg-cyan after:opacity-0 hover:after:opacity-100 after:transition-opacity">
                     {link.label}
                   </Link>
                 </li>
@@ -98,7 +98,7 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-navy"
+            className="lg:hidden p-2 text-navy"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
