@@ -12,14 +12,22 @@ export async function getAuthServer() {
 /**
  * Get the current authenticated user session and user.
  * Uses the neonAuth() utility which reads session from cookies.
- * Returns { session: null, user: null } if auth is not configured.
+ * Returns { session: null, user: null } if auth is not configured or session is invalid.
+ *
+ * Wrapped in try-catch because neonAuth() may attempt to modify cookies
+ * (e.g. clearing a stale session after account deletion), which throws
+ * in Server Components. Catching this gracefully treats it as unauthenticated.
  */
 export async function getSession() {
   if (!process.env.NEON_AUTH_BASE_URL) {
     return { session: null, user: null };
   }
-  const { neonAuth } = await import('@neondatabase/auth/next/server');
-  return neonAuth();
+  try {
+    const { neonAuth } = await import('@neondatabase/auth/next/server');
+    return await neonAuth();
+  } catch {
+    return { session: null, user: null };
+  }
 }
 
 /**
