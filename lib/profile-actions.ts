@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { getCurrentProfile } from '@/lib/auth/profile';
-import { getAuthServer, getCurrentUser } from '@/lib/auth/server';
+import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
 import { isValidEmail } from '@/lib/security';
 
@@ -307,7 +307,7 @@ export async function deleteProfile(): Promise<{ success: boolean; error?: strin
       return { success: false, error: 'Profile not found' };
     }
 
-    // Perform deletion in a transaction
+    // Perform deletion in a transaction (public schema + neon_auth schema)
     await prisma.$transaction(async (tx) => {
       // 1. Orphan registrations (set profileId to null)
       await tx.registration.updateMany({
@@ -315,12 +315,12 @@ export async function deleteProfile(): Promise<{ success: boolean; error?: strin
         data: { profileId: null },
       });
 
-      // 2. Delete all speaker proposals (including decided ones per plan)
+      // 2. Delete all speaker proposals
       await tx.speakerProposal.deleteMany({
         where: { profileId: profile.id },
       });
 
-      // 3. Delete all funding applications (including decided ones per plan)
+      // 3. Delete all funding applications
       await tx.fundingApplication.deleteMany({
         where: { profileId: profile.id },
       });
@@ -329,13 +329,14 @@ export async function deleteProfile(): Promise<{ success: boolean; error?: strin
       await tx.profile.delete({
         where: { id: profile.id },
       });
-    });
 
-    // 5. Delete the neon_auth user (also removes sessions and linked accounts)
-    const authServer = await getAuthServer();
-    if (authServer && user.id) {
-      await authServer.admin.removeUser({ userId: user.id });
-    }
+      // 5. Delete neon_auth sessions, accounts, and user (raw SQL since it's a different schema)
+      if (user.id) {
+        await tx.$executeRaw`DELETE FROM neon_auth."session" WHERE "userId" = ${user.id}::uuid`;
+        await tx.$executeRaw`DELETE FROM neon_auth."account" WHERE "userId" = ${user.id}::uuid`;
+        await tx.$executeRaw`DELETE FROM neon_auth."user" WHERE id = ${user.id}::uuid`;
+      }
+    });
 
     return { success: true };
   } catch (error) {
