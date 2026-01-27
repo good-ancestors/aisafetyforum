@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { sendConfirmationEmail } from '@/lib/brevo';
+import { sendReceiptEmail, sendTicketConfirmationEmail } from '@/lib/brevo';
 import { prisma } from '@/lib/prisma';
 import { redactEmail, isProduction } from '@/lib/security';
 import { requireStripe } from '@/lib/stripe';
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         // First try to find an Order by session ID (multi-ticket orders)
         const order = await prisma.order.findUnique({
           where: { stripeSessionId: session.id },
-          include: { registrations: true },
+          include: { registrations: true, coupon: true },
         });
 
         if (order) {
@@ -74,33 +74,55 @@ export async function POST(req: Request) {
 
           console.log(`✅ Order ${order.id} marked as paid with ${order.registrations.length} registrations`);
 
-          // Send confirmation email to each attendee
+          const orderDate = new Date(order.createdAt).toLocaleDateString('en-AU', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          });
+
+          // 1. Send RECEIPT to the purchaser only
+          try {
+            const subtotal = order.registrations.reduce((sum, r) => sum + (r.ticketPrice || 0), 0);
+            const discountAmount = order.discountAmount || 0;
+            const totalAmount = order.totalAmount;
+
+            await sendReceiptEmail({
+              purchaserEmail: order.purchaserEmail,
+              purchaserName: order.purchaserName,
+              orderNumber: `AISF-${order.id.slice(-8).toUpperCase()}`,
+              orderDate,
+              transactionId: session.payment_intent as string,
+              attendees: order.registrations.map((r) => ({
+                name: r.name,
+                email: r.email,
+                ticketType: r.ticketType,
+                amount: r.ticketPrice || r.amountPaid,
+              })),
+              subtotal,
+              discountAmount,
+              discountDescription: order.coupon?.code,
+              totalAmount,
+            });
+
+            console.log(`✅ Receipt email sent to purchaser ${isProduction() ? redactEmail(order.purchaserEmail) : order.purchaserEmail}`);
+          } catch (emailError) {
+            console.error(`❌ Error sending receipt email:`, emailError);
+          }
+
+          // 2. Send TICKET CONFIRMATION to each attendee
           for (const reg of order.registrations) {
             try {
-              const receiptNumber = `AISF-${reg.id.slice(-8).toUpperCase()}`;
-              const receiptDate = new Date(reg.createdAt).toLocaleDateString('en-AU', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-              });
-
-              await sendConfirmationEmail({
+              await sendTicketConfirmationEmail({
                 email: reg.email,
                 name: reg.name,
                 ticketType: reg.ticketType,
-                organisation: reg.organisation,
-                receiptNumber,
-                receiptDate,
-                amountPaid: reg.ticketPrice || reg.amountPaid,
-                transactionId: session.payment_intent as string,
-                // Include purchaser info for group orders
                 purchaserEmail: order.purchaserEmail,
                 purchaserName: order.purchaserName,
               });
 
-              console.log(`✅ Confirmation email sent to ${isProduction() ? redactEmail(reg.email) : reg.email}`);
+              console.log(`✅ Ticket confirmation email sent to ${isProduction() ? redactEmail(reg.email) : reg.email}`);
             } catch (emailError) {
-              console.error(`❌ Error sending confirmation email to ${isProduction() ? redactEmail(reg.email) : reg.email}:`, emailError);
+              console.error(`❌ Error sending ticket confirmation email to ${isProduction() ? redactEmail(reg.email) : reg.email}:`, emailError);
             }
           }
         } else {
@@ -134,29 +156,41 @@ export async function POST(req: Request) {
 
             console.log(`✅ Registration ${registration.id} marked as paid`);
 
-            // Send confirmation email
+            const orderDate = new Date(registration.createdAt).toLocaleDateString('en-AU', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            });
+
+            // Send receipt and confirmation (same person for single ticket)
             try {
-              const receiptNumber = `AISF-${registration.id.slice(-8).toUpperCase()}`;
-              const receiptDate = new Date(registration.createdAt).toLocaleDateString('en-AU', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
+              // Send receipt
+              await sendReceiptEmail({
+                purchaserEmail: registration.email,
+                purchaserName: registration.name,
+                orderNumber: `AISF-${registration.id.slice(-8).toUpperCase()}`,
+                orderDate,
+                transactionId: session.payment_intent as string,
+                attendees: [{
+                  name: registration.name,
+                  email: registration.email,
+                  ticketType: registration.ticketType,
+                  amount: registration.amountPaid,
+                }],
+                subtotal: registration.amountPaid,
+                totalAmount: registration.amountPaid,
               });
 
-              await sendConfirmationEmail({
+              // Send ticket confirmation
+              await sendTicketConfirmationEmail({
                 email: registration.email,
                 name: registration.name,
                 ticketType: registration.ticketType,
-                organisation: registration.organisation,
-                receiptNumber,
-                receiptDate,
-                amountPaid: registration.amountPaid,
-                transactionId: session.payment_intent as string,
               });
 
-              console.log(`✅ Confirmation email sent to ${isProduction() ? redactEmail(registration.email) : registration.email}`);
+              console.log(`✅ Receipt and confirmation emails sent to ${isProduction() ? redactEmail(registration.email) : registration.email}`);
             } catch (emailError) {
-              console.error('❌ Error sending confirmation email:', emailError);
+              console.error('❌ Error sending emails:', emailError);
             }
           } else {
             console.warn(`⚠️  No order or registration found for session ${session.id}`);
@@ -256,7 +290,7 @@ export async function POST(req: Request) {
         // Find order by Stripe invoice ID
         const order = await prisma.order.findUnique({
           where: { stripeInvoiceId: invoice.id },
-          include: { registrations: true },
+          include: { registrations: true, coupon: true },
         });
 
         if (order) {
@@ -282,33 +316,55 @@ export async function POST(req: Request) {
 
           console.log(`✅ Invoice order ${order.id} marked as paid with ${order.registrations.length} registrations`);
 
-          // Send confirmation email to each attendee
+          const orderDate = new Date().toLocaleDateString('en-AU', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          });
+
+          // 1. Send RECEIPT to the purchaser only
+          try {
+            const subtotal = order.registrations.reduce((sum, r) => sum + (r.ticketPrice || 0), 0);
+            const discountAmount = order.discountAmount || 0;
+            const totalAmount = order.totalAmount;
+
+            await sendReceiptEmail({
+              purchaserEmail: order.purchaserEmail,
+              purchaserName: order.purchaserName,
+              orderNumber: `AISF-${order.id.slice(-8).toUpperCase()}`,
+              orderDate,
+              transactionId: paymentIntentId,
+              attendees: order.registrations.map((r) => ({
+                name: r.name,
+                email: r.email,
+                ticketType: r.ticketType,
+                amount: r.ticketPrice || r.amountPaid,
+              })),
+              subtotal,
+              discountAmount,
+              discountDescription: order.coupon?.code,
+              totalAmount,
+            });
+
+            console.log(`✅ Receipt email sent to purchaser ${isProduction() ? redactEmail(order.purchaserEmail) : order.purchaserEmail} (invoice payment)`);
+          } catch (emailError) {
+            console.error(`❌ Error sending receipt email:`, emailError);
+          }
+
+          // 2. Send TICKET CONFIRMATION to each attendee
           for (const reg of order.registrations) {
             try {
-              const receiptNumber = `AISF-${reg.id.slice(-8).toUpperCase()}`;
-              const receiptDate = new Date().toLocaleDateString('en-AU', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-              });
-
-              await sendConfirmationEmail({
+              await sendTicketConfirmationEmail({
                 email: reg.email,
                 name: reg.name,
                 ticketType: reg.ticketType,
-                organisation: reg.organisation,
-                receiptNumber,
-                receiptDate,
-                amountPaid: reg.ticketPrice || reg.amountPaid,
-                transactionId: paymentIntentId,
-                // Include purchaser info for group orders
                 purchaserEmail: order.purchaserEmail,
                 purchaserName: order.purchaserName,
               });
 
-              console.log(`✅ Confirmation email sent to ${isProduction() ? redactEmail(reg.email) : reg.email} (invoice payment)`);
+              console.log(`✅ Ticket confirmation email sent to ${isProduction() ? redactEmail(reg.email) : reg.email} (invoice payment)`);
             } catch (emailError) {
-              console.error(`❌ Error sending confirmation email to ${isProduction() ? redactEmail(reg.email) : reg.email}:`, emailError);
+              console.error(`❌ Error sending ticket confirmation email to ${isProduction() ? redactEmail(reg.email) : reg.email}:`, emailError);
             }
           }
         } else {

@@ -1,5 +1,5 @@
 import * as brevo from '@getbrevo/brevo';
-import { eventConfig } from './config';
+import { eventConfig, siteConfig } from './config';
 
 export function getBrevoClient() {
   const apiKey = process.env.BREVO_API_KEY;
@@ -13,6 +13,375 @@ export function getBrevoClient() {
 
   return apiInstance;
 }
+
+// ============================================================================
+// RECEIPT EMAIL - Sent to purchaser only with payment details
+// ============================================================================
+
+interface ReceiptEmailParams {
+  // Purchaser info
+  purchaserEmail: string;
+  purchaserName: string;
+  // Order info
+  orderNumber: string;
+  orderDate: string;
+  transactionId?: string | null;
+  // Attendees in this order
+  attendees: Array<{
+    name: string;
+    email: string;
+    ticketType: string;
+    amount: number; // in cents
+  }>;
+  // Totals
+  subtotal: number; // in cents
+  discountAmount?: number; // in cents
+  discountDescription?: string;
+  totalAmount: number; // in cents
+}
+
+export async function sendReceiptEmail(params: ReceiptEmailParams) {
+  const apiInstance = getBrevoClient();
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+  sendSmtpEmail.subject = `Payment Receipt - Australian AI Safety Forum ${eventConfig.year}`;
+  sendSmtpEmail.sender = {
+    name: 'Australian AI Safety Forum',
+    email: eventConfig.organization.email,
+  };
+  sendSmtpEmail.to = [
+    {
+      email: params.purchaserEmail,
+      name: params.purchaserName,
+    },
+  ];
+
+  // Build attendee rows for the table
+  const attendeeRows = params.attendees
+    .map(
+      (a) => `
+        <tr>
+          <td>${escapeHtml(a.name)}<br><span style="font-size: 12px; color: #5c6670;">${escapeHtml(a.email)}</span></td>
+          <td>${escapeHtml(a.ticketType)}</td>
+          <td style="text-align: right;">$${(a.amount / 100).toFixed(2)}</td>
+        </tr>
+      `
+    )
+    .join('');
+
+  const attendeeRowsText = params.attendees
+    .map((a) => `  - ${a.name} (${a.email}): ${a.ticketType} - $${(a.amount / 100).toFixed(2)}`)
+    .join('\n');
+
+  // HTML email content
+  sendSmtpEmail.htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0a1f5c 0%, #0047ba 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { background: white; padding: 30px 20px; }
+    .receipt-box { background: #f0f4f8; border-left: 4px solid #00d4ff; padding: 20px; margin: 20px 0; }
+    .footer { background: #0a1f5c; color: white; padding: 20px; text-align: center; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e4e8; }
+    th { background: #f0f4f8; font-weight: bold; }
+    .total-row td { font-weight: bold; font-size: 16px; color: #0a1f5c; border-top: 2px solid #0a1f5c; }
+    .discount-row td { color: #28a745; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Payment Receipt</h1>
+      <p>Australian AI Safety Forum ${eventConfig.year}</p>
+    </div>
+
+    <div class="content">
+      <p>Dear ${escapeHtml(params.purchaserName)},</p>
+
+      <p>Thank you for your purchase! This email confirms your payment for the Australian AI Safety Forum ${eventConfig.year}.</p>
+
+      <div class="receipt-box">
+        <p style="margin: 0; font-size: 14px; color: #5c6670;">
+          <strong>Receipt Number:</strong> ${params.orderNumber}<br>
+          <strong>Date:</strong> ${params.orderDate}<br>
+          ${params.transactionId ? `<strong>Transaction ID:</strong> ${params.transactionId}` : ''}
+        </p>
+      </div>
+
+      <h3 style="color: #0a1f5c;">Order Details</h3>
+      <table>
+        <tr>
+          <th>Attendee</th>
+          <th>Ticket Type</th>
+          <th style="text-align: right;">Amount (AUD)</th>
+        </tr>
+        ${attendeeRows}
+        ${params.discountAmount && params.discountAmount > 0 ? `
+        <tr class="discount-row">
+          <td colspan="2">Discount${params.discountDescription ? ` (${escapeHtml(params.discountDescription)})` : ''}</td>
+          <td style="text-align: right;">-$${(params.discountAmount / 100).toFixed(2)}</td>
+        </tr>
+        ` : ''}
+        <tr class="total-row">
+          <td colspan="2">Total (inc. GST)</td>
+          <td style="text-align: right;">$${(params.totalAmount / 100).toFixed(2)}</td>
+        </tr>
+      </table>
+
+      <p style="font-size: 14px; color: #5c6670;">
+        Each attendee listed above will receive a separate confirmation email with event details and a calendar invite.
+      </p>
+
+      <p>If you have any questions about your order, please contact us at
+        <a href="mailto:${eventConfig.organization.email}">${eventConfig.organization.email}</a>
+      </p>
+
+      <p>Best regards,<br>
+      <strong>The Australian AI Safety Forum Team</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>${eventConfig.organization.name}<br>
+      ABN ${eventConfig.organization.abn}<br>
+      ${eventConfig.organization.address.line1}, ${eventConfig.organization.address.city} ${eventConfig.organization.address.postcode}</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  // Plain text version
+  sendSmtpEmail.textContent = `
+Payment Receipt - Australian AI Safety Forum ${eventConfig.year}
+
+Dear ${params.purchaserName},
+
+Thank you for your purchase! This email confirms your payment for the Australian AI Safety Forum ${eventConfig.year}.
+
+RECEIPT DETAILS
+---------------
+Receipt Number: ${params.orderNumber}
+Date: ${params.orderDate}
+${params.transactionId ? `Transaction ID: ${params.transactionId}` : ''}
+
+ORDER DETAILS
+-------------
+${attendeeRowsText}
+${params.discountAmount && params.discountAmount > 0 ? `Discount${params.discountDescription ? ` (${params.discountDescription})` : ''}: -$${(params.discountAmount / 100).toFixed(2)}\n` : ''}
+Total (inc. GST): $${(params.totalAmount / 100).toFixed(2)}
+
+Each attendee listed above will receive a separate confirmation email with event details and a calendar invite.
+
+If you have any questions about your order, please contact us at ${eventConfig.organization.email}
+
+Best regards,
+The Australian AI Safety Forum Team
+
+${eventConfig.organization.name}
+ABN ${eventConfig.organization.abn}
+  `.trim();
+
+  try {
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('✅ Receipt email sent:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error sending receipt email:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// TICKET CONFIRMATION EMAIL - Sent to each attendee with event details
+// ============================================================================
+
+interface TicketConfirmationEmailParams {
+  // Attendee info
+  email: string;
+  name: string;
+  ticketType: string;
+  // Optional: who purchased this ticket (for group orders)
+  purchaserEmail?: string | null;
+  purchaserName?: string | null;
+}
+
+export async function sendTicketConfirmationEmail(params: TicketConfirmationEmailParams) {
+  const apiInstance = getBrevoClient();
+
+  // Generate calendar event (.ics file content)
+  const calendarEvent = generateCalendarInvite({
+    name: params.name,
+    email: params.email,
+  });
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+  const isPurchasedByOther = params.purchaserName &&
+    params.purchaserEmail &&
+    params.purchaserEmail.toLowerCase() !== params.email.toLowerCase();
+
+  sendSmtpEmail.subject = isPurchasedByOther
+    ? `You're Registered! Australian AI Safety Forum ${eventConfig.year}`
+    : `Registration Confirmed - Australian AI Safety Forum ${eventConfig.year}`;
+  sendSmtpEmail.sender = {
+    name: 'Australian AI Safety Forum',
+    email: eventConfig.organization.email,
+  };
+  sendSmtpEmail.to = [
+    {
+      email: params.email,
+      name: params.name,
+    },
+  ];
+
+  const dashboardUrl = `${siteConfig.url}/dashboard`;
+
+  // HTML email content
+  sendSmtpEmail.htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0a1f5c 0%, #0047ba 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { background: white; padding: 30px 20px; }
+    .event-box { background: #f0f4f8; border-left: 4px solid #00d4ff; padding: 20px; margin: 20px 0; }
+    .ticket-badge { display: inline-block; background: #0a1f5c; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; margin: 10px 0; }
+    .footer { background: #0a1f5c; color: white; padding: 20px; text-align: center; font-size: 12px; }
+    .button { display: inline-block; background: #00d4ff; color: #061440; padding: 14px 32px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 10px 5px; }
+    .button-secondary { display: inline-block; background: white; color: #0a1f5c; padding: 14px 32px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 10px 5px; border: 2px solid #0a1f5c; }
+    .action-box { background: #e8f4fd; border: 1px solid #00d4ff; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 ${isPurchasedByOther ? "You're Registered!" : 'Registration Confirmed!'}</h1>
+      <p>Australian AI Safety Forum ${eventConfig.year}</p>
+    </div>
+
+    <div class="content">
+      <p>Dear ${escapeHtml(params.name)},</p>
+
+      ${isPurchasedByOther
+        ? `<p>Great news! <strong>${escapeHtml(params.purchaserName!)}</strong> has registered you for the Australian AI Safety Forum ${eventConfig.year}.</p>`
+        : `<p>Thank you for registering for the Australian AI Safety Forum ${eventConfig.year}! We're excited to have you join us.</p>`
+      }
+
+      <p class="ticket-badge">${escapeHtml(params.ticketType)} Ticket</p>
+
+      <div class="event-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">📅 Event Details</h3>
+        <p style="margin-bottom: 0;">
+          <strong>Dates:</strong> ${eventConfig.datesLong}<br>
+          <strong>Time:</strong> ${eventConfig.startTime} - ${eventConfig.endTime} AEST<br>
+          <strong>Location:</strong> ${eventConfig.venueLong}
+        </p>
+      </div>
+
+      <div class="action-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">Complete Your Profile</h3>
+        <p style="margin-bottom: 15px;">Log in to view your ticket, update your profile, and access event materials.</p>
+        <a href="${dashboardUrl}" class="button">Go to Dashboard</a>
+      </div>
+
+      <h3 style="color: #0a1f5c;">📋 What's Next?</h3>
+      <ul>
+        <li><strong>Add to Calendar</strong> - Use the attached .ics file to add the event to your calendar</li>
+        <li><strong>Complete Your Profile</strong> - Log in to update your bio and connect with other attendees</li>
+        <li><strong>Stay Tuned</strong> - We'll send program updates and logistics info closer to the event</li>
+      </ul>
+
+      <p>If you have any questions, please contact us at
+        <a href="mailto:${eventConfig.organization.email}">${eventConfig.organization.email}</a>
+      </p>
+
+      <p>We look forward to seeing you at the forum!</p>
+
+      <p>Best regards,<br>
+      <strong>The Australian AI Safety Forum Team</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>${eventConfig.organization.name}<br>
+      ABN ${eventConfig.organization.abn}<br>
+      ${eventConfig.organization.address.line1}, ${eventConfig.organization.address.city} ${eventConfig.organization.address.postcode}</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  // Plain text version
+  sendSmtpEmail.textContent = `
+${isPurchasedByOther ? "You're Registered!" : 'Registration Confirmed'} - Australian AI Safety Forum ${eventConfig.year}
+
+Dear ${params.name},
+
+${isPurchasedByOther
+  ? `Great news! ${params.purchaserName} has registered you for the Australian AI Safety Forum ${eventConfig.year}.`
+  : `Thank you for registering for the Australian AI Safety Forum ${eventConfig.year}! We're excited to have you join us.`
+}
+
+Your Ticket: ${params.ticketType}
+
+EVENT DETAILS
+-------------
+Dates: ${eventConfig.datesLong}
+Time: ${eventConfig.startTime} - ${eventConfig.endTime} AEST
+Location: ${eventConfig.venueLong}
+
+COMPLETE YOUR PROFILE
+---------------------
+Log in to view your ticket, update your profile, and access event materials:
+${dashboardUrl}
+
+WHAT'S NEXT?
+------------
+- Add to Calendar: Use the attached .ics file to add the event to your calendar
+- Complete Your Profile: Log in to update your bio and connect with other attendees
+- Stay Tuned: We'll send program updates and logistics info closer to the event
+
+If you have any questions, please contact us at ${eventConfig.organization.email}
+
+We look forward to seeing you at the forum!
+
+Best regards,
+The Australian AI Safety Forum Team
+
+${eventConfig.organization.name}
+ABN ${eventConfig.organization.abn}
+  `.trim();
+
+  // Attach calendar invite
+  sendSmtpEmail.attachment = [
+    {
+      name: `Australian_AI_Safety_Forum_${eventConfig.year}.ics`,
+      content: Buffer.from(calendarEvent).toString('base64'),
+    },
+  ];
+
+  try {
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('✅ Ticket confirmation email sent:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error sending ticket confirmation email:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// LEGACY: Combined confirmation email (keeping for backwards compatibility)
+// ============================================================================
 
 interface RegistrationEmailParams {
   email: string;
@@ -28,6 +397,9 @@ interface RegistrationEmailParams {
   purchaserName?: string | null;
 }
 
+/**
+ * @deprecated Use sendReceiptEmail() and sendTicketConfirmationEmail() separately
+ */
 export async function sendConfirmationEmail(params: RegistrationEmailParams) {
   const apiInstance = getBrevoClient();
 
@@ -200,6 +572,10 @@ ABN ${eventConfig.organization.abn}
     throw error;
   }
 }
+
+// ============================================================================
+// INVOICE EMAIL - Sent to purchaser with invoice PDF
+// ============================================================================
 
 interface InvoiceEmailParams {
   email: string;
@@ -402,11 +778,15 @@ ABN ${eventConfig.organization.abn}
   }
 }
 
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
 function generateCalendarInvite(params: { name: string; email: string }): string {
   // Format dates for iCalendar (YYYYMMDD format with time)
   const startDate = `${eventConfig.day1.isoDate.replace(/-/g, '')}T${eventConfig.startTime.replace(':', '')}00`;
   const endDate = `${eventConfig.day2.isoDate.replace(/-/g, '')}T${eventConfig.endTime.replace(':', '')}00`;
-  const now = `${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]  }Z`;
+  const now = `${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`;
 
   return `BEGIN:VCALENDAR
 VERSION:2.0
