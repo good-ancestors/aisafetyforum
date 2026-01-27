@@ -2,21 +2,21 @@ import { redirect } from 'next/navigation';
 import DashboardNav from '@/components/dashboard/DashboardNav';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { isAdmin } from '@/lib/auth/admin';
-import { getCurrentUser } from '@/lib/auth/server';
+import { getCurrentProfile } from '@/lib/auth/profile';
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  // Get profile in one call (includes admin check)
+  const profile = await getCurrentProfile();
 
-  if (!user) {
+  if (!profile) {
     redirect('/auth/email-otp');
   }
 
-  const userIsAdmin = await isAdmin(user.email);
+  const userIsAdmin = profile.isAdmin;
 
   return (
     <div className="min-h-screen bg-[--bg-cream] flex flex-col">

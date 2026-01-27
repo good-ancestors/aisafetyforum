@@ -14,41 +14,45 @@ export default async function DashboardPage() {
     redirect('/auth/email-otp');
   }
 
-  // Get profile and all related data for this user
-  const profile = await prisma.profile.findUnique({
-    where: { email: user.email.toLowerCase() },
-    include: {
-      registrations: {
-        where: { status: 'paid' },
-        include: {
-          order: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      },
-      speakerProposals: {
-        orderBy: { createdAt: 'desc' },
-      },
-      fundingApplications: {
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  });
+  const email = user.email.toLowerCase();
 
-  // Get orders where this user is the purchaser (for group tickets)
-  const purchasedOrders = await prisma.order.findMany({
-    where: {
-      purchaserEmail: user.email.toLowerCase(),
-      paymentStatus: 'paid',
-    },
-    include: {
-      registrations: {
-        include: {
-          profile: true,
+  // Run both queries in parallel for better performance
+  const [profile, purchasedOrders] = await Promise.all([
+    // Get profile and all related data for this user
+    prisma.profile.findUnique({
+      where: { email },
+      include: {
+        registrations: {
+          where: { status: 'paid' },
+          include: {
+            order: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+        speakerProposals: {
+          orderBy: { createdAt: 'desc' },
+        },
+        fundingApplications: {
+          orderBy: { createdAt: 'desc' },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+    }),
+    // Get orders where this user is the purchaser (for group tickets)
+    prisma.order.findMany({
+      where: {
+        purchaserEmail: email,
+        paymentStatus: 'paid',
+      },
+      include: {
+        registrations: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
