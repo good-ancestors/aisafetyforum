@@ -605,7 +605,7 @@ DTSTAMP:${now}
 DTSTART;TZID=Australia/Sydney:${startDate}
 DTEND;TZID=Australia/Sydney:${endDate}
 SUMMARY:Australian AI Safety Forum ${eventConfig.year}
-DESCRIPTION:Join us for the Australian AI Safety Forum ${eventConfig.year}.\\n\\nThis two-day event brings together researchers\\, policymakers\\, and industry leaders to discuss the latest developments in AI safety.\\n\\nFor more information\\, visit: https://aisafetyforum.org.au
+DESCRIPTION:Join us for the Australian AI Safety Forum ${eventConfig.year}.\\n\\nThis two-day event brings together researchers\\, policymakers\\, and industry leaders to discuss the latest developments in AI safety.\\n\\nFor more information\\, visit: ${siteConfig.url}
 LOCATION:${eventConfig.venueLong}
 STATUS:CONFIRMED
 ORGANIZER;CN=Australian AI Safety Forum:mailto:${eventConfig.organization.email}
@@ -637,8 +637,8 @@ export async function sendContactFormNotification(params: ContactFormEmailParams
 
     sendSmtpEmail.subject = `[Contact Form] ${params.subject}`;
     sendSmtpEmail.sender = {
-      name: 'AI Safety Forum',
-      email: 'noreply@aisafetyforum.au',
+      name: 'Australian AI Safety Forum',
+      email: eventConfig.organization.email,
     };
     sendSmtpEmail.to = [
       { email: eventConfig.organization.email, name: 'AI Safety Forum Team' },

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { cancelRegistration, getRegistrationCancellationInfo } from '@/lib/cancellation-actions';
+import { eventConfig } from '@/lib/config';
 
 interface CancelTicketButtonProps {
   registrationId: string;
@@ -135,7 +136,7 @@ export default function CancelTicketButton({
                   <div>
                     <p className="font-medium text-amber-800">Manual refund required</p>
                     <p className="text-sm text-amber-700">
-                      This ticket was paid by invoice. After cancellation, please contact us at <a href="mailto:contact@aisafetyforum.au" className="underline">contact@aisafetyforum.au</a> to arrange a refund of <strong>${refundAmount} AUD</strong>.
+                      This ticket was paid by invoice. After cancellation, please contact us at <a href={`mailto:${eventConfig.organization.email}`} className="underline">{eventConfig.organization.email}</a> to arrange a refund of <strong>${refundAmount} AUD</strong>.
                     </p>
                   </div>
                 </div>

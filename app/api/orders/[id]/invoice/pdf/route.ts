@@ -387,7 +387,7 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
   <div class="footer">
     <p>Australian AI Safety Forum ${eventConfig.year}</p>
     <p>${eventConfig.datesLong} • ${eventConfig.venueLong}</p>
-    <p>Questions? Contact us at info@aisafetyforum.au</p>
+    <p>Questions? Contact us at ${eventConfig.organization.email}</p>
   </div>
 </body>
 </html>

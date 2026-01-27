@@ -387,7 +387,7 @@ export default function SponsorPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:contact@aisafetyforum.au"
+                href={`mailto:${eventConfig.organization.email}`}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold bg-white text-navy rounded-md hover:bg-cyan/10 transition-colors"
               >
                 Get in Touch
