@@ -439,21 +439,9 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
 
         {/* Attendees Section */}
         <section>
-          <div className="flex justify-between items-center mb-4 pb-2 border-b border-[#e0e4e8]">
-            <h2 className="text-lg font-bold text-[#0a1f5c]">
-              Attendees ({attendees.length} ticket{attendees.length !== 1 ? 's' : ''})
-            </h2>
-            <button
-              type="button"
-              onClick={addAttendee}
-              className="text-sm font-bold text-[#0047ba] hover:text-[#0a1f5c] flex items-center gap-1"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Attendee
-            </button>
-          </div>
+          <h2 className="text-lg font-bold text-[#0a1f5c] mb-4 pb-2 border-b border-[#e0e4e8]">
+            Attendees ({attendees.length} ticket{attendees.length !== 1 ? 's' : ''})
+          </h2>
 
           <div className="space-y-6">
             {attendees.map((attendee, index) => (
@@ -474,6 +462,17 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
               />
             ))}
           </div>
+
+          <button
+            type="button"
+            onClick={addAttendee}
+            className="mt-4 w-full py-3 text-sm font-bold text-[#0047ba] hover:text-[#0a1f5c] border border-dashed border-[#0047ba] hover:border-[#0a1f5c] rounded-md flex items-center justify-center gap-2 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Another Attendee
+          </button>
         </section>
 
         {/* Coupon Code */}
