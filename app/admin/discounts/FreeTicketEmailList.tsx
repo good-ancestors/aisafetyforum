@@ -182,7 +182,7 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                 setNewReason('');
               }
             }}
-            className="px-4 py-2 bg-[--navy] text-white rounded text-sm hover:bg-[--navy-light] transition-colors"
+            className="px-4 py-2 bg-navy text-white rounded text-sm hover:bg-navy-light transition-colors"
           >
             {showAddForm ? 'Cancel' : 'Add Email(s)'}
           </button>
@@ -217,8 +217,8 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                 onClick={() => setBulkMode(false)}
                 className={`px-3 py-1 text-sm rounded border transition-colors ${
                   !bulkMode
-                    ? 'bg-[--navy] text-white border-[--navy]'
-                    : 'bg-white text-[--text-body] border-[--border] hover:border-[--navy]'
+                    ? 'bg-navy text-white border-navy'
+                    : 'bg-white text-body border hover:border-navy'
                 }`}
               >
                 Single Email
@@ -228,8 +228,8 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                 onClick={() => setBulkMode(true)}
                 className={`px-3 py-1 text-sm rounded border transition-colors ${
                   bulkMode
-                    ? 'bg-[--navy] text-white border-[--navy]'
-                    : 'bg-white text-[--text-body] border-[--border] hover:border-[--navy]'
+                    ? 'bg-navy text-white border-navy'
+                    : 'bg-white text-body border hover:border-navy'
                 }`}
               >
                 Bulk Add

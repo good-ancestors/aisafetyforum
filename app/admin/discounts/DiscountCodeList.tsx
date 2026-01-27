@@ -221,7 +221,7 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
           <h2 className="font-semibold text-[--navy]">Discount Codes</h2>
           <button
             onClick={showForm ? closeForm : openCreateForm}
-            className="px-4 py-2 bg-[--navy] text-white rounded text-sm hover:bg-[--navy-light] transition-colors"
+            className="px-4 py-2 bg-navy text-white rounded text-sm hover:bg-navy-light transition-colors"
           >
             {showForm ? 'Cancel' : 'Create New Code'}
           </button>
@@ -359,8 +359,8 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
                     onClick={() => toggleTicketType(type)}
                     className={`px-3 py-1 text-sm rounded border transition-colors ${
                       formData.validFor.includes(type)
-                        ? 'bg-[--navy] text-white border-[--navy]'
-                        : 'bg-white text-[--text-body] border-[--border] hover:border-[--navy]'
+                        ? 'bg-navy text-white border-navy'
+                        : 'bg-white text-body border hover:border-navy'
                     }`}
                   >
                     {type}
