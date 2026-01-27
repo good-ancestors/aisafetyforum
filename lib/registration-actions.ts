@@ -1,10 +1,11 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { siteConfig } from './config';
+import { siteConfig, eventConfig } from './config';
 import { validateCoupon, incrementCouponUsage } from './coupon-actions';
 import { checkFreeTicketEmail } from './free-ticket-actions';
 import { prisma } from './prisma';
+import { sendReceiptEmail, sendTicketConfirmationEmail } from './brevo';
 import { requireStripe } from './stripe';
 import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
 import type { InvoiceLineItem, InvoiceAttendee } from './invoice-pdf';
@@ -172,6 +173,38 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       // Increment coupon usage
       if (data.couponCode) {
         await incrementCouponUsage(data.couponCode);
+      }
+
+      // Send confirmation emails for free ticket
+      const ticketTypeName = earlyBird ? `${ticketTier.name} (Early Bird)` : ticketTier.name;
+      try {
+        // Send receipt to purchaser
+        await sendReceiptEmail({
+          purchaserEmail: data.email,
+          purchaserName: data.name,
+          orderNumber: `ORD-${order.id.slice(0, 8).toUpperCase()}`,
+          orderDate: new Date().toLocaleDateString('en-AU', { dateStyle: 'long' }),
+          attendees: [{
+            name: data.name,
+            email: data.email,
+            ticketType: ticketTypeName,
+            amount: 0, // Free ticket
+          }],
+          subtotal: currentPrice,
+          discountAmount: discountAmount,
+          discountDescription: 'Complimentary ticket',
+          totalAmount: 0,
+        });
+
+        // Send ticket confirmation to attendee
+        await sendTicketConfirmationEmail({
+          email: data.email,
+          name: data.name,
+          ticketType: ticketTypeName,
+        });
+      } catch (emailError) {
+        // Log but don't fail the registration if email fails
+        console.error('Failed to send free ticket confirmation email:', emailError);
       }
 
       return {
@@ -508,6 +541,49 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
         await incrementCouponUsage(data.couponCode);
       }
 
+      // Send confirmation emails for free multi-ticket order
+      try {
+        // Build attendee list for receipt
+        const attendeesForEmail = data.attendees.map((attendee, i) => {
+          const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
+          const isFree = attendeeFreeTicketStatus[i];
+          return {
+            name: attendee.name,
+            email: attendee.email,
+            ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+            amount: isFree ? 0 : (earlyBird ? tier.earlyBirdPrice : tier.price),
+          };
+        });
+
+        // Send receipt to purchaser
+        await sendReceiptEmail({
+          purchaserEmail: data.purchaserEmail,
+          purchaserName: data.purchaserName,
+          orderNumber: `ORD-${order.id.slice(0, 8).toUpperCase()}`,
+          orderDate: new Date().toLocaleDateString('en-AU', { dateStyle: 'long' }),
+          attendees: attendeesForEmail,
+          subtotal,
+          discountAmount,
+          discountDescription: 'Complimentary tickets',
+          totalAmount: 0,
+        });
+
+        // Send ticket confirmation to each attendee
+        for (const attendee of data.attendees) {
+          const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
+          await sendTicketConfirmationEmail({
+            email: attendee.email,
+            name: attendee.name,
+            ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+            purchaserEmail: data.purchaserEmail,
+            purchaserName: data.purchaserName,
+          });
+        }
+      } catch (emailError) {
+        // Log but don't fail the registration if email fails
+        console.error('Failed to send free multi-ticket confirmation emails:', emailError);
+      }
+
       return {
         success: true,
         free: true,
@@ -748,6 +824,49 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
 
       if (data.couponCode) {
         await incrementCouponUsage(data.couponCode);
+      }
+
+      // Send confirmation emails for free invoice order
+      try {
+        // Build attendee list for receipt
+        const attendeesForEmail = data.attendees.map((attendee, i) => {
+          const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
+          const isFree = attendeeFreeTicketStatus[i];
+          return {
+            name: attendee.name,
+            email: attendee.email,
+            ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+            amount: isFree ? 0 : (earlyBird ? tier.earlyBirdPrice : tier.price),
+          };
+        });
+
+        // Send receipt to purchaser
+        await sendReceiptEmail({
+          purchaserEmail: data.purchaserEmail,
+          purchaserName: data.purchaserName,
+          orderNumber: `ORD-${order.id.slice(0, 8).toUpperCase()}`,
+          orderDate: new Date().toLocaleDateString('en-AU', { dateStyle: 'long' }),
+          attendees: attendeesForEmail,
+          subtotal,
+          discountAmount,
+          discountDescription: 'Complimentary tickets',
+          totalAmount: 0,
+        });
+
+        // Send ticket confirmation to each attendee
+        for (const attendee of data.attendees) {
+          const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
+          await sendTicketConfirmationEmail({
+            email: attendee.email,
+            name: attendee.name,
+            ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+            purchaserEmail: data.purchaserEmail,
+            purchaserName: data.purchaserName,
+          });
+        }
+      } catch (emailError) {
+        // Log but don't fail the registration if email fails
+        console.error('Failed to send free invoice order confirmation emails:', emailError);
       }
 
       return {
