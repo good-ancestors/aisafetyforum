@@ -10,7 +10,7 @@ export default function Organisers() {
       logo: '/logos/gradient-institute.svg',
     },
     {
-      name: 'Good Ancestors Policy',
+      name: 'Good Ancestors',
       lead: 'Greg Sadler',
       title: 'CEO',
       website: 'https://www.goodancestors.org.au/',

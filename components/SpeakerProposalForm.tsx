@@ -81,7 +81,7 @@ export default function SpeakerProposalForm() {
   if (submitted) {
     return (
       <div className="bg-white rounded-lg p-8 border border-border text-center">
-        <div className="w-16 h-16 bg-cyan rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -365,6 +365,7 @@ export default function SpeakerProposalForm() {
               id="travelEstimate"
               name="anythingElse"
               rows={2}
+              maxLength={500}
               placeholder="e.g. $400 domestic flight from Brisbane & $300 for 2 nights accommodation"
               className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
             />
@@ -376,7 +377,7 @@ export default function SpeakerProposalForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full px-8 py-4 text-base font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-8 py-4 text-base font-bold bg-navy text-white rounded-md hover:bg-navy-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Proposal'}
           </button>

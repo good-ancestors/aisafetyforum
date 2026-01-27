@@ -68,7 +68,7 @@ export default function Forum2024Highlights() {
         <div className="text-center">
           <Link
             href="/2024"
-            className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors"
+            className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors"
           >
             View Full 2024 Report →
           </Link>

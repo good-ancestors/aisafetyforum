@@ -24,7 +24,7 @@ export default function CTA() {
             <p className="text-sm opacity-90 mb-6">
               Secure your ticket for the forum. Early bird pricing available.
             </p>
-            <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors">
+            <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors">
               Register Now
             </Link>
           </div>
@@ -42,7 +42,7 @@ export default function CTA() {
             <p className="text-sm opacity-90 mb-6">
               Share your expertise. Submit a keynote, workshop, or lightning talk proposal.
             </p>
-            <Link href="/speak" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors">
+            <Link href="/speak" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors">
               Submit Proposal
             </Link>
           </div>
@@ -59,7 +59,7 @@ export default function CTA() {
             <p className="text-sm opacity-90 mb-6">
               Scholarships with travel and accommodation support available.
             </p>
-            <Link href="/scholarships" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors">
+            <Link href="/scholarships" className="inline-flex items-center gap-2 px-6 py-3 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors">
               Apply Now
             </Link>
           </div>

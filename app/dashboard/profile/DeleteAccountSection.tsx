@@ -52,7 +52,7 @@ export default function DeleteAccountSection() {
       }
 
       // Sign out the user after successful deletion
-      await authClient.signOut();
+      await authClient.signOut({ fetchOptions: { credentials: 'include' } });
       router.push('/');
     } catch {
       setError('Failed to delete account');

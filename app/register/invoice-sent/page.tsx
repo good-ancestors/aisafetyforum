@@ -267,9 +267,9 @@ export default async function InvoiceSentPage({
           {/* Contact Info */}
           <div className="text-center text-sm text-muted">
             <p className="mb-2">
-              Questions? Contact us at{' '}
-              <a href={`mailto:${organization.email}`} className="text-brand-blue underline">
-                {organization.email}
+              Questions?{' '}
+              <a href="/contact" className="text-brand-blue underline">
+                Contact us
               </a>
             </p>
             <p>

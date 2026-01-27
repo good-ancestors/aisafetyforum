@@ -157,12 +157,12 @@ export default function TaxReceipt({ registration }: TaxReceiptProps) {
           This is a tax receipt for payment received. Please retain for your records.
         </p>
         <p>
-          For enquiries regarding this receipt, please contact{' '}
+          For enquiries regarding this receipt, please{' '}
           <a
-            href={`mailto:${eventConfig.organization.email}`}
+            href="/contact"
             className="text-brand-blue hover:underline"
           >
-            {eventConfig.organization.email}
+            contact us
           </a>
         </p>
       </div>

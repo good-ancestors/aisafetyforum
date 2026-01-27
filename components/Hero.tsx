@@ -31,7 +31,7 @@ export default function Hero() {
           Join leading researchers, policymakers, and industry experts for two days of rigorous dialogue on the future of AI safety in Australia, grounded in the science of AI safety as explored in the <a href="https://internationalaisafetyreport.org/" target="_blank" rel="noopener noreferrer" className="underline hover:text-cyan">International AI Safety Report</a>.
         </p>
         <div className="flex gap-4 flex-wrap justify-center">
-          <Link href="#register" className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors">
+          <Link href="#register" className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors">
             Join Us
           </Link>
         </div>

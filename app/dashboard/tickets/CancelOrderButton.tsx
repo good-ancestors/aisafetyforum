@@ -169,7 +169,7 @@ export default function CancelOrderButton({
                   <div>
                     <p className="font-medium text-amber-800">Manual refund required</p>
                     <p className="text-sm text-amber-700">
-                      This order was paid by invoice. After cancellation, please contact us at <a href={`mailto:${eventConfig.organization.email}`} className="underline">{eventConfig.organization.email}</a> to arrange a refund of <strong>${refundAmount} AUD</strong>.
+                      This order was paid by invoice. After cancellation, please <a href="/contact" className="underline">contact us</a> to arrange a refund of <strong>${refundAmount} AUD</strong>.
                     </p>
                   </div>
                 </div>

@@ -46,7 +46,7 @@ export default function SpeakersPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/speak"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-navy text-white rounded-md hover:bg-navy-dark transition-colors"
               >
                 Submit a Proposal
               </Link>

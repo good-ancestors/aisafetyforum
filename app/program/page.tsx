@@ -52,7 +52,7 @@ export default function ProgramPage() {
             </p>
             <Link
               href="/speak"
-              className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-cyan text-navy-dark rounded-md hover:bg-cyan-dark transition-colors"
+              className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors"
             >
               Apply to Speak
             </Link>
@@ -233,7 +233,7 @@ export default function ProgramPage() {
                     <div className="text-sm font-semibold text-teal">14:00</div>
                     <div>
                       <div className="font-semibold text-navy mb-1">Workshop: Potential Australian AI Safety Institute</div>
-                      <div className="text-sm text-muted mb-2">Nitarshan Rajkumar (University of Cambridge), Greg Sadler (Good Ancestors Policy)</div>
+                      <div className="text-sm text-muted mb-2">Nitarshan Rajkumar (University of Cambridge), Greg Sadler (Good Ancestors)</div>
                       <div className="text-sm text-muted">Discusses institute models and international examples from UK, US, and Japan</div>
                     </div>
                   </div>

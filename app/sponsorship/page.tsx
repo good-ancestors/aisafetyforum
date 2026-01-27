@@ -61,7 +61,7 @@ export default function SponsorPage() {
       logo: '/logos/gradient-institute.svg',
     },
     {
-      name: 'Good Ancestors Policy',
+      name: 'Good Ancestors',
       lead: 'Greg Sadler',
       title: 'CEO',
       website: 'https://www.goodancestors.org.au/',
@@ -387,8 +387,8 @@ export default function SponsorPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href={`mailto:${eventConfig.organization.email}`}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold bg-white text-navy rounded-md hover:bg-cyan/10 transition-colors"
+                href="/contact"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold bg-white text-navy rounded-md hover:bg-white/90 transition-colors"
               >
                 Get in Touch
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

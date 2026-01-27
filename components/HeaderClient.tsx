@@ -30,7 +30,9 @@ export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
   const router = useRouter();
 
   async function handleSignOut() {
-    await authClient.signOut();
+    await authClient.signOut({
+      fetchOptions: { credentials: 'include' },
+    });
     router.push('/');
     router.refresh();
   }
