@@ -3,17 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth/client';
 import AuthModal from './AuthModal';
 import { MobileNav, UserMenu } from './header-nav';
-
-interface HeaderClientProps {
-  user: {
-    email: string;
-  } | null;
-  isAdmin: boolean;
-}
 
 const navLinks = [
   { href: '/program', label: 'Program' },
@@ -23,16 +16,34 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
 ];
 
-export default function HeaderClient({ user, isAdmin }: HeaderClientProps) {
+export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  const userEmail = session?.user?.email ?? null;
+  const user = userEmail ? { email: userEmail } : null;
+
+  useEffect(() => {
+    if (!userEmail) {
+      setIsAdmin(false);
+      return;
+    }
+
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => setIsAdmin(data.isAdmin ?? false))
+      .catch(() => setIsAdmin(false));
+  }, [userEmail]);
 
   async function handleSignOut() {
     await authClient.signOut({
       fetchOptions: { credentials: 'include' },
     });
+    setIsAdmin(false);
     router.push('/');
     router.refresh();
   }

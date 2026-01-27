@@ -7,6 +7,11 @@ import VideoCarousel from '@/components/VideoCarousel';
 import { eventConfig } from '@/lib/config';
 import type { Metadata } from 'next';
 
+// ISR: regenerate every 24h. Currently all content is static (config-driven),
+// so pages only truly update on redeploy. If dynamic content (e.g. DB-driven
+// speakers/program) is added later, reduce this or add on-demand revalidation.
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: 'Program',
   description: `Program for the Australian AI Safety Forum ${eventConfig.year}. Keynotes, workshops, panels, and lightning talks on AI safety science and governance.`,

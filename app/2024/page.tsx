@@ -1,6 +1,19 @@
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import type { Metadata } from 'next';
+
+// ISR: archive page, content is static. Only updates on redeploy.
+export const revalidate = 86400;
+
+export const metadata: Metadata = {
+  title: 'Australian AI Safety Forum 2024',
+  description: 'The inaugural Australian AI Safety Forum held 7-8 November 2024 at the Sydney Knowledge Hub. Keynotes, workshops, and panels on AI safety science and governance.',
+  openGraph: {
+    title: 'Australian AI Safety Forum 2024',
+    description: 'The inaugural Australian AI Safety Forum held 7-8 November 2024. Over 100 researchers, policymakers, and industry professionals.',
+  },
+};
 
 export default function Forum2024() {
   return (

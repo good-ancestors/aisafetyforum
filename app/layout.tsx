@@ -48,21 +48,12 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     siteName: siteTitle,
     title: siteTitle,
-    description: `${eventConfig.datesLong} in Sydney. ${siteDescription}`,
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: siteTitle,
-      },
-    ],
+    description: `${eventConfig.datesLong} in ${eventConfig.venue}. ${siteDescription}`,
   },
   twitter: {
     card: "summary_large_image",
     title: siteTitle,
-    description: `${eventConfig.datesLong} in Sydney. ${siteDescription}`,
-    images: ["/og-image.png"],
+    description: `${eventConfig.datesLong} in ${eventConfig.venue}. ${siteDescription}`,
   },
   robots: {
     index: true,

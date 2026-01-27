@@ -2,10 +2,20 @@ import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { eventConfig } from '@/lib/config';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Contact Us - Australian AI Safety Forum 2026',
+// ISR: regenerate every 24h. Currently all content is static (config-driven),
+// so pages only truly update on redeploy. If dynamic content is added later,
+// reduce this or add on-demand revalidation.
+export const revalidate = 86400;
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
   description: 'Get in touch with the Australian AI Safety Forum organizing team.',
+  openGraph: {
+    title: `Contact Us - Australian AI Safety Forum ${eventConfig.year}`,
+    description: 'Get in touch with the Australian AI Safety Forum organizing team.',
+  },
 };
 
 export default function ContactPage() {
