@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { getCurrentProfile } from '@/lib/auth/profile';
-import { getCurrentUser } from '@/lib/auth/server';
+import { getAuthServer, getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
 import { isValidEmail } from '@/lib/security';
 
@@ -330,6 +330,12 @@ export async function deleteProfile(): Promise<{ success: boolean; error?: strin
         where: { id: profile.id },
       });
     });
+
+    // 5. Delete the neon_auth user (also removes sessions and linked accounts)
+    const authServer = await getAuthServer();
+    if (authServer && user.id) {
+      await authServer.admin.removeUser({ userId: user.id });
+    }
 
     return { success: true };
   } catch (error) {

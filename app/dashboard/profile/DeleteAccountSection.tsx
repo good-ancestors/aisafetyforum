@@ -1,13 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
-import { authClient } from '@/lib/auth/client';
 import { deleteProfile, getProfileDeletionInfo } from '@/lib/profile-actions';
 
 export default function DeleteAccountSection() {
-  const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingInfo, setCheckingInfo] = useState(false);
@@ -51,9 +48,8 @@ export default function DeleteAccountSection() {
         return;
       }
 
-      // Sign out the user after successful deletion
-      await authClient.signOut({ fetchOptions: { credentials: 'include' } });
       // Hard redirect to clear all client state (dialog, auth, etc.)
+      // No need to call signOut — the server already deleted the auth user and sessions
       window.location.href = '/';
     } catch {
       setError('Failed to delete account');
