@@ -79,23 +79,11 @@ Borders:
 
 ## Authentication
 
-* **Provider**: Neon Auth (`@neondatabase/auth`) — a managed wrapper around Better Auth
-* **Method**: Email OTP (passwordless, no passwords stored)
-* **Schema**: Auth data lives in `neon_auth` schema (separate from `public`); profile data in `public.Profile`
-* **Client**: `lib/auth/client.ts` — `createAuthClient()` for client-side auth operations
-* **Server**: `lib/auth/server.ts` — `getSession()`, `getCurrentUser()` for server-side session access
-* **Profile linking**: `lib/auth/profile.ts` — links `neon_auth.user` to `public.Profile` by `neonAuthUserId` or email
-
-### neon_auth schema access
-Neon Auth manages the `neon_auth` schema (tables: `user`, `session`, `account`, `verification`).
-Since these aren't in Prisma's `public` schema, use `prisma.$executeRaw` / `prisma.$queryRaw` for
-direct access. See `lib/admin-actions.ts` and `lib/profile-actions.ts` for examples.
-
-### Account deletion
-Account deletion uses raw SQL against `neon_auth` tables within the same Prisma transaction as
-profile cleanup. This is intentional — Neon Auth doesn't expose Better Auth's `deleteUser` config
-(which requires `sendDeleteAccountVerification` for passwordless users), and `admin.removeUser()`
-requires Better Auth admin role. See the `deleteProfile()` JSDoc in `lib/profile-actions.ts`.
+* **Provider**: Neon Auth (`@neondatabase/auth`) — managed wrapper around Better Auth
+* **Method**: Email OTP (passwordless)
+* **Schema**: Auth data in `neon_auth` schema; profile data in `public.Profile`
+* **Key files**: `lib/auth/client.ts`, `lib/auth/server.ts`, `lib/auth/profile.ts`
+* **neon_auth access**: Use `prisma.$executeRaw` / `$queryRaw` (not in Prisma schema). See `lib/admin-actions.ts`
 
 ## Content Structure
 
