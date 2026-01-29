@@ -1,5 +1,6 @@
 'use server';
 
+import { eventConfig } from './config';
 import { prisma } from './prisma';
 import { ticketTiers, type TicketTierId } from './stripe-config';
 
@@ -18,6 +19,7 @@ export type CouponValidationResult = {
   };
 };
 
+// eslint-disable-next-line complexity -- Coupon validation with date, usage, email, ticket type, and registration mode checks
 export async function validateCoupon(
   code: string,
   email: string,
@@ -88,9 +90,9 @@ export async function validateCoupon(
       finalAmount = originalAmount - discountAmount;
     }
 
-    // Reject access-only codes that provide no actual discount
-    // (These are only useful in gated mode, not open mode)
-    if (discountAmount === 0 && coupon.grantsAccess) {
+    // Reject access-only codes that provide no actual discount in open mode
+    // In gated mode, these codes are valid (they granted access to get here)
+    if (discountAmount === 0 && coupon.grantsAccess && eventConfig.registrationMode === 'open') {
       return { valid: false, error: 'This code is for early access only and registration is now open' };
     }
 
