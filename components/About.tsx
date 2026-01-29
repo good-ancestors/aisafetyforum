@@ -1,13 +1,10 @@
+import SectionHeading from './SectionHeading';
+
 export default function About() {
   return (
     <section id="about" className="bg-white border-t border-b border-border">
       <div className="max-w-[1200px] mx-auto px-8 py-20">
-        <div className="mb-12">
-          <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">About the Forum</div>
-          <h2 className="font-serif text-[2rem] font-bold text-navy inline-block relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-[60px] after:h-1 after:bg-gradient-to-r after:from-navy after:to-cyan">
-            Why Attend
-          </h2>
-        </div>
+        <SectionHeading eyebrow="About the Forum" title="Why Attend" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div className="space-y-6">
