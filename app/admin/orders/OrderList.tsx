@@ -46,6 +46,7 @@ interface OrderListProps {
 type StatusFilter = 'all' | 'pending' | 'paid' | 'cancelled' | 'failed';
 type MethodFilter = 'all' | 'card' | 'invoice';
 
+// eslint-disable-next-line max-lines-per-function -- Admin list with filters, expandable rows, and complex cancel dialog
 export default function OrderList({ orders }: OrderListProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [methodFilter, setMethodFilter] = useState<MethodFilter>('all');

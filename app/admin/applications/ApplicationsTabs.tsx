@@ -64,6 +64,7 @@ interface ApplicationsTabsProps {
 type Tab = 'speakers' | 'scholarships';
 type StatusFilter = 'all' | 'pending' | 'accepted' | 'approved' | 'rejected';
 
+// eslint-disable-next-line max-lines-per-function -- Dual-tab admin view with expandable application details
 export default function ApplicationsTabs({
   speakerProposals,
   scholarshipApplications,

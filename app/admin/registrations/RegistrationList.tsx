@@ -48,6 +48,7 @@ interface RegistrationListProps {
 type StatusFilter = 'all' | 'pending' | 'paid' | 'cancelled' | 'refunded';
 type TicketFilter = 'all' | string;
 
+// eslint-disable-next-line max-lines-per-function -- Admin list with filters and complex cancel/refund dialog
 export default function RegistrationList({ registrations }: RegistrationListProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [ticketFilter, setTicketFilter] = useState<TicketFilter>('all');
