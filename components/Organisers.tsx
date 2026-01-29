@@ -1,6 +1,12 @@
+'use client';
+
 import Image from 'next/image';
+import { useInView } from '@/hooks/useInView';
 
 export default function Organisers() {
+  const { ref: organisersRef, inView: organisersInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
+  const { ref: sponsorsRef, inView: sponsorsInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
+
   const organisers = [
     {
       name: 'Gradient Institute',
@@ -69,14 +75,17 @@ export default function Organisers() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {organisers.map((org) => (
+          <div ref={organisersRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {organisers.map((org, index) => (
               <div
                 key={org.name}
-                className="bg-white rounded-lg p-6 shadow-sm border border-border flex flex-col"
+                className={`group bg-white rounded-lg p-6 shadow-sm border border-border flex flex-col hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,0,0,0.08)] hover:border-teal transition-all duration-300 ${
+                  organisersInView ? 'animate-fade-in-up' : 'opacity-0'
+                } stagger-${index + 1}`}
+                style={{ animationFillMode: 'backwards' }}
               >
                 {/* Logo */}
-                <div className="h-20 flex items-center justify-center mb-4 bg-cream rounded border border-border p-4 relative">
+                <div className="h-20 flex items-center justify-center mb-4 bg-cream rounded border border-border p-4 relative group-hover:border-teal/50 transition-colors">
                   <Image
                     src={org.logo}
                     alt={`${org.name} logo`}
@@ -110,11 +119,14 @@ export default function Organisers() {
             </h2>
           </div>
 
-          <div className="flex flex-col items-center gap-8">
-            {sponsors.map((sponsor) => (
+          <div ref={sponsorsRef} className="flex flex-col items-center gap-8">
+            {sponsors.map((sponsor, index) => (
               <div
                 key={sponsor.name}
-                className="bg-white rounded-lg p-8 shadow-sm border-2 border-teal max-w-md w-full"
+                className={`group bg-white rounded-lg p-8 shadow-sm border-2 border-teal max-w-md w-full hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,153,204,0.15)] hover:border-cyan transition-all duration-300 ${
+                  sponsorsInView ? 'animate-fade-in-up' : 'opacity-0'
+                } stagger-${index + 1}`}
+                style={{ animationFillMode: 'backwards' }}
               >
                 {/* Logo */}
                 <div className="h-24 flex items-center justify-center mb-6 bg-cream rounded p-4 relative">

@@ -34,7 +34,7 @@ export default function MobileNav({
   if (!isOpen) return null;
 
   return (
-    <nav className="md:hidden border-t border-border bg-white">
+    <nav className="md:hidden border-t border-border bg-white animate-slide-in-left">
       <ul className="flex flex-col list-none">
         {navLinks.map((link) => (
           <li key={link.href}>
