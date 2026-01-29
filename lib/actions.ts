@@ -1,7 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { sendContactFormNotification } from './brevo';
+import {
+  sendContactFormNotification,
+  sendScholarshipApplicationConfirmation,
+  sendSpeakerProposalConfirmation,
+} from './brevo';
 import { prisma } from './prisma';
 
 type ProfileFields = {
@@ -142,6 +146,18 @@ export async function submitSpeakerProposal(data: SpeakerProposalFormData) {
       },
     });
 
+    // Send confirmation email
+    try {
+      await sendSpeakerProposalConfirmation({
+        email: data.email,
+        name: data.name,
+        sessionFormat: data.format,
+      });
+    } catch (emailError) {
+      console.error('Failed to send speaker proposal confirmation email:', emailError);
+      // Don't fail the submission if email fails
+    }
+
     revalidatePath('/speak');
     return { success: true, id: proposal.id };
   } catch (error) {
@@ -216,6 +232,18 @@ export async function submitScholarshipApplication(data: ScholarshipApplicationF
         profileId: profile.id,
       },
     });
+
+    // Send confirmation email
+    try {
+      await sendScholarshipApplicationConfirmation({
+        email: data.email,
+        name: data.name,
+        travelSupport: data.travelSupport,
+      });
+    } catch (emailError) {
+      console.error('Failed to send scholarship application confirmation email:', emailError);
+      // Don't fail the submission if email fails
+    }
 
     revalidatePath('/scholarship');
     return { success: true, id: application.id };

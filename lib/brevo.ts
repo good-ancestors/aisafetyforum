@@ -697,3 +697,274 @@ function escapeHtml(text: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+// ============================================================================
+// SPEAKER PROPOSAL CONFIRMATION EMAIL
+// ============================================================================
+
+interface SpeakerProposalEmailParams {
+  email: string;
+  name: string;
+  sessionFormat: string;
+  sessionTitle?: string;
+}
+
+export async function sendSpeakerProposalConfirmation(params: SpeakerProposalEmailParams) {
+  const apiInstance = getBrevoClient();
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  const dashboardUrl = `${siteConfig.url}/dashboard`;
+
+  sendSmtpEmail.subject = `Speaker Proposal Received - Australian AI Safety Forum ${eventConfig.year}`;
+  sendSmtpEmail.sender = {
+    name: 'Australian AI Safety Forum',
+    email: eventConfig.organization.email,
+  };
+  sendSmtpEmail.to = [
+    {
+      email: params.email,
+      name: params.name,
+    },
+  ];
+
+  sendSmtpEmail.htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0a1f5c 0%, #0047ba 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { background: white; padding: 30px 20px; }
+    .info-box { background: #f0f4f8; border-left: 4px solid #00d4ff; padding: 20px; margin: 20px 0; }
+    .footer { background: #0a1f5c; color: white; padding: 20px; text-align: center; font-size: 12px; }
+    .button { display: inline-block; background: #00d4ff; color: #061440; padding: 14px 32px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 10px 5px; }
+    .action-box { background: #e8f4fd; border: 1px solid #00d4ff; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Thank You for Your Proposal!</h1>
+      <p>Australian AI Safety Forum ${eventConfig.year}</p>
+    </div>
+
+    <div class="content">
+      <p>Dear ${escapeHtml(params.name)},</p>
+
+      <p>Thank you for submitting a speaker proposal for the Australian AI Safety Forum ${eventConfig.year}. We're excited to review your session idea!</p>
+
+      <div class="info-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">📋 Your Submission</h3>
+        <p style="margin-bottom: 0;">
+          <strong>Format:</strong> ${escapeHtml(params.sessionFormat)}
+        </p>
+      </div>
+
+      <div class="action-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">Edit Your Proposal</h3>
+        <p style="margin-bottom: 15px;">You can view and edit your proposal at any time from your dashboard.</p>
+        <a href="${dashboardUrl}" class="button">Go to Dashboard</a>
+      </div>
+
+      <h3 style="color: #0a1f5c;">📅 What's Next?</h3>
+      <ul>
+        <li>Our program committee will review all proposals on a rolling basis</li>
+        <li>We'll be in touch within a few weeks with our decision</li>
+        <li>In the meantime, you can update your proposal from your dashboard</li>
+      </ul>
+
+      <p>If you have any questions, please contact us at
+        <a href="mailto:${eventConfig.organization.email}">${eventConfig.organization.email}</a>
+      </p>
+
+      <p>Best regards,<br>
+      <strong>The Australian AI Safety Forum Team</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>${eventConfig.organization.name}<br>
+      ABN ${eventConfig.organization.abn}<br>
+      ${eventConfig.organization.address.line1}, ${eventConfig.organization.address.city} ${eventConfig.organization.address.postcode}</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  sendSmtpEmail.textContent = `
+Speaker Proposal Received - Australian AI Safety Forum ${eventConfig.year}
+
+Dear ${params.name},
+
+Thank you for submitting a speaker proposal for the Australian AI Safety Forum ${eventConfig.year}. We're excited to review your session idea!
+
+YOUR SUBMISSION
+---------------
+Format: ${params.sessionFormat}
+
+EDIT YOUR PROPOSAL
+------------------
+You can view and edit your proposal at any time from your dashboard:
+${dashboardUrl}
+
+WHAT'S NEXT?
+------------
+- Our program committee will review all proposals on a rolling basis
+- We'll be in touch within a few weeks with our decision
+- In the meantime, you can update your proposal from your dashboard
+
+If you have any questions, please contact us at ${eventConfig.organization.email}
+
+Best regards,
+The Australian AI Safety Forum Team
+
+${eventConfig.organization.name}
+ABN ${eventConfig.organization.abn}
+  `.trim();
+
+  try {
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('✅ Speaker proposal confirmation email sent:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error sending speaker proposal confirmation email:', error);
+    throw error;
+  }
+}
+
+// ============================================================================
+// SCHOLARSHIP APPLICATION CONFIRMATION EMAIL
+// ============================================================================
+
+interface ScholarshipApplicationEmailParams {
+  email: string;
+  name: string;
+  travelSupport: string;
+}
+
+export async function sendScholarshipApplicationConfirmation(params: ScholarshipApplicationEmailParams) {
+  const apiInstance = getBrevoClient();
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  const dashboardUrl = `${siteConfig.url}/dashboard`;
+
+  sendSmtpEmail.subject = `Scholarship Application Received - Australian AI Safety Forum ${eventConfig.year}`;
+  sendSmtpEmail.sender = {
+    name: 'Australian AI Safety Forum',
+    email: eventConfig.organization.email,
+  };
+  sendSmtpEmail.to = [
+    {
+      email: params.email,
+      name: params.name,
+    },
+  ];
+
+  sendSmtpEmail.htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0a1f5c 0%, #0047ba 100%); color: white; padding: 30px 20px; text-align: center; }
+    .content { background: white; padding: 30px 20px; }
+    .info-box { background: #f0f4f8; border-left: 4px solid #00d4ff; padding: 20px; margin: 20px 0; }
+    .footer { background: #0a1f5c; color: white; padding: 20px; text-align: center; font-size: 12px; }
+    .button { display: inline-block; background: #00d4ff; color: #061440; padding: 14px 32px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 10px 5px; }
+    .action-box { background: #e8f4fd; border: 1px solid #00d4ff; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Application Received!</h1>
+      <p>Australian AI Safety Forum ${eventConfig.year}</p>
+    </div>
+
+    <div class="content">
+      <p>Dear ${escapeHtml(params.name)},</p>
+
+      <p>Thank you for applying for a scholarship to attend the Australian AI Safety Forum ${eventConfig.year}. We've received your application and will review it carefully.</p>
+
+      <div class="info-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">📋 Your Application</h3>
+        <p style="margin-bottom: 0;">
+          <strong>Travel Support Requested:</strong> ${escapeHtml(params.travelSupport)}
+        </p>
+      </div>
+
+      <div class="action-box">
+        <h3 style="margin-top: 0; color: #0a1f5c;">Edit Your Application</h3>
+        <p style="margin-bottom: 15px;">You can view and edit your application at any time from your dashboard.</p>
+        <a href="${dashboardUrl}" class="button">Go to Dashboard</a>
+      </div>
+
+      <h3 style="color: #0a1f5c;">📅 What's Next?</h3>
+      <ul>
+        <li>Our team will review all applications on a rolling basis</li>
+        <li>We'll be in touch within a few weeks with our decision</li>
+        <li>In the meantime, you can update your application from your dashboard</li>
+      </ul>
+
+      <p>If you have any questions, please contact us at
+        <a href="mailto:${eventConfig.organization.email}">${eventConfig.organization.email}</a>
+      </p>
+
+      <p>Best regards,<br>
+      <strong>The Australian AI Safety Forum Team</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>${eventConfig.organization.name}<br>
+      ABN ${eventConfig.organization.abn}<br>
+      ${eventConfig.organization.address.line1}, ${eventConfig.organization.address.city} ${eventConfig.organization.address.postcode}</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  sendSmtpEmail.textContent = `
+Scholarship Application Received - Australian AI Safety Forum ${eventConfig.year}
+
+Dear ${params.name},
+
+Thank you for applying for a scholarship to attend the Australian AI Safety Forum ${eventConfig.year}. We've received your application and will review it carefully.
+
+YOUR APPLICATION
+----------------
+Travel Support Requested: ${params.travelSupport}
+
+EDIT YOUR APPLICATION
+---------------------
+You can view and edit your application at any time from your dashboard:
+${dashboardUrl}
+
+WHAT'S NEXT?
+------------
+- Our team will review all applications on a rolling basis
+- We'll be in touch within a few weeks with our decision
+- In the meantime, you can update your application from your dashboard
+
+If you have any questions, please contact us at ${eventConfig.organization.email}
+
+Best regards,
+The Australian AI Safety Forum Team
+
+${eventConfig.organization.name}
+ABN ${eventConfig.organization.abn}
+  `.trim();
+
+  try {
+    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('✅ Scholarship application confirmation email sent:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error sending scholarship application confirmation email:', error);
+    throw error;
+  }
+}
