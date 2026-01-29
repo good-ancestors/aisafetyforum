@@ -84,57 +84,10 @@ interface OrderWithDetails {
   } | null;
 }
 
-function generateInvoiceHtml(order: OrderWithDetails): string {
-  const subtotal = order.totalAmount + order.discountAmount;
-  const isPaid = order.paymentStatus === 'paid';
+// --- Helper functions for HTML generation ---
 
-  // GST calculation (prices include 10% GST)
-  const gstAmount = Math.round(order.totalAmount / 11);
-  const subtotalExGst = order.totalAmount - gstAmount;
-
-  // Group tickets by type and count them
-  const ticketSummary = order.registrations.reduce((acc, reg) => {
-    const key = reg.ticketType;
-    if (!acc[key]) {
-      acc[key] = { count: 0, unitPrice: reg.ticketPrice || 0, total: 0 };
-    }
-    acc[key].count++;
-    acc[key].total += reg.ticketPrice || 0;
-    return acc;
-  }, {} as Record<string, { count: number; unitPrice: number; total: number }>);
-
-  const ticketRows = Object.entries(ticketSummary)
-    .map(
-      ([type, { count, unitPrice, total }]) => `
-      <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(type)} Ticket${count > 1 ? ` (x${count})` : ''}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(unitPrice / 100).toFixed(2)}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(total / 100).toFixed(2)}</td>
-      </tr>
-    `
-    )
-    .join('');
-
-  const attendeeList = order.registrations
-    .map(
-      (reg) => `
-      <tr>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.name)}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.email)}</td>
-        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.ticketType)}</td>
-      </tr>
-    `
-    )
-    .join('');
-
+function getInvoiceStyles(): string {
   return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice ${order.invoiceNumber || order.id.slice(-8).toUpperCase()}</title>
-  <style>
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .no-print { display: none; }
@@ -273,7 +226,117 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     .print-button:hover {
       background: #061440;
     }
-  </style>
+  `;
+}
+
+function generateTicketRows(
+  registrations: OrderWithDetails['registrations']
+): string {
+  const ticketSummary = registrations.reduce((acc, reg) => {
+    const key = reg.ticketType;
+    if (!acc[key]) {
+      acc[key] = { count: 0, unitPrice: reg.ticketPrice || 0, total: 0 };
+    }
+    acc[key].count++;
+    acc[key].total += reg.ticketPrice || 0;
+    return acc;
+  }, {} as Record<string, { count: number; unitPrice: number; total: number }>);
+
+  return Object.entries(ticketSummary)
+    .map(
+      ([type, { count, unitPrice, total }]) => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(type)} Ticket${count > 1 ? ` (x${count})` : ''}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(unitPrice / 100).toFixed(2)}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">$${(total / 100).toFixed(2)}</td>
+      </tr>
+    `
+    )
+    .join('');
+}
+
+function generateAttendeeList(
+  registrations: OrderWithDetails['registrations']
+): string {
+  return registrations
+    .map(
+      (reg) => `
+      <tr>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.name)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.email)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f3f4f6;">${escapeHtml(reg.ticketType)}</td>
+      </tr>
+    `
+    )
+    .join('');
+}
+
+function generateTotalsSection(order: OrderWithDetails, isPaid: boolean): string {
+  const subtotal = order.totalAmount + order.discountAmount;
+  const gstAmount = Math.round(order.totalAmount / 11);
+  const subtotalExGst = order.totalAmount - gstAmount;
+
+  const discountRows = order.discountAmount > 0 ? `
+    <div class="total-row">
+      <span>Subtotal (before discount)</span>
+      <span>$${(subtotal / 100).toFixed(2)} AUD</span>
+    </div>
+    <div class="total-row" style="color: #059669;">
+      <span>Discount${order.coupon ? ` (${order.coupon.code})` : ''}</span>
+      <span>-$${(order.discountAmount / 100).toFixed(2)} AUD</span>
+    </div>
+  ` : '';
+
+  return `
+  <div class="totals">
+    ${discountRows}
+    <div class="total-row">
+      <span>Subtotal (ex GST)</span>
+      <span>$${(subtotalExGst / 100).toFixed(2)} AUD</span>
+    </div>
+    <div class="total-row">
+      <span>GST (10%)</span>
+      <span>$${(gstAmount / 100).toFixed(2)} AUD</span>
+    </div>
+    <div class="total-row grand-total">
+      <span>Total ${isPaid ? 'Paid' : 'Due'} (inc GST)</span>
+      <span>$${(order.totalAmount / 100).toFixed(2)} AUD</span>
+    </div>
+  </div>
+  `;
+}
+
+function generatePaymentInstructions(order: OrderWithDetails): string {
+  return `
+  <div class="payment-info">
+    <h3>Payment Instructions</h3>
+    <p>Please pay by bank transfer to:</p>
+    <p><strong>Account Name:</strong> ${eventConfig.organization.bankDetails.accountName}</p>
+    <p><strong>BSB:</strong> ${eventConfig.organization.bankDetails.bsb}</p>
+    <p><strong>Account Number:</strong> ${eventConfig.organization.bankDetails.accountNumber}</p>
+    <p><strong>Bank:</strong> ${eventConfig.organization.bankDetails.bank}</p>
+    <p><strong>Reference:</strong> ${order.invoiceNumber || order.id.slice(-8).toUpperCase()}</p>
+    ${order.invoiceDueDate ? `<p style="margin-top: 12px;"><strong>Please pay by:</strong> ${new Date(order.invoiceDueDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
+  </div>
+  `;
+}
+
+// --- Main HTML generation function ---
+
+function generateInvoiceHtml(order: OrderWithDetails): string {
+  const isPaid = order.paymentStatus === 'paid';
+  const ticketRows = generateTicketRows(order.registrations);
+  const attendeeList = generateAttendeeList(order.registrations);
+  const totalsSection = generateTotalsSection(order, isPaid);
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice ${order.invoiceNumber || order.id.slice(-8).toUpperCase()}</title>
+  <style>${getInvoiceStyles()}</style>
 </head>
 <body>
   <button class="print-button no-print" onclick="window.print()">Print / Save PDF</button>
@@ -324,34 +387,7 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     </tbody>
   </table>
 
-  <div class="totals">
-    ${
-      order.discountAmount > 0
-        ? `
-    <div class="total-row">
-      <span>Subtotal (before discount)</span>
-      <span>$${(subtotal / 100).toFixed(2)} AUD</span>
-    </div>
-    <div class="total-row" style="color: #059669;">
-      <span>Discount${order.coupon ? ` (${order.coupon.code})` : ''}</span>
-      <span>-$${(order.discountAmount / 100).toFixed(2)} AUD</span>
-    </div>
-    `
-        : ''
-    }
-    <div class="total-row">
-      <span>Subtotal (ex GST)</span>
-      <span>$${(subtotalExGst / 100).toFixed(2)} AUD</span>
-    </div>
-    <div class="total-row">
-      <span>GST (10%)</span>
-      <span>$${(gstAmount / 100).toFixed(2)} AUD</span>
-    </div>
-    <div class="total-row grand-total">
-      <span>Total ${isPaid ? 'Paid' : 'Due'} (inc GST)</span>
-      <span>$${(order.totalAmount / 100).toFixed(2)} AUD</span>
-    </div>
-  </div>
+  ${totalsSection}
 
   <h3 style="margin: 40px 0 16px 0; color: #0a1f5c;">Attendee Details</h3>
   <table>
@@ -367,22 +403,7 @@ function generateInvoiceHtml(order: OrderWithDetails): string {
     </tbody>
   </table>
 
-  ${
-    !isPaid
-      ? `
-  <div class="payment-info">
-    <h3>Payment Instructions</h3>
-    <p>Please pay by bank transfer to:</p>
-    <p><strong>Account Name:</strong> ${eventConfig.organization.bankDetails.accountName}</p>
-    <p><strong>BSB:</strong> ${eventConfig.organization.bankDetails.bsb}</p>
-    <p><strong>Account Number:</strong> ${eventConfig.organization.bankDetails.accountNumber}</p>
-    <p><strong>Bank:</strong> ${eventConfig.organization.bankDetails.bank}</p>
-    <p><strong>Reference:</strong> ${order.invoiceNumber || order.id.slice(-8).toUpperCase()}</p>
-    ${order.invoiceDueDate ? `<p style="margin-top: 12px;"><strong>Please pay by:</strong> ${new Date(order.invoiceDueDate).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}</p>` : ''}
-  </div>
-  `
-      : ''
-  }
+  ${!isPaid ? generatePaymentInstructions(order) : ''}
 
   <div class="footer">
     <p>Australian AI Safety Forum ${eventConfig.year}</p>

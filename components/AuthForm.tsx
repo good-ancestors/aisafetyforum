@@ -9,6 +9,7 @@ interface AuthFormProps {
   redirectTo?: string;
 }
 
+// eslint-disable-next-line max-lines-per-function -- Auth flow with email + OTP steps is inherently stateful
 export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps) {
   const router = useRouter();
 

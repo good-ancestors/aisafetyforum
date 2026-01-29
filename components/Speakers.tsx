@@ -5,6 +5,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Image from 'next/image';
 import { useCallback } from 'react';
 
+// eslint-disable-next-line max-lines-per-function -- Speaker carousel with static data array
 export default function Speakers() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: 'center' },

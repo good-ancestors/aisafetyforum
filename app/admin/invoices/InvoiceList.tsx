@@ -24,6 +24,7 @@ type Order = {
   }[];
 };
 
+// eslint-disable-next-line max-lines-per-function -- Admin list with inline expansion and actions
 export default function InvoiceList({ orders }: { orders: Order[] }) {
   const [filter, setFilter] = useState<'all' | 'pending' | 'paid'>('pending');
   const [loading, setLoading] = useState<string | null>(null);
