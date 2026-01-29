@@ -3,12 +3,11 @@
 import { useState, useTransition } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import {
-  addFreeTicketEmail,
-  addBulkFreeTicketEmails,
   toggleFreeTicketEmailStatus,
   deleteFreeTicketEmail,
   updateFreeTicketEmail,
 } from '@/lib/admin-actions';
+import FreeTicketEmailForm from './FreeTicketEmailForm';
 
 // Consistent date formatting to avoid hydration mismatches
 function formatDate(date: Date): string {
@@ -36,14 +35,11 @@ interface FreeTicketEmailListProps {
 
 type StatusFilter = 'all' | 'active' | 'inactive';
 
+// eslint-disable-next-line max-lines-per-function -- Admin list with filters, inline edit, and actions
 export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [search, setSearch] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
-  const [bulkMode, setBulkMode] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
-  const [newReason, setNewReason] = useState('');
-  const [bulkEmails, setBulkEmails] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editReason, setEditReason] = useState('');
   const [localEmails, setLocalEmails] = useState(emails);
@@ -63,56 +59,6 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
     }
     return true;
   });
-
-  const handleAddSingle = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newEmail || !newReason) return;
-
-    startTransition(async () => {
-      const result = await addFreeTicketEmail(newEmail, newReason);
-      if (result.success) {
-        setMessage({ type: 'success', text: 'Email added successfully' });
-        setNewEmail('');
-        setNewReason('');
-        setShowAddForm(false);
-        window.location.reload();
-      } else {
-        setMessage({ type: 'error', text: result.error || 'Failed to add email' });
-      }
-    });
-  };
-
-  const handleAddBulk = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bulkEmails || !newReason) return;
-
-    const emailList = bulkEmails
-      .split(/[\n,]/)
-      .map((e) => e.trim())
-      .filter((e) => e.length > 0 && e.includes('@'));
-
-    if (emailList.length === 0) {
-      setMessage({ type: 'error', text: 'No valid emails found' });
-      return;
-    }
-
-    startTransition(async () => {
-      const result = await addBulkFreeTicketEmails(emailList, newReason);
-      if (result.success) {
-        setMessage({
-          type: 'success',
-          text: `Added ${result.added} email(s)${result.failed > 0 ? `, ${result.failed} failed (may already exist)` : ''}`,
-        });
-        setBulkEmails('');
-        setNewReason('');
-        setShowAddForm(false);
-        setBulkMode(false);
-        window.location.reload();
-      } else {
-        setMessage({ type: 'error', text: result.error || 'Failed to add emails' });
-      }
-    });
-  };
 
   const handleToggleStatus = (id: string) => {
     startTransition(async () => {
@@ -173,15 +119,7 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
             </p>
           </div>
           <button
-            onClick={() => {
-              setShowAddForm(!showAddForm);
-              if (!showAddForm) {
-                setBulkMode(false);
-                setNewEmail('');
-                setBulkEmails('');
-                setNewReason('');
-              }
-            }}
+            onClick={() => setShowAddForm(!showAddForm)}
             className="px-4 py-2 bg-navy text-white rounded text-sm hover:bg-navy-light transition-colors"
           >
             {showAddForm ? 'Cancel' : 'Add Email(s)'}
@@ -209,99 +147,11 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
 
         {/* Add Form */}
         {showAddForm && (
-          <div className="p-4 border-b border-[--border] bg-[--bg-light]">
-            {/* Mode Toggle */}
-            <div className="flex gap-2 mb-4">
-              <button
-                type="button"
-                onClick={() => setBulkMode(false)}
-                className={`px-3 py-1 text-sm rounded border transition-colors ${
-                  !bulkMode
-                    ? 'bg-navy text-white border-navy'
-                    : 'bg-white text-body border hover:border-navy'
-                }`}
-              >
-                Single Email
-              </button>
-              <button
-                type="button"
-                onClick={() => setBulkMode(true)}
-                className={`px-3 py-1 text-sm rounded border transition-colors ${
-                  bulkMode
-                    ? 'bg-navy text-white border-navy'
-                    : 'bg-white text-body border hover:border-navy'
-                }`}
-              >
-                Bulk Add
-              </button>
-            </div>
-
-            <form onSubmit={bulkMode ? handleAddBulk : handleAddSingle}>
-              {bulkMode ? (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[--text-body] mb-1">
-                    Email Addresses *
-                  </label>
-                  <textarea
-                    value={bulkEmails}
-                    onChange={(e) => setBulkEmails(e.target.value)}
-                    placeholder="Enter email addresses, one per line or comma-separated&#10;e.g., speaker1@example.com&#10;speaker2@example.com"
-                    required
-                    rows={4}
-                    className="w-full px-3 py-2 border border-[--border] rounded text-sm font-mono"
-                  />
-                </div>
-              ) : (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[--text-body] mb-1">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="e.g., speaker@example.com"
-                    required
-                    className="w-full px-3 py-2 border border-[--border] rounded text-sm"
-                  />
-                </div>
-              )}
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-[--text-body] mb-1">
-                  Reason *
-                </label>
-                <input
-                  type="text"
-                  value={newReason}
-                  onChange={(e) => setNewReason(e.target.value)}
-                  placeholder="e.g., Accepted speaker, Organizer, VIP"
-                  required
-                  className="w-full px-3 py-2 border border-[--border] rounded text-sm"
-                />
-                <p className="text-xs text-[--text-muted] mt-1">
-                  This reason will be shown to them during registration
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 text-[--text-body] border border-[--border] rounded text-sm hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending || (!bulkMode && !newEmail) || (bulkMode && !bulkEmails) || !newReason}
-                  className="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors disabled:opacity-50"
-                >
-                  {isPending ? 'Adding...' : bulkMode ? 'Add All' : 'Add Email'}
-                </button>
-              </div>
-            </form>
-          </div>
+          <FreeTicketEmailForm
+            onClose={() => setShowAddForm(false)}
+            onSuccess={(text) => setMessage({ type: 'success', text })}
+            onError={(text) => setMessage({ type: 'error', text })}
+          />
         )}
 
         {/* Filters */}
