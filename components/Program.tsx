@@ -1,4 +1,10 @@
+'use client';
+
+import { useInView } from '@/hooks/useInView';
+
 export default function Program() {
+  const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.1 });
+
   return (
     <section id="program" className="bg-white py-16 px-8">
       <div className="max-w-[1200px] mx-auto">
@@ -14,9 +20,14 @@ export default function Program() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[900px] mx-auto">
+        <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[900px] mx-auto">
           {/* Day 1 */}
-          <div className="bg-gradient-to-br from-navy to-brand-blue rounded-lg p-8 text-white">
+          <div
+            className={`bg-gradient-to-br from-navy to-brand-blue rounded-lg p-8 text-white hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,71,186,0.3)] transition-all duration-300 ${
+              inView ? 'animate-fade-in-up' : 'opacity-0'
+            } stagger-1`}
+            style={{ animationFillMode: 'backwards' }}
+          >
             <div className="text-cyan font-bold text-sm mb-3 uppercase tracking-wider">
               Day 1 • Monday 22 June
             </div>
@@ -44,7 +55,12 @@ export default function Program() {
           </div>
 
           {/* Day 2 */}
-          <div className="bg-light rounded-lg p-8 border-2 border-teal">
+          <div
+            className={`bg-light rounded-lg p-8 border-2 border-teal hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,153,204,0.2)] hover:border-cyan transition-all duration-300 ${
+              inView ? 'animate-fade-in-up' : 'opacity-0'
+            } stagger-2`}
+            style={{ animationFillMode: 'backwards' }}
+          >
             <div className="text-teal font-bold text-sm mb-3 uppercase tracking-wider">
               Day 2 • Tuesday 23 June
             </div>
