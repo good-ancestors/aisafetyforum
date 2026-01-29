@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { deleteProfile, getProfileDeletionInfo } from '@/lib/profile-actions';
 
+// eslint-disable-next-line complexity -- Multi-step deletion flow with pre-checks, confirmations, and error states
 export default function DeleteAccountSection() {
   const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);

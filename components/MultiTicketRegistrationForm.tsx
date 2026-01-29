@@ -26,6 +26,7 @@ interface MultiTicketRegistrationFormProps {
   preAppliedDiscount?: PreAppliedDiscount | null;
 }
 
+// eslint-disable-next-line max-lines-per-function, complexity -- UI component; logic extracted to useMultiTicketForm hook
 export default function MultiTicketRegistrationForm({
   initialProfile,
   preValidatedCode,

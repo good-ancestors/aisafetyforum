@@ -20,6 +20,7 @@ type ProfileFields = {
  * If the profile exists, update fields if new values are provided.
  * Bio and social links are centralized on Profile (single source of truth).
  */
+// eslint-disable-next-line complexity -- Profile upsert with conditional field updates and neon_auth sync
 async function getOrCreateProfile(email: string, fields: ProfileFields = {}) {
   const normalizedEmail = email.toLowerCase().trim();
 

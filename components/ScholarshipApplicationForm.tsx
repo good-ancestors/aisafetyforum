@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { submitScholarshipApplication, type ScholarshipApplicationFormData } from '@/lib/actions';
 
+// eslint-disable-next-line max-lines-per-function -- Multi-field application form with validation and submission states
 export default function ScholarshipApplicationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

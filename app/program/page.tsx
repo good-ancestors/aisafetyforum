@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
+// eslint-disable-next-line max-lines-per-function -- Static page layout with hero, program grid, and CTA sections
 export default function ProgramPage() {
   return (
     <>

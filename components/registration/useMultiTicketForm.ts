@@ -31,6 +31,7 @@ interface UseMultiTicketFormProps {
   preAppliedDiscount?: PreAppliedDiscount | null;
 }
 
+// eslint-disable-next-line max-lines-per-function -- Cohesive hook managing related form state (purchaser, attendees, coupon, payment)
 export function useMultiTicketForm({
   initialProfile,
   preValidatedCode,

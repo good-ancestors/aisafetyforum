@@ -81,6 +81,7 @@ async function getOrCreateProfile(email: string, name?: string, title?: string, 
   return profile;
 }
 
+// eslint-disable-next-line complexity -- Payment flow with free tickets, coupons, and Stripe integration
 export async function createCheckoutSession(data: RegistrationFormData) {
   try {
     // Find the ticket tier
@@ -373,6 +374,7 @@ export async function getOrdersByEmail(email: string) {
  * Create a multi-ticket checkout session.
  * Supports multiple attendees with different ticket types in a single order.
  */
+// eslint-disable-next-line complexity -- Multi-attendee payment: free tickets, coupons, partial discounts, Stripe
 export async function createMultiTicketCheckout(data: MultiTicketFormData) {
   try {
     const earlyBird = isEarlyBirdActive();
@@ -608,6 +610,7 @@ export async function getOrderBySessionId(sessionId: string) {
  * Create an invoice order with PDF invoice sent via email.
  * Uses bank transfer for payment instead of Stripe (not available in AU).
  */
+// eslint-disable-next-line complexity -- Invoice generation with free tickets, coupons, PDF creation, email sending
 export async function createInvoiceOrder(data: InvoiceFormData) {
   try {
     const earlyBird = isEarlyBirdActive();

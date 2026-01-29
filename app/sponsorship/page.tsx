@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
+// eslint-disable-next-line max-lines-per-function -- Static page with sponsorship tiers, benefits, and contact info
 export default function SponsorPage() {
   const sponsorshipTiers = [
     {

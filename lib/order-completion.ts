@@ -18,6 +18,7 @@ import { isProduction, redactEmail } from './security';
  * - Free ticket flows (when totalAmount === 0)
  * - Admin marking invoice as paid (bank transfer received)
  */
+// eslint-disable-next-line complexity -- Order completion: status updates, registration marking, confirmation emails
 export async function completeOrder(
   orderId: string,
   options?: {

@@ -6,6 +6,7 @@ import { calculateGST } from '@/lib/invoice-pdf';
 import { getOrderById } from '@/lib/registration-actions';
 import InvoiceDownloadButton from './InvoiceDownloadButton';
 
+// eslint-disable-next-line max-lines-per-function -- Confirmation page with order summary, payment details, and next steps
 export default async function InvoiceSentPage({
   searchParams,
 }: {

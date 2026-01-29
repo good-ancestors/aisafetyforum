@@ -36,6 +36,7 @@ const sessionFormats = [
   },
 ];
 
+// eslint-disable-next-line max-lines-per-function -- Speaker proposal form with format selection, abstract, and travel info
 export default function SpeakerProposalForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

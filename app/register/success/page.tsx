@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { getRegistrationBySessionId, getRegistrationById, getOrderBySessionId, getOrderById } from '@/lib/registration-actions';
 import { requireStripe } from '@/lib/stripe';
 
+// eslint-disable-next-line complexity -- Handles multiple entry points: session_id, registration_id, order_id
 export default async function RegistrationSuccess({
   searchParams,
 }: {

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
+// eslint-disable-next-line max-lines-per-function -- Static archive page with multiple content sections
 export default function Forum2024() {
   return (
     <>

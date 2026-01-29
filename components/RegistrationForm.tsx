@@ -7,6 +7,7 @@ import { checkFreeTicketEmail } from '@/lib/free-ticket-actions';
 import { createCheckoutSession, type RegistrationFormData } from '@/lib/registration-actions';
 import { ticketTiers, isEarlyBirdActive, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 
+// eslint-disable-next-line max-lines-per-function, complexity -- Legacy single-ticket form (superseded by MultiTicketRegistrationForm)
 export default function RegistrationForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -103,6 +103,7 @@ export async function cancelOrder(
  * Cancel a single registration (ticket) with optional partial refund.
  * For card payments, issues a partial Stripe refund for the ticket amount.
  */
+// eslint-disable-next-line complexity -- Cancellation with auth, refund eligibility, Stripe partial refunds, email notifications
 export async function cancelRegistration(
   registrationId: string,
   options: CancelRegistrationOptions = {}
