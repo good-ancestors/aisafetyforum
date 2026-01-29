@@ -289,40 +289,6 @@ async function getOrCreateStripeCoupon(discount: {
   return stripeCoupon.id;
 }
 
-export async function getRegistrationBySessionId(sessionId: string) {
-  try {
-    const registration = await prisma.registration.findUnique({
-      where: { stripeSessionId: sessionId },
-      include: {
-        coupon: true,
-        profile: true,
-        order: true,
-      },
-    });
-    return registration;
-  } catch (error) {
-    console.error('Error fetching registration:', error);
-    return null;
-  }
-}
-
-export async function getRegistrationById(registrationId: string) {
-  try {
-    const registration = await prisma.registration.findUnique({
-      where: { id: registrationId },
-      include: {
-        coupon: true,
-        profile: true,
-        order: true,
-      },
-    });
-    return registration;
-  } catch (error) {
-    console.error('Error fetching registration:', error);
-    return null;
-  }
-}
-
 /**
  * Get an order by its ID with all registrations
  */
