@@ -6,6 +6,8 @@ import { ticketTiers, type TicketTierId } from './stripe-config';
 export type CouponValidationResult = {
   valid: boolean;
   error?: string;
+  grantsAccess?: boolean;
+  couponId?: string;
   discount?: {
     type: 'percentage' | 'fixed' | 'free';
     value: number;
@@ -86,8 +88,16 @@ export async function validateCoupon(
       finalAmount = originalAmount - discountAmount;
     }
 
+    // Reject access-only codes that provide no actual discount
+    // (These are only useful in gated mode, not open mode)
+    if (discountAmount === 0 && coupon.grantsAccess) {
+      return { valid: false, error: 'This code is for early access only and registration is now open' };
+    }
+
     return {
       valid: true,
+      grantsAccess: coupon.grantsAccess,
+      couponId: coupon.id,
       discount: {
         type: coupon.type as 'percentage' | 'fixed' | 'free',
         value: coupon.value,
@@ -100,6 +110,78 @@ export async function validateCoupon(
   } catch (error) {
     console.error('Error validating coupon:', error);
     return { valid: false, error: 'Failed to validate coupon code' };
+  }
+}
+
+/**
+ * Validate an access code for gated registration
+ * Similar to validateCoupon but specifically checks grantsAccess flag
+ * and doesn't require a ticket type (validated before checkout)
+ */
+export async function validateAccessCode(
+  code: string,
+  email?: string
+): Promise<CouponValidationResult> {
+  try {
+    const coupon = await prisma.discountCode.findUnique({
+      where: { code: code.toUpperCase() },
+    });
+
+    if (!coupon) {
+      return { valid: false, error: 'Invalid code' };
+    }
+
+    if (!coupon.active) {
+      return { valid: false, error: 'This code is no longer active' };
+    }
+
+    if (!coupon.grantsAccess) {
+      return { valid: false, error: 'This code does not grant early access' };
+    }
+
+    // Check date validity
+    const now = new Date();
+    if (coupon.validFrom && now < coupon.validFrom) {
+      return { valid: false, error: 'This code is not yet valid' };
+    }
+    if (coupon.validUntil && now > coupon.validUntil) {
+      return { valid: false, error: 'This code has expired' };
+    }
+
+    // Check usage limit
+    if (coupon.maxUses !== null && coupon.currentUses >= coupon.maxUses) {
+      return { valid: false, error: 'This code has reached its usage limit' };
+    }
+
+    // Check email restriction if provided
+    if (email && coupon.allowedEmails.length > 0) {
+      const emailAllowed = coupon.allowedEmails.some(
+        (allowedEmail: string) => allowedEmail.toLowerCase() === email.toLowerCase()
+      );
+      if (!emailAllowed) {
+        return { valid: false, error: 'This code is not valid for your email address' };
+      }
+    }
+
+    // Return basic discount info (full calculation done at checkout with ticket type)
+    return {
+      valid: true,
+      grantsAccess: true,
+      couponId: coupon.id,
+      discount: coupon.type !== 'percentage' || coupon.value > 0
+        ? {
+            type: coupon.type as 'percentage' | 'fixed' | 'free',
+            value: coupon.value,
+            originalAmount: 0,
+            discountAmount: 0,
+            finalAmount: 0,
+            description: coupon.description,
+          }
+        : undefined,
+    };
+  } catch (error) {
+    console.error('Error validating access code:', error);
+    return { valid: false, error: 'Failed to validate code' };
   }
 }
 
@@ -128,6 +210,7 @@ export async function createDiscountCode(data: {
   maxUses?: number;
   validFrom?: Date;
   validUntil?: Date;
+  grantsAccess?: boolean;
 }) {
   try {
     const coupon = await prisma.discountCode.create({
@@ -141,6 +224,7 @@ export async function createDiscountCode(data: {
         maxUses: data.maxUses || null,
         validFrom: data.validFrom || null,
         validUntil: data.validUntil || null,
+        grantsAccess: data.grantsAccess || false,
         active: true,
       },
     });

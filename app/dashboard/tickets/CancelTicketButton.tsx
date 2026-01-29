@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { cancelRegistration, getRegistrationCancellationInfo } from '@/lib/cancellation-actions';
-import { eventConfig } from '@/lib/config';
 
 interface CancelTicketButtonProps {
   registrationId: string;

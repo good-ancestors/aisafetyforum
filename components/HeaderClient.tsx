@@ -28,15 +28,31 @@ export default function HeaderClient() {
   const user = userEmail ? { email: userEmail } : null;
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!userEmail) {
-      setIsAdmin(false);
-      return;
+      // Defer to avoid synchronous setState in effect
+      const timeoutId = setTimeout(() => {
+        if (!cancelled) setIsAdmin(false);
+      }, 0);
+      return () => {
+        cancelled = true;
+        clearTimeout(timeoutId);
+      };
     }
 
     fetch('/api/auth/me')
       .then((res) => res.json())
-      .then((data) => setIsAdmin(data.isAdmin ?? false))
-      .catch(() => setIsAdmin(false));
+      .then((data) => {
+        if (!cancelled) setIsAdmin(data.isAdmin ?? false);
+      })
+      .catch(() => {
+        if (!cancelled) setIsAdmin(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [userEmail]);
 
   async function handleSignOut() {

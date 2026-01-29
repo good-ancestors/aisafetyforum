@@ -338,8 +338,8 @@ const InvoiceDocument: React.FC<{ data: InvoiceData }> = ({ data }) => {
               <Text style={[styles.tableHeaderCell, styles.colUnitPrice]}>Unit Price</Text>
               <Text style={[styles.tableHeaderCell, styles.colAmount]}>Amount</Text>
             </View>
-            {data.lineItems.map((item, index) => (
-              <View key={index} style={styles.tableRow}>
+            {data.lineItems.map((item) => (
+              <View key={`${item.description}-${item.quantity}`} style={styles.tableRow}>
                 <Text style={[styles.tableCell, styles.colDescription]}>{item.description}</Text>
                 <Text style={[styles.tableCell, styles.colQty]}>{item.quantity}</Text>
                 <Text style={[styles.tableCell, styles.colUnitPrice]}>{formatCurrency(item.unitPrice)}</Text>
@@ -408,8 +408,8 @@ const InvoiceDocument: React.FC<{ data: InvoiceData }> = ({ data }) => {
           <View style={[styles.section, { marginTop: 20 }]}>
             <Text style={styles.sectionTitle}>Registered Attendees ({data.attendees.length})</Text>
             <View style={styles.attendeesList}>
-              {data.attendees.map((attendee, index) => (
-                <View key={index} style={styles.attendee}>
+              {data.attendees.map((attendee) => (
+                <View key={attendee.email} style={styles.attendee}>
                   <Text style={styles.attendeeName}>{attendee.name}</Text>
                   <Text style={styles.attendeeEmail}>{attendee.email}</Text>
                   <Text style={styles.attendeeTicket}>{attendee.ticketType}</Text>

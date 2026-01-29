@@ -95,25 +95,41 @@ model Registration {
 }
 
 model DiscountCode {
-  id            String         @id @default(cuid())
-  code          String         @unique
-  description   String
-  type          String
-  value         Int
-  validFor      String[]
-  allowedEmails String[]
-  maxUses       Int?
-  currentUses   Int            @default(0)
-  active        Boolean        @default(true)
-  validFrom     DateTime?
-  validUntil    DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  orders        Order[]
-  registrations Registration[]
+  id              String            @id @default(cuid())
+  code            String            @unique
+  description     String
+  type            String
+  value           Int
+  validFor        String[]
+  allowedEmails   String[]
+  maxUses         Int?
+  currentUses     Int               @default(0)
+  active          Boolean           @default(true)
+  grantsAccess    Boolean           @default(false) // Allows registration in gated mode
+  validFrom       DateTime?
+  validUntil      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  orders          Order[]
+  registrations   Registration[]
+  waitlistSignups WaitlistSignup[]
 
   @@index([code])
   @@index([active])
+}
+
+model WaitlistSignup {
+  id        String        @id @default(cuid())
+  email     String        @unique
+  status    String        @default("pending") // pending | notified | registered
+  codeId    String?
+  code      DiscountCode? @relation(fields: [codeId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([codeId])
 }
 
 model FreeTicketEmail {

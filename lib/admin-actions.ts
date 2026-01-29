@@ -924,6 +924,7 @@ export async function createDiscountCode(data: {
   allowedEmails?: string[];
   validFrom?: Date;
   validUntil?: Date;
+  grantsAccess?: boolean;
 }): Promise<{ success: boolean; error?: string }> {
   try {
     const admin = await requireAdmin();
@@ -940,6 +941,7 @@ export async function createDiscountCode(data: {
         allowedEmails: data.allowedEmails || [],
         validFrom: data.validFrom,
         validUntil: data.validUntil,
+        grantsAccess: data.grantsAccess || false,
         active: true,
       },
     });
@@ -971,6 +973,7 @@ export async function updateDiscountCode(
     validFrom?: Date | null;
     validUntil?: Date | null;
     active?: boolean;
+    grantsAccess?: boolean;
   }
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -993,6 +996,7 @@ export async function updateDiscountCode(
         ...(data.validFrom !== undefined && { validFrom: data.validFrom }),
         ...(data.validUntil !== undefined && { validUntil: data.validUntil }),
         ...(data.active !== undefined && { active: data.active }),
+        ...(data.grantsAccess !== undefined && { grantsAccess: data.grantsAccess }),
       },
     });
 

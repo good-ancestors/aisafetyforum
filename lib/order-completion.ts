@@ -1,7 +1,7 @@
 'use server';
 
-import { prisma } from './prisma';
 import { sendReceiptEmail, sendTicketConfirmationEmail } from './brevo';
+import { prisma } from './prisma';
 import { isProduction, redactEmail } from './security';
 
 /**

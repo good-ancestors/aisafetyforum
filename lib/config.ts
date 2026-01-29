@@ -5,6 +5,12 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://aisafetyforum.au',
 } as const;
 
+// Registration mode: 'open' | 'gated' | 'closed'
+// - open: Anyone can register, codes provide discounts only
+// - gated: Requires a code with grantsAccess to proceed
+// - closed: No registration, only waitlist signup
+export type RegistrationMode = 'open' | 'gated' | 'closed';
+
 // Event configuration
 export const eventConfig = {
   year: '2026',
@@ -12,6 +18,9 @@ export const eventConfig = {
   datesLong: '22-23 June 2026',
   venue: 'Sydney',
   venueLong: 'The University of Sydney, Sydney, Australia',
+
+  // Registration gating
+  registrationMode: (process.env.REGISTRATION_MODE || 'open') as RegistrationMode,
 
   // Specific dates (used in funding form and calendar invites)
   day1: {

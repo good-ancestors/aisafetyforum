@@ -33,6 +33,7 @@ interface DiscountCode {
   type: string;
   value: number;
   active: boolean;
+  grantsAccess: boolean;
   maxUses: number | null;
   validFor: string[];
   allowedEmails: string[];
@@ -58,6 +59,7 @@ interface CodeFormData {
   allowedEmails: string;
   validFrom: string;
   validUntil: string;
+  grantsAccess: boolean;
 }
 
 const TICKET_TYPES = [
@@ -77,6 +79,7 @@ const emptyFormData: CodeFormData = {
   allowedEmails: '',
   validFrom: '',
   validUntil: '',
+  grantsAccess: false,
 };
 
 export default function DiscountCodeList({ discountCodes }: DiscountCodeListProps) {
@@ -120,6 +123,7 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
       allowedEmails: code.allowedEmails.join('\n'),
       validFrom: formatDateForInput(code.validFrom),
       validUntil: formatDateForInput(code.validUntil),
+      grantsAccess: code.grantsAccess,
     });
     setShowForm(true);
   };
@@ -146,6 +150,7 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
           .filter((e) => e.length > 0),
         validFrom: formData.validFrom ? new Date(formData.validFrom) : undefined,
         validUntil: formData.validUntil ? new Date(formData.validUntil) : undefined,
+        grantsAccess: formData.grantsAccess,
       };
 
       let result;
@@ -320,6 +325,24 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
               </div>
             </div>
 
+            {/* Grants Access Checkbox */}
+            <div className="mb-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.grantsAccess}
+                  onChange={(e) => setFormData({ ...formData, grantsAccess: e.target.checked })}
+                  className="w-4 h-4 rounded border-[--border] text-[--navy] focus:ring-[--cyan]"
+                />
+                <div>
+                  <span className="text-sm font-medium text-[--text-body]">Grants Early Access</span>
+                  <p className="text-xs text-[--text-muted]">
+                    When enabled, this code allows registration even when registration is gated (invite-only).
+                  </p>
+                </div>
+              </label>
+            </div>
+
             {/* Valid Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
@@ -448,6 +471,11 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
                       >
                         {code.active ? 'Active' : 'Inactive'}
                       </span>
+                      {code.grantsAccess && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800">
+                          Access Code
+                        </span>
+                      )}
                       <span className="text-xs px-2 py-0.5 rounded bg-[--bg-light] text-[--text-muted]">
                         {formatValue(code.type, code.value)}
                       </span>

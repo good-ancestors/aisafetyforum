@@ -15,11 +15,23 @@ interface InitialProfile {
   organisation: string;
 }
 
-interface MultiTicketRegistrationFormProps {
-  initialProfile?: InitialProfile;
+interface PreAppliedDiscount {
+  type: 'percentage' | 'fixed' | 'free';
+  value: number;
+  description: string;
 }
 
-export default function MultiTicketRegistrationForm({ initialProfile }: MultiTicketRegistrationFormProps) {
+interface MultiTicketRegistrationFormProps {
+  initialProfile?: InitialProfile;
+  preValidatedCode?: string | null;
+  preAppliedDiscount?: PreAppliedDiscount | null;
+}
+
+export default function MultiTicketRegistrationForm({
+  initialProfile,
+  preValidatedCode,
+  preAppliedDiscount,
+}: MultiTicketRegistrationFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,15 +56,15 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
     },
   ]);
 
-  // Coupon
-  const [couponCode, setCouponCode] = useState('');
-  const [couponApplied, setCouponApplied] = useState(false);
+  // Coupon - initialize from pre-applied discount if provided
+  const [couponCode, setCouponCode] = useState(preValidatedCode || '');
+  const [couponApplied, setCouponApplied] = useState(!!preAppliedDiscount);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [discount, setDiscount] = useState<{
     type: 'percentage' | 'fixed' | 'free';
     value: number;
     description?: string;
-  } | null>(null);
+  } | null>(preAppliedDiscount || null);
 
   // Payment method
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'invoice'>('card');
@@ -295,7 +307,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
         organisation: a.organisation || undefined,
         ticketType: a.ticketType as TicketTierId,
       })),
-      couponCode: couponApplied ? couponCode : undefined,
+      couponCode: preValidatedCode || (couponApplied ? couponCode : undefined),
     };
 
     if (paymentMethod === 'invoice') {
@@ -446,6 +458,7 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
           <div className="space-y-6">
             {attendees.map((attendee, index) => (
               <AttendeeCard
+                // eslint-disable-next-line react/no-array-index-key -- Attendees are dynamically added/removed without stable IDs
                 key={index}
                 index={index}
                 attendee={attendee}
@@ -475,57 +488,63 @@ export default function MultiTicketRegistrationForm({ initialProfile }: MultiTic
           </button>
         </section>
 
-        {/* Coupon Code */}
-        <section>
-          <h2 className="text-lg font-bold text-navy mb-4 pb-2 border-b border-border">
-            Discount Code
-          </h2>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => {
-                setCouponCode(e.target.value.toUpperCase());
-                if (couponApplied) {
-                  setCouponApplied(false);
-                  setDiscount(null);
-                }
-              }}
-              disabled={couponApplied}
-              placeholder="Enter coupon code"
-              className="flex-1 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100 uppercase"
-            />
-            {!couponApplied ? (
-              <button
-                type="button"
-                onClick={handleApplyCoupon}
-                disabled={validatingCoupon || !couponCode.trim()}
-                className="px-6 py-2 text-sm font-bold bg-navy text-white rounded-md hover:bg-navy-light transition-colors disabled:opacity-50"
-              >
-                {validatingCoupon ? 'Checking...' : 'Apply'}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleRemoveCoupon}
-                className="px-6 py-2 text-sm font-bold bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
-              >
-                Remove
-              </button>
-            )}
-          </div>
+        {/* Coupon Code - hide entirely if pre-validated access code (they already have access) */}
+        {!preValidatedCode && (
+          <section>
+            <h2 className="text-lg font-bold text-navy mb-4 pb-2 border-b border-border">
+              Discount Code
+            </h2>
 
-          {couponApplied && discount && (
-            <div className="mt-4 bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <p className="font-bold text-green-800">Discount applied: {discount.description}</p>
+            {/* Show applied discount */}
+            {couponApplied && discount && (
+              <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <p className="font-bold text-green-800">Discount applied: {discount.description}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </section>
+            )}
+
+            {/* Show input field only if no discount applied */}
+            {!couponApplied && (
+              <div className="space-y-3">
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+                    {error}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="Enter coupon code"
+                    className="flex-1 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent uppercase"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={validatingCoupon || !couponCode.trim()}
+                    className="px-6 py-2 text-sm font-bold bg-navy text-white rounded-md hover:bg-navy-light transition-colors disabled:opacity-50"
+                  >
+                    {validatingCoupon ? 'Checking...' : 'Apply'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Payment Method */}
         {totals.total > 0 && (

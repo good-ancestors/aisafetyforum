@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { cancelOrder, getOrderCancellationInfo } from '@/lib/cancellation-actions';
-import { eventConfig } from '@/lib/config';
 
 interface CancelOrderButtonProps {
   orderId: string;

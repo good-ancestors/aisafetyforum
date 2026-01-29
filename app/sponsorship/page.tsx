@@ -131,8 +131,8 @@ export default function SponsorPage() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-              {impactStats.map((stat, index) => (
-                <div key={index} className="text-center">
+              {impactStats.map((stat) => (
+                <div key={stat.label} className="text-center">
                   <div className="text-4xl font-bold text-brand-blue mb-2">
                     {stat.value}
                   </div>
@@ -272,9 +272,9 @@ export default function SponsorPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {sponsorshipTiers.map((tier, index) => (
+              {sponsorshipTiers.map((tier) => (
                 <div
-                  key={index}
+                  key={tier.name}
                   className={`bg-white rounded-lg p-8 ${
                     tier.highlight
                       ? 'border-2 border-teal shadow-lg transform md:scale-105'
@@ -288,8 +288,8 @@ export default function SponsorPage() {
                     {tier.amount}
                   </div>
                   <ul className="space-y-3">
-                    {tier.benefits.map((benefit, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
+                    {tier.benefits.map((benefit) => (
+                      <li key={benefit} className="flex items-start gap-3">
                         <svg className="w-5 h-5 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
@@ -351,9 +351,9 @@ export default function SponsorPage() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {organisingCommittee.map((org, index) => (
+              {organisingCommittee.map((org) => (
                 <div
-                  key={index}
+                  key={org.name}
                   className="bg-light rounded-lg p-6 border-l-4 border-teal flex flex-col"
                 >
                   {/* Logo */}

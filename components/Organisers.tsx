@@ -70,9 +70,9 @@ export default function Organisers() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {organisers.map((org, index) => (
+            {organisers.map((org) => (
               <div
-                key={index}
+                key={org.name}
                 className="bg-white rounded-lg p-6 shadow-sm border border-border flex flex-col"
               >
                 {/* Logo */}
@@ -111,9 +111,9 @@ export default function Organisers() {
           </div>
 
           <div className="flex flex-col items-center gap-8">
-            {sponsors.map((sponsor, index) => (
+            {sponsors.map((sponsor) => (
               <div
-                key={index}
+                key={sponsor.name}
                 className="bg-white rounded-lg p-8 shadow-sm border-2 border-teal max-w-md w-full"
               >
                 {/* Logo */}

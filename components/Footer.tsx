@@ -19,9 +19,9 @@ export default function Footer() {
 
         {/* Sponsor Logos */}
         <div className="flex justify-center gap-4 mb-8">
-          {sponsors.map((sponsor, index) => (
+          {sponsors.map((sponsor) => (
             <a
-              key={index}
+              key={sponsor.name}
               href={sponsor.website}
               target="_blank"
               rel="noopener noreferrer"

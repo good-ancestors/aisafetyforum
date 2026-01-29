@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import MultiTicketRegistrationForm from '@/components/MultiTicketRegistrationForm';
+import { GatedRegistration, WaitlistForm } from '@/components/registration';
 import { getCurrentUser } from '@/lib/auth/server';
 import { eventConfig } from '@/lib/config';
 import { prisma } from '@/lib/prisma';
@@ -17,21 +19,31 @@ export const metadata: Metadata = {
 };
 
 export default async function Register() {
-  // Get current user's profile for prefilling
-  const user = await getCurrentUser();
-  let profile = null;
+  const mode = eventConfig.registrationMode;
 
-  if (user) {
-    profile = await prisma.profile.findUnique({
-      where: { email: user.email.toLowerCase() },
-      select: {
-        email: true,
-        name: true,
-        title: true,
-        organisation: true,
-      },
-    });
+  // Get current user's profile for prefilling (only needed for open/gated modes)
+  let profile = null;
+  if (mode !== 'closed') {
+    const user = await getCurrentUser();
+    if (user) {
+      profile = await prisma.profile.findUnique({
+        where: { email: user.email.toLowerCase() },
+        select: {
+          email: true,
+          name: true,
+          title: true,
+          organisation: true,
+        },
+      });
+    }
   }
+
+  const initialProfile = profile ? {
+    email: profile.email,
+    name: profile.name || '',
+    role: profile.title || '',
+    organisation: profile.organisation || '',
+  } : undefined;
 
   return (
     <>
@@ -49,23 +61,37 @@ export default async function Register() {
             </div>
           </div>
 
-          {/* Registration Form */}
-          <MultiTicketRegistrationForm
-            initialProfile={profile ? {
-              email: profile.email,
-              name: profile.name || '',
-              role: profile.title || '',
-              organisation: profile.organisation || '',
-            } : undefined}
-          />
+          {/* Closed Mode: Waitlist only */}
+          {mode === 'closed' && (
+            <div className="space-y-6">
+              <div className="text-center text-muted mb-8">
+                <p>Registration is not yet open.</p>
+              </div>
+              <WaitlistForm />
+            </div>
+          )}
 
-          {/* Cancellation Policy */}
-          <div className="bg-light rounded-lg p-6 mt-8">
-            <h3 className="font-bold text-navy mb-2">Cancellation Policy</h3>
-            <p className="text-sm text-muted">
-              Full refund available until the event starts. If you&apos;re accepted as a speaker or awarded a scholarship after purchasing a ticket, we&apos;ll refund your registration.
-            </p>
-          </div>
+          {/* Gated Mode: Code entry or waitlist */}
+          {mode === 'gated' && (
+            <Suspense fallback={<div className="animate-pulse bg-white rounded-lg h-64" />}>
+              <GatedRegistration initialProfile={initialProfile} />
+            </Suspense>
+          )}
+
+          {/* Open Mode: Full registration form */}
+          {mode === 'open' && (
+            <MultiTicketRegistrationForm initialProfile={initialProfile} />
+          )}
+
+          {/* Cancellation Policy - only show when registration is possible */}
+          {mode !== 'closed' && (
+            <div className="bg-light rounded-lg p-6 mt-8">
+              <h3 className="font-bold text-navy mb-2">Cancellation Policy</h3>
+              <p className="text-sm text-muted">
+                Full refund available until the event starts. If you&apos;re accepted as a speaker or awarded a scholarship after purchasing a ticket, we&apos;ll refund your registration.
+              </p>
+            </div>
+          )}
 
           {/* Additional Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -78,7 +104,7 @@ export default async function Register() {
                 href="/speak"
                 className="text-brand-blue hover:text-teal font-medium text-sm underline"
               >
-                Apply to speak →
+                Apply to speak &rarr;
               </Link>
             </div>
             <div className="bg-white rounded-lg p-6 border border-border">
@@ -90,7 +116,7 @@ export default async function Register() {
                 href="/scholarships"
                 className="text-brand-blue hover:text-teal font-medium text-sm underline"
               >
-                Apply for a scholarship →
+                Apply for a scholarship &rarr;
               </Link>
             </div>
           </div>

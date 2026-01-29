@@ -109,8 +109,8 @@ export default function Speakers() {
 
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
-            {speakers2024.map((speaker, index) => (
-              <div key={index} className="flex-[0_0_70%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_20%] xl:flex-[0_0_16%] min-w-0 px-2">
+            {speakers2024.map((speaker) => (
+              <div key={speaker.name} className="flex-[0_0_70%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_20%] xl:flex-[0_0_16%] min-w-0 px-2">
                 <div className="bg-light rounded-lg overflow-hidden border-l-4 border-teal h-full flex flex-col">
                   <div className="relative w-full aspect-square bg-gradient-to-br from-navy to-brand-blue overflow-hidden">
                     {speaker.image ? (

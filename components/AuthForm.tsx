@@ -192,6 +192,7 @@ export default function AuthForm({ onSuccess, redirectTo = '/' }: AuthFormProps)
         <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
           {otp.map((digit, index) => (
             <input
+              // eslint-disable-next-line react/no-array-index-key -- OTP inputs are positional by nature
               key={index}
               ref={(el) => { otpRefs.current[index] = el; }}
               type="text"
