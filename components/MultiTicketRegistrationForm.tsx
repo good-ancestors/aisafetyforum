@@ -207,7 +207,7 @@ export default function MultiTicketRegistrationForm({
                 className="w-4 h-4 text-cyan border-border rounded focus:ring-cyan"
               />
               <label htmlFor="purchaserIsAttendee" className="text-sm text-body">
-                I am also attending (use my details for the first ticket)
+                I am booking for myself (use my details for the first ticket)
               </label>
             </div>
           </div>
