@@ -1,41 +1,41 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth/config';
 
 /**
  * Authentication proxy for protected routes.
  *
- * Uses the official neonAuthMiddleware from @neondatabase/auth.
- * This handles session validation and redirects unauthenticated users to login.
+ * Uses Better Auth's session validation with cookieCache enabled.
+ * With cookieCache, session data is stored in an encrypted cookie,
+ * so validation reads from the cookie instead of hitting the database.
  *
- * IMPORTANT - Why we use neonAuthMiddleware (not custom cookie checks):
- * - Cookie names are implementation details that can change between versions
- * - Neon Auth wraps Better Auth, which has different cookie names (__Secure-neon-auth vs better-auth)
- * - Manual cookie checks require knowing internal details not exposed in public API
- * - The middleware handles edge cases (OAuth flows, session refresh, etc.)
+ * This eliminates the ~300-500ms HTTP call to an external auth service
+ * that was required with Neon Auth on every request.
  *
- * If performance becomes an issue:
- * - Profile first to confirm this is the bottleneck
- * - File an issue with @neondatabase/auth requesting a lightweight mode
- * - Do NOT try to optimize by manually checking cookies
- *
- * Note: If auth is not configured (no NEON_AUTH_BASE_URL), protected routes
- * redirect to home page.
+ * Protected routes:
+ * - /dashboard/* - User dashboard
+ * - /admin/* - Admin panel
  */
 export default async function proxy(request: NextRequest) {
-  // Skip auth check if not configured
-  if (!process.env.NEON_AUTH_BASE_URL) {
-    if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    return NextResponse.next();
-  }
+  const start = performance.now();
 
-  // Use official Neon Auth middleware for session validation
-  const { neonAuthMiddleware } = await import('@neondatabase/auth/next/server');
-  const authMiddleware = neonAuthMiddleware({
-    loginUrl: '/auth/email-otp',
+  // Check session using Better Auth
+  // With cookieCache enabled, this reads from cookie (fast) instead of DB
+  const session = await auth.api.getSession({
+    headers: request.headers,
   });
 
-  return authMiddleware(request);
+  console.log(`[PERF] proxy session check: ${(performance.now() - start).toFixed(0)}ms`);
+
+  const isProtectedRoute =
+    request.nextUrl.pathname.startsWith('/dashboard') ||
+    request.nextUrl.pathname.startsWith('/admin');
+
+  if (isProtectedRoute && !session) {
+    // Redirect to login page
+    return NextResponse.redirect(new URL('/auth/email-otp', request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

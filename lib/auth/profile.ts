@@ -8,9 +8,9 @@ import type { Profile } from '@prisma/client';
  * Get the profile for the current authenticated user.
  *
  * This function:
- * 1. First tries to find profile by neonAuthUserId (stable identity)
- * 2. Falls back to email lookup if neonAuthUserId not linked yet
- * 3. Auto-links the profile to neonAuthUserId if found by email
+ * 1. First tries to find profile by authUserId (stable identity)
+ * 2. Falls back to email lookup if authUserId not linked yet
+ * 3. Auto-links the profile to authUserId if found by email
  *
  * Cached at request level - multiple calls in the same request only execute once.
  * Returns null if not authenticated or no profile exists.
@@ -35,13 +35,15 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
  */
 const getCachedProfileLookup = unstable_cache(
   async (userId: string, email: string): Promise<Profile | null> => {
+    const start = performance.now();
     // Run both lookups in parallel
     const [profileById, profileByEmail] = await Promise.all([
-      prisma.profile.findUnique({ where: { neonAuthUserId: userId } }),
+      prisma.profile.findUnique({ where: { authUserId: userId } }),
       prisma.profile.findUnique({ where: { email } }),
     ]);
+    console.log(`[PERF] Profile DB lookup: ${(performance.now() - start).toFixed(0)}ms`);
 
-    // Found by neonAuthUserId (most reliable)
+    // Found by authUserId (most reliable)
     if (profileById) {
       return profileById;
     }
@@ -67,10 +69,10 @@ async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
 
   // If profile exists but isn't linked to this auth user, link it now
   // This write operation can't be cached, but only happens once per user
-  if (!profile.neonAuthUserId) {
+  if (!profile.authUserId) {
     return prisma.profile.update({
       where: { id: profile.id },
-      data: { neonAuthUserId: user.id },
+      data: { authUserId: user.id },
     });
   }
 
@@ -100,7 +102,7 @@ export const getOrCreateCurrentProfile = cache(async (): Promise<Profile | null>
   const normalizedEmail = user.email.toLowerCase();
   return prisma.profile.create({
     data: {
-      neonAuthUserId: user.id,
+      authUserId: user.id,
       email: normalizedEmail,
       name: user.name || null,
     },

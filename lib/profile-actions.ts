@@ -21,9 +21,9 @@ export interface ProfileUpdateData {
 
 /**
  * Change the email address for a user.
- * Updates the Profile, neon_auth.user, and all related records.
+ * Updates the Profile, User (auth), and all related records.
  *
- * This keeps the user identity (neonAuthUserId) the same while changing
+ * This keeps the user identity (authUserId) the same while changing
  * their email everywhere it's stored.
  */
 export async function changeEmail(
@@ -65,13 +65,12 @@ export async function changeEmail(
         data: { email: normalizedNewEmail },
       });
 
-      // 2. Update neon_auth.user email (raw query since it's in a different schema)
-      if (profile.neonAuthUserId) {
-        await tx.$executeRaw`
-          UPDATE neon_auth."user"
-          SET email = ${normalizedNewEmail}, "updatedAt" = NOW()
-          WHERE id = ${profile.neonAuthUserId}::uuid
-        `;
+      // 2. Update user table email
+      if (profile.authUserId) {
+        await tx.user.update({
+          where: { id: profile.authUserId },
+          data: { email: normalizedNewEmail },
+        });
       }
 
       // 3. Update email on registrations linked to this profile
@@ -323,20 +322,11 @@ export async function getProfileDeletionInfo(): Promise<{
  * Delete the current user's account (self-service).
  *
  * Deletes data from both the public schema (profile, proposals, applications)
- * and the neon_auth schema (user, sessions, accounts) in a single transaction.
+ * and the auth tables (user, sessions, accounts) in a single transaction.
  *
- * Why raw SQL for neon_auth instead of Better Auth's built-in deleteUser API:
- * - Neon Auth is a managed wrapper around Better Auth. We don't control the
- *   server config, so we can't enable `user.deleteUser` or configure the
- *   `sendDeleteAccountVerification` callback that passwordless users require.
- * - Better Auth's admin.removeUser() requires the caller to have admin role,
- *   which regular users don't have.
- * - Raw SQL lets us delete the auth user within the same transaction as the
- *   profile cleanup, ensuring atomicity (all-or-nothing).
- * - This pattern is consistent with how the codebase handles other neon_auth
- *   operations (see updateProfileEmail, getAllAuthUsers in admin-actions.ts).
+ * The auth tables have cascade delete configured, so deleting the user
+ * automatically cleans up sessions and accounts.
  *
- * The neon_auth tables deleted: session, account, user (in that order due to FK constraints).
  * After deletion, the client does a hard redirect (window.location.href) to clear all
  * client state — no signOut() call needed since the session no longer exists.
  */
@@ -372,10 +362,10 @@ export async function deleteProfile(): Promise<{ success: boolean; error?: strin
       return { success: false, error: 'Profile not found' };
     }
 
-    // All deletions in a single transaction across both schemas.
+    // All deletions in a single transaction.
     // If any step fails, everything rolls back.
     await prisma.$transaction(async (tx) => {
-      // Public schema: orphan registrations, delete proposals/applications, delete profile
+      // Orphan registrations, delete proposals/applications, delete profile
       await tx.registration.updateMany({
         where: { profileId: profile.id },
         data: { profileId: null },
@@ -390,11 +380,11 @@ export async function deleteProfile(): Promise<{ success: boolean; error?: strin
         where: { id: profile.id },
       });
 
-      // neon_auth schema: delete sessions, accounts, then user (FK order matters)
+      // Delete auth user (cascade deletes sessions and accounts)
       if (user.id) {
-        await tx.$executeRaw`DELETE FROM neon_auth."session" WHERE "userId" = ${user.id}::uuid`;
-        await tx.$executeRaw`DELETE FROM neon_auth."account" WHERE "userId" = ${user.id}::uuid`;
-        await tx.$executeRaw`DELETE FROM neon_auth."user" WHERE id = ${user.id}::uuid`;
+        await tx.user.delete({
+          where: { id: user.id },
+        });
       }
     });
 

@@ -387,7 +387,7 @@ export async function toggleAdminStatus(
 
 /**
  * Admin: Change email for any user by profile ID.
- * Updates Profile, neon_auth.user, and all related records.
+ * Updates Profile, User (auth), and all related records.
  */
 export async function adminChangeEmail(
   profileId: string,
@@ -437,13 +437,12 @@ export async function adminChangeEmail(
         data: { email: normalizedNewEmail },
       });
 
-      // 2. Update neon_auth.user email (raw query since it's in a different schema)
-      if (profile.neonAuthUserId) {
-        await tx.$executeRaw`
-          UPDATE neon_auth."user"
-          SET email = ${normalizedNewEmail}, "updatedAt" = NOW()
-          WHERE id = ${profile.neonAuthUserId}::uuid
-        `;
+      // 2. Update user table email
+      if (profile.authUserId) {
+        await tx.user.update({
+          where: { id: profile.authUserId },
+          data: { email: normalizedNewEmail },
+        });
       }
 
       // 3. Update email on registrations linked to this profile
@@ -500,16 +499,16 @@ export async function adminChangeEmail(
 }
 
 // ============================================
-// Auth Users Admin (neon_auth.user)
+// Auth Users Admin (user table)
 // ============================================
 
 /**
- * Type for neon_auth.user records
+ * Type for user records
  */
-export type NeonAuthUser = {
+export type AuthUser = {
   id: string;
   email: string;
-  name: string | null;
+  name: string;
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -518,7 +517,7 @@ export type NeonAuthUser = {
 /**
  * Combined view of auth users with their profiles
  */
-export type AuthUserWithProfile = NeonAuthUser & {
+export type AuthUserWithProfile = AuthUser & {
   profile: {
     id: string;
     isAdmin: boolean;
@@ -533,34 +532,26 @@ export type AuthUserWithProfile = NeonAuthUser & {
 };
 
 /**
- * Get all authenticated users from neon_auth.user with their linked profiles.
+ * Get all authenticated users with their linked profiles.
  * This shows everyone who has signed up, even if they haven't created a profile yet.
  */
 export async function getAllAuthUsers(): Promise<AuthUserWithProfile[]> {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  // Get all users from neon_auth.user
-  const authUsers = await prisma.$queryRaw<NeonAuthUser[]>`
-    SELECT
-      id,
-      email,
-      name,
-      "emailVerified",
-      "createdAt",
-      "updatedAt"
-    FROM neon_auth."user"
-    ORDER BY "createdAt" DESC
-  `;
+  // Get all users from the user table
+  const authUsers = await prisma.user.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
 
   // Get all profiles with their counts
   const profiles = await prisma.profile.findMany({
     where: {
-      neonAuthUserId: { in: authUsers.map(u => u.id) }
+      authUserId: { in: authUsers.map(u => u.id) }
     },
     select: {
       id: true,
-      neonAuthUserId: true,
+      authUserId: true,
       isAdmin: true,
       organisation: true,
       title: true,
@@ -576,7 +567,7 @@ export async function getAllAuthUsers(): Promise<AuthUserWithProfile[]> {
 
   // Create a map for quick lookup
   const profileMap = new Map(
-    profiles.map(p => [p.neonAuthUserId, p])
+    profiles.map(p => [p.authUserId, p])
   );
 
   // Combine auth users with their profiles
@@ -593,19 +584,17 @@ export async function getAuthUserStats() {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const [authUsers, profilesLinked, admins] = await Promise.all([
-    prisma.$queryRaw<[{ count: bigint }]>`
-      SELECT COUNT(*) as count FROM neon_auth."user"
-    `,
-    prisma.profile.count({ where: { neonAuthUserId: { not: null } } }),
+  const [totalAuthUsers, profilesLinked, admins] = await Promise.all([
+    prisma.user.count(),
+    prisma.profile.count({ where: { authUserId: { not: null } } }),
     prisma.profile.count({ where: { isAdmin: true } }),
   ]);
 
   return {
-    totalAuthUsers: Number(authUsers[0].count),
+    totalAuthUsers,
     profilesLinked,
     admins,
-    unlinked: Number(authUsers[0].count) - profilesLinked,
+    unlinked: totalAuthUsers - profilesLinked,
   };
 }
 
@@ -622,21 +611,19 @@ export async function createProfileForAuthUser(
     if (!admin) return { success: false, error: 'Unauthorized' };
 
     // Get the auth user
-    const authUsers = await prisma.$queryRaw<NeonAuthUser[]>`
-      SELECT id, email, name FROM neon_auth."user" WHERE id = ${authUserId}::uuid
-    `;
+    const authUser = await prisma.user.findUnique({
+      where: { id: authUserId },
+    });
 
-    if (authUsers.length === 0) {
+    if (!authUser) {
       return { success: false, error: 'Auth user not found' };
     }
-
-    const authUser = authUsers[0];
 
     // Check if profile already exists
     const existing = await prisma.profile.findFirst({
       where: {
         OR: [
-          { neonAuthUserId: authUserId },
+          { authUserId: authUserId },
           { email: authUser.email.toLowerCase() },
         ],
       },
@@ -644,10 +631,10 @@ export async function createProfileForAuthUser(
 
     if (existing) {
       // Link if not already linked
-      if (!existing.neonAuthUserId) {
+      if (!existing.authUserId) {
         await prisma.profile.update({
           where: { id: existing.id },
-          data: { neonAuthUserId: authUserId },
+          data: { authUserId: authUserId },
         });
       }
       return { success: true, profileId: existing.id };
@@ -656,7 +643,7 @@ export async function createProfileForAuthUser(
     // Create new profile
     const profile = await prisma.profile.create({
       data: {
-        neonAuthUserId: authUserId,
+        authUserId: authUserId,
         email: authUser.email.toLowerCase(),
         name: authUser.name,
         isAdmin: data?.isAdmin ?? false,
@@ -684,20 +671,18 @@ export async function toggleAuthUserAdmin(
 
     // Find or create profile
     let profile = await prisma.profile.findUnique({
-      where: { neonAuthUserId: authUserId },
+      where: { authUserId: authUserId },
     });
 
     if (!profile) {
       // Try to find by email from auth user
-      const authUsers = await prisma.$queryRaw<NeonAuthUser[]>`
-        SELECT id, email, name FROM neon_auth."user" WHERE id = ${authUserId}::uuid
-      `;
+      const authUser = await prisma.user.findUnique({
+        where: { id: authUserId },
+      });
 
-      if (authUsers.length === 0) {
+      if (!authUser) {
         return { success: false, error: 'Auth user not found' };
       }
-
-      const authUser = authUsers[0];
 
       // Check if there's a profile with this email
       profile = await prisma.profile.findUnique({
@@ -708,13 +693,13 @@ export async function toggleAuthUserAdmin(
         // Link existing profile
         profile = await prisma.profile.update({
           where: { id: profile.id },
-          data: { neonAuthUserId: authUserId },
+          data: { authUserId: authUserId },
         });
       } else {
         // Create new profile
         profile = await prisma.profile.create({
           data: {
-            neonAuthUserId: authUserId,
+            authUserId: authUserId,
             email: authUser.email.toLowerCase(),
             name: authUser.name,
             isAdmin: true, // They're being made admin

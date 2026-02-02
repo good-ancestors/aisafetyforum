@@ -1,30 +1,14 @@
 import { cache } from 'react';
+import { headers } from 'next/headers';
+import { auth } from './config';
 
 /**
- * Server-side authentication utilities for Neon Auth.
+ * Server-side authentication utilities for Better Auth.
  *
- * IMPORTANT - Use official APIs only:
- * - Always use neonAuth() for session validation, never read cookies directly
- * - Cookie names are internal implementation details (e.g., __Secure-neon-auth.session_token)
- * - These details can change between versions and break your code
- * - The official API handles all edge cases correctly
- *
- * For caching session validation:
- * - Use React.cache() for request-level deduplication (safe, standard pattern)
- * - Do NOT use unstable_cache with custom cookie reading (fragile, hardcodes internals)
- * - If cross-request caching is needed, consult Neon Auth docs for supported patterns
+ * Uses cookie-based session caching (configured in config.ts) to avoid
+ * database lookups on every request. Session data is cached in an
+ * encrypted cookie for 5 minutes.
  */
-
-/**
- * Get the auth server instance. Returns null if NEON_AUTH_BASE_URL is not configured.
- */
-export async function getAuthServer() {
-  if (!process.env.NEON_AUTH_BASE_URL) {
-    return null;
-  }
-  const { createAuthServer } = await import('@neondatabase/auth/next/server');
-  return createAuthServer();
-}
 
 /**
  * Get the current authenticated user session and user.
@@ -32,24 +16,29 @@ export async function getAuthServer() {
  * Uses React.cache() to deduplicate calls within a single request.
  * This prevents multiple DB queries when multiple components call getSession().
  *
- * Note: This calls the official neonAuth() which handles all session validation.
+ * With cookieCache enabled, most requests will read from the cookie
+ * instead of hitting the database.
  */
 export const getSession = cache(async () => {
-  if (!process.env.NEON_AUTH_BASE_URL) {
+  const start = performance.now();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  console.log(`[PERF] auth.api.getSession(): ${(performance.now() - start).toFixed(0)}ms`);
+
+  if (!session) {
     return { session: null, user: null };
   }
 
-  try {
-    const { neonAuth } = await import('@neondatabase/auth/next/server');
-    return await neonAuth();
-  } catch {
-    return { session: null, user: null };
-  }
+  return {
+    session: session.session,
+    user: session.user,
+  };
 });
 
 /**
  * Get the current user from the session.
- * Returns null if not authenticated or auth is not configured.
+ * Returns null if not authenticated.
  * Cached at request level via getSession().
  */
 export async function getCurrentUser() {
@@ -58,11 +47,10 @@ export async function getCurrentUser() {
 }
 
 /**
- * Auth user type from Neon Auth (Better Auth).
- * Based on the neon_auth.user table schema.
+ * Auth user type from Better Auth.
  */
 export type AuthUser = {
-  id: string;       // UUID from neon_auth.user
+  id: string;
   email: string;
   name: string | null;
   emailVerified: boolean;

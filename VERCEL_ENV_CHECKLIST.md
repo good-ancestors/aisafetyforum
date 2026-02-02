@@ -16,13 +16,11 @@ These environment variables must be set in Vercel for the deployment to succeed:
 
 > **Note:** See [NEON_DATABASE_SETUP.md](./NEON_DATABASE_SETUP.md) for detailed Neon configuration
 
-### Authentication (Neon Auth)
-- `NEON_AUTH_BASE_URL` - Neon Auth base URL for your project
-  - Example: `https://auth.neon.tech/...`
-  - Used for email OTP authentication
-- `NEON_JWKS_URL` - JWKS URL for JWT validation
-  - Example: `https://auth.neon.tech/.well-known/jwks.json`
-  - Used to verify authentication tokens
+### Authentication (Better Auth)
+- `BETTER_AUTH_SECRET` - Secret key for signing cookies and tokens
+  - Generate with: `openssl rand -base64 32`
+  - **Required** in production - auth will fail without this
+  - Must be kept secret and consistent across deployments
 
 ### Stripe
 - `STRIPE_SECRET_KEY` - Stripe secret key (starts with `sk_test_` for test mode, `sk_live_` for production)
