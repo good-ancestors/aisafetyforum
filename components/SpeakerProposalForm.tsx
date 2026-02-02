@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { submitSpeakerProposal, type SpeakerProposalFormData } from '@/lib/actions';
+import SocialLinkInput from '@/components/SocialLinkInput';
 
 export interface SpeakerInitialProfile {
   email: string;
@@ -310,38 +311,40 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
             Optional — add any professional profiles you&apos;d like to share
           </p>
           <div className="space-y-3">
-            <input
-              type="url"
+            <SocialLinkInput
+              type="linkedin"
               id="linkedin"
               name="linkedin"
+              label="LinkedIn"
               defaultValue={initialProfile?.linkedin}
-              placeholder="LinkedIn URL (e.g. linkedin.com/in/yourname)"
-              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
-            <input
-              type="url"
+            <SocialLinkInput
+              type="twitter"
               id="twitter"
               name="twitter"
+              label="X / Twitter"
               defaultValue={initialProfile?.twitter}
-              placeholder="X/Twitter URL (e.g. x.com/yourhandle)"
-              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
-            <input
-              type="url"
+            <SocialLinkInput
+              type="bluesky"
               id="bluesky"
               name="bluesky"
+              label="Bluesky"
               defaultValue={initialProfile?.bluesky}
-              placeholder="Bluesky URL (e.g. bsky.app/profile/yourname)"
-              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
-            <input
-              type="url"
-              id="website"
-              name="website"
-              defaultValue={initialProfile?.website}
-              placeholder="Personal website or academic profile URL"
-              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
-            />
+            <div>
+              <label htmlFor="website" className="block text-sm font-medium text-body mb-1">
+                Website
+              </label>
+              <input
+                type="url"
+                id="website"
+                name="website"
+                defaultValue={initialProfile?.website}
+                placeholder="https://yourwebsite.com"
+                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
+              />
+            </div>
           </div>
         </div>
 
