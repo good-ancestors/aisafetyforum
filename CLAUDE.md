@@ -11,11 +11,19 @@
 * **Measure first**: Add `console.log(\`[PERF] ${name}: ${time}ms\`)` timing
 * **Trace full request flow**: Identify ALL operations, not just obvious ones
 * **Identify root cause**: Don't treat symptoms (e.g., "add caching") without understanding cause
+* **Use official APIs**: Never bypass library internals (e.g., reading cookies directly) to "optimize"
+* **Read library source if needed**: Check what official functions actually do before replacing them
 
 ### When Unsure About Framework Conventions
 * **Check current docs**: Next.js, React, and library APIs change frequently
 * **Verify versions**: This project uses Next.js 16+, React 19+ (not 15/18)
 * **Search for deprecations**: Features like `middleware.ts` get renamed/deprecated
+
+### Using Third-Party Libraries
+* **Use official APIs only**: Never access internal implementation details
+* **Cookie/token names are internal**: Libraries can change them between versions
+* **Read library source when debugging**: But don't depend on internal behavior
+* **If official API is slow**: Profile, document, and file an issue - don't bypass
 
 ## Framework
 * Next.js 16+ with App Router
@@ -105,23 +113,28 @@ Borders:
 
 ### Auth Architecture (Next.js 16)
 ```
-proxy.ts (cookie check only)      ← Fast redirect if no cookie (<1ms)
+proxy.ts (neonAuthMiddleware)     ← Official middleware, validates session
     ↓
-Layout (getSession via neonAuth)  ← Session validation (cached 30s with unstable_cache)
+Layout (getOrCreateCurrentProfile) ← Profile lookup (uses neonAuth internally)
     ↓
-Profile lookup (unstable_cache)   ← Cached 60s, safe to cache (doesn't affect auth)
-    ↓
-Data queries (unstable_cache)     ← Cached 30s with tag-based revalidation
+Data queries                       ← Business data, can use unstable_cache
 ```
 
 ### Important Auth Rules
 * **DO NOT** use `middleware.ts` - deprecated, use `proxy.ts` instead
-* **DO NOT** use `neonAuthMiddleware` in proxy - it does full DB validation (slow)
-* **DO NOT** put heavy logic in `proxy.ts` - just check cookie presence
-* **DO** cache session validation with short TTL (30s) - acceptable security tradeoff
-* **DO** cache profile lookups (safe, doesn't grant access)
-* **DO** use `unstable_cache` for data queries with appropriate tags
+* **DO NOT** manually check cookie names - they are internal implementation details
+* **DO NOT** hardcode cookie names like `better-auth.session_token` or `__Secure-neon-auth.session_token`
+* **DO** use official `neonAuthMiddleware` in proxy.ts
+* **DO** use official `neonAuth()` for session validation in server components
+* **DO** use `React.cache()` for request-level deduplication
 * **DO** use `prefetch={false}` on dashboard navigation links to prevent request storms
+
+### Auth Performance Considerations
+* `neonAuthMiddleware` and `neonAuth()` make HTTP calls to Neon Auth service
+* Multiple components calling `neonAuth()` independently can cause duplicate requests
+* Use `React.cache()` wrapper to deduplicate within a single request
+* If performance is an issue, profile first before optimizing
+* Do NOT try to "optimize" by reading cookies directly - this breaks auth
 
 ## Content Structure
 

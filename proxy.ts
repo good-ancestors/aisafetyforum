@@ -1,26 +1,24 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 /**
- * Better Auth session cookie name.
- * Source: https://www.better-auth.com/docs/integrations/next
- * Default is 'better-auth.session_token' (prefix 'better-auth', name 'session_token')
- */
-const SESSION_COOKIE_NAME = 'better-auth.session_token';
-
-/**
- * Lightweight proxy for protected routes.
+ * Authentication proxy for protected routes.
  *
- * IMPORTANT: This only checks for cookie PRESENCE, not validity.
- * Full session validation happens in layouts via neonAuth().
+ * Uses the official neonAuthMiddleware from @neondatabase/auth.
+ * This handles session validation and redirects unauthenticated users to login.
  *
- * Why this pattern:
- * - neonAuthMiddleware does full DB validation (slow, ~200-500ms)
- * - Checking cookie presence is instant (<1ms)
- * - Invalid/expired sessions are caught by layout validation anyway
- * - This eliminates duplicate validation on every request
+ * IMPORTANT - Why we use neonAuthMiddleware (not custom cookie checks):
+ * - Cookie names are implementation details that can change between versions
+ * - Neon Auth wraps Better Auth, which has different cookie names (__Secure-neon-auth vs better-auth)
+ * - Manual cookie checks require knowing internal details not exposed in public API
+ * - The middleware handles edge cases (OAuth flows, session refresh, etc.)
  *
- * Security note: An attacker with a fake cookie would pass this check
- * but be rejected by the layout's neonAuth() call. No security loss.
+ * If performance becomes an issue:
+ * - Profile first to confirm this is the bottleneck
+ * - File an issue with @neondatabase/auth requesting a lightweight mode
+ * - Do NOT try to optimize by manually checking cookies
+ *
+ * Note: If auth is not configured (no NEON_AUTH_BASE_URL), protected routes
+ * redirect to home page.
  */
 export default async function proxy(request: NextRequest) {
   // Skip auth check if not configured
@@ -31,21 +29,16 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Fast path: check if session cookie exists (name from Better Auth docs)
-  const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  // Use official Neon Auth middleware for session validation
+  const { neonAuthMiddleware } = await import('@neondatabase/auth/next/server');
+  const authMiddleware = neonAuthMiddleware({
+    loginUrl: '/auth/email-otp',
+  });
 
-  if (!sessionToken) {
-    // No session cookie - redirect to login
-    const loginUrl = new URL('/auth/email-otp', request.url);
-    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Session cookie exists - let request through
-  // Layout will do full validation and handle invalid/expired sessions
-  return NextResponse.next();
+  return authMiddleware(request);
 }
 
 export const config = {
+  // Protect dashboard and admin routes - require authentication
   matcher: ['/dashboard/:path*', '/admin/:path*'],
 };
