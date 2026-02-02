@@ -14,37 +14,37 @@ export default async function AdminApplicationsPage() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl font-bold text-[--navy] mb-2">
+      <h1 className="font-serif text-3xl font-bold text-navy mb-2">
         All Applications
       </h1>
-      <p className="text-[--text-muted] mb-8">
+      <p className="text-muted mb-8">
         Review and manage speaker proposals and scholarship applications.
       </p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Speaker Proposals</p>
-          <p className="text-2xl font-bold text-[--navy]">{stats.speaker.total}</p>
-          <p className="text-xs text-[--text-muted] mt-1">
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Speaker Proposals</p>
+          <p className="text-2xl font-bold text-navy">{stats.speaker.total}</p>
+          <p className="text-xs text-muted mt-1">
             {stats.speaker.pending} pending · {stats.speaker.accepted} accepted
           </p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Scholarships</p>
-          <p className="text-2xl font-bold text-[--navy]">{stats.scholarship.total}</p>
-          <p className="text-xs text-[--text-muted] mt-1">
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Scholarships</p>
+          <p className="text-2xl font-bold text-navy">{stats.scholarship.total}</p>
+          <p className="text-xs text-muted mt-1">
             {stats.scholarship.pending} pending · {stats.scholarship.approved} approved
           </p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Pending Review</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Pending Review</p>
           <p className="text-2xl font-bold text-amber-600">
             {stats.speaker.pending + stats.scholarship.pending}
           </p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Rejected</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Rejected</p>
           <p className="text-2xl font-bold text-red-600">
             {stats.speaker.rejected + stats.scholarship.rejected}
           </p>

@@ -30,21 +30,21 @@ export default function ScholarshipApplicationCard({
   const displayAmount = String(amount);
 
   return (
-    <div className="border-l-4 border-[--teal] bg-[--bg-light] p-4 rounded-r">
+    <div className="border-l-4 border-teal bg-light p-4 rounded-r">
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-[--navy]">
-              ${displayAmount} AUD requested
+            <span className="font-semibold text-navy">
+              {displayAmount} requested
             </span>
             <span className={`text-xs px-2 py-0.5 rounded ${getStatusBadgeClass(status)}`}>
               {status}
             </span>
           </div>
-          <p className="text-sm text-[--text-muted] line-clamp-2 mb-2">
+          <p className="text-sm text-muted line-clamp-2 mb-2">
             {whyAttend}
           </p>
-          <p className="text-xs text-[--text-muted]">
+          <p className="text-xs text-muted">
             Submitted {new Date(createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' })}
           </p>
         </div>

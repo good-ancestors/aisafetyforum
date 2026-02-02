@@ -11,7 +11,7 @@ const features = [
       </svg>
     ),
     title: 'Timely & Relevant',
-    description: "Support the launch of Australia's AI Safety Institute and shape the nation's AI safety strategy",
+    description: "Learn about and discuss the launch of Australia's AI Safety Institute and the National AI Plan",
   },
   {
     icon: (

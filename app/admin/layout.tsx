@@ -23,7 +23,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[--bg-cream] flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
       <Header />
       <DashboardNav isAdmin={true} />
       <main className="flex-1">

@@ -132,6 +132,12 @@ export default async function RegistrationSuccess({
                     <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
+                    <span><strong>Complete your profile</strong> in your <Link href="/dashboard/profile" className="underline">dashboard</Link> — including any dietary requirements for catering</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
                     <span>We&apos;ll send program updates and logistics information closer to the event</span>
                   </li>
                   <li className="flex items-start gap-2">

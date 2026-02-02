@@ -45,16 +45,16 @@ export default async function EditSpeakerProposalPage({
       <div className="mb-6">
         <Link
           href="/dashboard/applications"
-          className="text-sm text-[--blue] hover:underline"
+          className="text-sm text-blue hover:underline"
         >
           &larr; Back to Applications
         </Link>
       </div>
 
-      <h1 className="font-serif text-3xl font-bold text-[--navy] mb-2">
+      <h1 className="font-serif text-3xl font-bold text-navy mb-2">
         {isEditable ? 'Edit Speaker Proposal' : 'View Speaker Proposal'}
       </h1>
-      <p className="text-[--text-muted] mb-8">
+      <p className="text-muted mb-8">
         {isEditable
           ? 'Update your proposal details below.'
           : 'This proposal has been reviewed and can no longer be edited.'}

@@ -39,20 +39,20 @@ export default function TicketsSection({
 
   if (registrations.length === 0) {
     return (
-      <section className="bg-white rounded-lg border border-[--border] p-6">
+      <section className="bg-white rounded-lg border border-border p-6">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="font-serif text-xl font-bold text-[--navy]">{title}</h2>
+          <h2 className="font-serif text-xl font-bold text-navy">{title}</h2>
           {showViewAllLink && (
-            <Link href="/dashboard/tickets" className="text-sm text-[--blue] hover:underline">
+            <Link href="/dashboard/tickets" className="text-sm text-blue hover:underline">
               View All Tickets
             </Link>
           )}
         </div>
         <div className="text-center py-8">
-          <p className="text-[--text-muted] mb-4">You don&apos;t have any tickets yet.</p>
+          <p className="text-muted mb-4">You don&apos;t have any tickets yet.</p>
           <Link
             href="/register"
-            className="inline-block bg-[--navy] text-white px-6 py-2 rounded hover:bg-[--navy-light] transition-colors"
+            className="inline-block bg-navy text-white px-6 py-2 rounded hover:bg-navy-light transition-colors"
           >
             Register Now
           </Link>
@@ -62,14 +62,14 @@ export default function TicketsSection({
   }
 
   return (
-    <section className="bg-white rounded-lg border border-[--border] p-6">
+    <section className="bg-white rounded-lg border border-border p-6">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h2 className="font-serif text-xl font-bold text-[--navy]">{title}</h2>
-          {description && <p className="text-sm text-[--text-muted] mt-1">{description}</p>}
+          <h2 className="font-serif text-xl font-bold text-navy">{title}</h2>
+          {description && <p className="text-sm text-muted mt-1">{description}</p>}
         </div>
         {showViewAllLink && (
-          <Link href="/dashboard/tickets" className="text-sm text-[--blue] hover:underline">
+          <Link href="/dashboard/tickets" className="text-sm text-blue hover:underline">
             View All Tickets
           </Link>
         )}
@@ -98,7 +98,7 @@ export default function TicketsSection({
           />
         ))}
         {remainingCount > 0 && (
-          <p className="text-sm text-[--text-muted]">+ {remainingCount} more ticket(s)</p>
+          <p className="text-sm text-muted">+ {remainingCount} more ticket(s)</p>
         )}
       </div>
     </section>

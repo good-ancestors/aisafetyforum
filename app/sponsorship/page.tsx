@@ -186,7 +186,7 @@ export default function SponsorPage() {
                   The Science of AI Safety
                 </h3>
                 <p className="text-muted text-sm leading-relaxed">
-                  The International AI Safety Report was released shortly after the first forum. Two updates have since been released, and a second full report will be released before the next forum, providing an updated scientific foundation.
+                  The International AI Safety Report was released shortly after the first forum. Two updates have since been released. The Second International AI Safety Report has now been released, providing an updated scientific foundation for the second Forum.
                 </p>
               </div>
             </div>
@@ -230,12 +230,6 @@ export default function SponsorPage() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>Build bridges between technical research and policy implementation</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-teal flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span>Raise the profile of Australia&apos;s new AI Safety Institute</span>
                   </li>
                 </ul>
               </div>

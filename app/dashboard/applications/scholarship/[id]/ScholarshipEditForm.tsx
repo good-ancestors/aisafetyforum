@@ -74,7 +74,7 @@ export default function ScholarshipEditForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[--border]">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-border">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
           <p className="font-medium">Error</p>
@@ -85,10 +85,10 @@ export default function ScholarshipEditForm({
       <div className="space-y-6">
         {/* Background Info */}
         <div>
-          <label className="block text-sm font-bold text-[--navy] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Background Information
           </label>
-          <p className="text-sm text-[--text-muted] mb-3">
+          <p className="text-sm text-muted mb-3">
             Select any that apply
           </p>
           <div className="space-y-2">
@@ -104,9 +104,9 @@ export default function ScholarshipEditForm({
                   checked={selectedBackgrounds.includes(option.id)}
                   onChange={() => toggleBackground(option.id)}
                   disabled={!isEditable}
-                  className="w-4 h-4 mt-0.5 text-[--cyan] border-[--border] rounded focus:ring-[--cyan]"
+                  className="w-4 h-4 mt-0.5 text-cyan border-border rounded focus:ring-cyan"
                 />
-                <span className="text-sm text-[--text-body]">{option.label}</span>
+                <span className="text-sm text-body">{option.label}</span>
               </label>
             ))}
           </div>
@@ -114,10 +114,10 @@ export default function ScholarshipEditForm({
 
         {/* Scholarship Pitch */}
         <div>
-          <label htmlFor="whyAttend" className="block text-sm font-bold text-[--navy] mb-2">
+          <label htmlFor="whyAttend" className="block text-sm font-bold text-navy mb-2">
             Scholarship Pitch
           </label>
-          <p className="text-sm text-[--text-muted] mb-2">
+          <p className="text-sm text-muted mb-2">
             Tell us how attending the forum would support your work
           </p>
           <textarea
@@ -128,13 +128,13 @@ export default function ScholarshipEditForm({
             rows={5}
             defaultValue={application.whyAttend}
             disabled={!isEditable}
-            className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent disabled:bg-[--bg-light] disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-light disabled:cursor-not-allowed"
           />
         </div>
 
         {/* Travel Support */}
         <div>
-          <label className="block text-sm font-bold text-[--navy] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Travel Support
           </label>
           <div className="space-y-2">
@@ -146,7 +146,7 @@ export default function ScholarshipEditForm({
                 checked={travelSupport === 'No'}
                 onChange={(e) => isEditable && setTravelSupport(e.target.value)}
                 disabled={!isEditable}
-                className="w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
               <span className="text-sm">No thanks, I just need the free registration</span>
             </label>
@@ -158,7 +158,7 @@ export default function ScholarshipEditForm({
                 checked={travelSupport === 'Yes'}
                 onChange={(e) => isEditable && setTravelSupport(e.target.value)}
                 disabled={!isEditable}
-                className="w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
               <span className="text-sm">Yes, I&apos;d need travel support to attend</span>
             </label>
@@ -170,7 +170,7 @@ export default function ScholarshipEditForm({
                 checked={travelSupport === 'Maybe'}
                 onChange={(e) => isEditable && setTravelSupport(e.target.value)}
                 disabled={!isEditable}
-                className="w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
               <span className="text-sm">Possibly — I&apos;d like to explore options</span>
             </label>
@@ -180,10 +180,10 @@ export default function ScholarshipEditForm({
         {/* Travel Amount */}
         {(travelSupport === 'Yes' || travelSupport === 'Maybe') && (
           <div>
-            <label htmlFor="amount" className="block text-sm font-bold text-[--navy] mb-2">
+            <label htmlFor="amount" className="block text-sm font-bold text-navy mb-2">
               Estimated Support Amount
             </label>
-            <p className="text-sm text-[--text-muted] mb-2">
+            <p className="text-sm text-muted mb-2">
               Include where you&apos;re travelling from and accommodation needs
             </p>
             <textarea
@@ -193,7 +193,7 @@ export default function ScholarshipEditForm({
               defaultValue={application.amount}
               disabled={!isEditable}
               placeholder="e.g. $400 domestic flight from Brisbane & $300 for 2 nights accommodation"
-              className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent disabled:bg-[--bg-light] disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-light disabled:cursor-not-allowed"
             />
           </div>
         )}
@@ -204,14 +204,14 @@ export default function ScholarshipEditForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-8 py-3 text-base font-bold bg-[--navy] text-white rounded-md hover:bg-[--navy-light] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-8 py-3 text-base font-bold bg-navy text-white rounded-md hover:bg-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
               onClick={() => router.push('/dashboard/applications')}
-              className="px-6 py-3 text-base font-medium border border-[--border] text-[--text-body] rounded-md hover:bg-[--bg-light] transition-colors"
+              className="px-6 py-3 text-base font-medium border border-border text-body rounded-md hover:bg-light transition-colors"
             >
               Cancel
             </button>

@@ -55,17 +55,17 @@ export default function OrdersSection({
   }
 
   const isPending = variant === 'pending';
-  const borderClass = isPending ? 'border-amber-300' : 'border-[--border]';
+  const borderClass = isPending ? 'border-amber-300' : 'border-border';
 
   return (
     <section className={`bg-white rounded-lg border ${borderClass} p-6`}>
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h2 className="font-serif text-xl font-bold text-[--navy]">{title}</h2>
-          {description && <p className="text-sm text-[--text-muted] mt-1">{description}</p>}
+          <h2 className="font-serif text-xl font-bold text-navy">{title}</h2>
+          {description && <p className="text-sm text-muted mt-1">{description}</p>}
         </div>
         {showViewAllLink && (
-          <Link href="/dashboard/tickets" className="text-sm text-[--blue] hover:underline">
+          <Link href="/dashboard/tickets" className="text-sm text-blue hover:underline">
             View All
           </Link>
         )}
@@ -103,7 +103,7 @@ export default function OrdersSection({
           />
         ))}
         {remainingCount > 0 && (
-          <p className="text-sm text-[--text-muted]">+ {remainingCount} more order(s)</p>
+          <p className="text-sm text-muted">+ {remainingCount} more order(s)</p>
         )}
       </div>
     </section>

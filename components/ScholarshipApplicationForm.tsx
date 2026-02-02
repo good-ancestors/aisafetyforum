@@ -6,6 +6,7 @@ import { submitScholarshipApplication, type ScholarshipApplicationFormData } fro
 export interface ScholarshipInitialProfile {
   email: string;
   name: string;
+  gender: string;
   role: string;
   organisation: string;
   bio: string;
@@ -50,6 +51,7 @@ export default function ScholarshipApplicationForm({ initialProfile }: Scholarsh
       email: formData.get('email') as string,
       name: formData.get('name') as string,
       organisation: formData.get('organisation') as string,
+      gender: (formData.get('gender') as string) || undefined,
       role: formData.get('role') as string,
       bio: formData.get('bio') as string,
       linkedin: (formData.get('linkedin') as string) || undefined,
@@ -138,6 +140,28 @@ export default function ScholarshipApplicationForm({ initialProfile }: Scholarsh
             defaultValue={initialProfile?.name}
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
+        </div>
+
+        {/* Gender */}
+        <div>
+          <label htmlFor="gender" className="block text-sm font-bold text-navy mb-2">
+            Gender
+          </label>
+          <p className="text-sm text-muted mb-2">
+            Optional — helps us understand our community and work toward gender balance
+          </p>
+          <select
+            id="gender"
+            name="gender"
+            defaultValue={initialProfile?.gender || ''}
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
+          >
+            <option value="">Prefer not to say</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="non-binary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
         </div>
 
         {/* Role */}

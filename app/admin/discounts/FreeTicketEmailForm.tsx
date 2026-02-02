@@ -65,7 +65,7 @@ export default function FreeTicketEmailForm({
   };
 
   return (
-    <div className="p-4 border-b border-[--border] bg-[--bg-light]">
+    <div className="p-4 border-b border-border bg-light">
       {/* Mode Toggle */}
       <div className="flex gap-2 mb-4">
         <button
@@ -95,7 +95,7 @@ export default function FreeTicketEmailForm({
       <form onSubmit={bulkMode ? handleAddBulk : handleAddSingle}>
         {bulkMode ? (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-[--text-body] mb-1">
+            <label className="block text-sm font-medium text-body mb-1">
               Email Addresses *
             </label>
             <textarea
@@ -104,12 +104,12 @@ export default function FreeTicketEmailForm({
               placeholder="Enter email addresses, one per line or comma-separated&#10;e.g., speaker1@example.com&#10;speaker2@example.com"
               required
               rows={4}
-              className="w-full px-3 py-2 border border-[--border] rounded text-sm font-mono"
+              className="w-full px-3 py-2 border border-border rounded text-sm font-mono"
             />
           </div>
         ) : (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-[--text-body] mb-1">
+            <label className="block text-sm font-medium text-body mb-1">
               Email Address *
             </label>
             <input
@@ -118,13 +118,13 @@ export default function FreeTicketEmailForm({
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder="e.g., speaker@example.com"
               required
-              className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+              className="w-full px-3 py-2 border border-border rounded text-sm"
             />
           </div>
         )}
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Reason *
           </label>
           <input
@@ -133,9 +133,9 @@ export default function FreeTicketEmailForm({
             onChange={(e) => setNewReason(e.target.value)}
             placeholder="e.g., Accepted speaker, Organizer, VIP"
             required
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           />
-          <p className="text-xs text-[--text-muted] mt-1">
+          <p className="text-xs text-muted mt-1">
             This reason will be shown to them during registration
           </p>
         </div>
@@ -144,7 +144,7 @@ export default function FreeTicketEmailForm({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-[--text-body] border border-[--border] rounded text-sm hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 text-body border border-border rounded text-sm hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>

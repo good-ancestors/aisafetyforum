@@ -81,11 +81,11 @@ export default function WaitlistTable({ signups }: WaitlistTableProps) {
   const registeredCount = localSignups.filter((s) => s.status === 'registered').length;
 
   return (
-    <div className="bg-white rounded-lg border border-[--border]">
-      <div className="p-4 border-b border-[--border]">
+    <div className="bg-white rounded-lg border border-border">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-[--navy]">Waitlist Signups</h2>
-          <div className="flex items-center gap-4 text-sm text-[--text-muted]">
+          <h2 className="text-lg font-bold text-navy">Waitlist Signups</h2>
+          <div className="flex items-center gap-4 text-sm text-muted">
             <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
               {pendingCount} pending
             </span>
@@ -104,12 +104,12 @@ export default function WaitlistTable({ signups }: WaitlistTableProps) {
             placeholder="Search by email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 px-3 py-2 border border-[--border] rounded-md text-sm"
+            className="flex-1 px-3 py-2 border border-border rounded-md text-sm"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="px-3 py-2 border border-[--border] rounded-md text-sm"
+            className="px-3 py-2 border border-border rounded-md text-sm"
           >
             <option value="all">All statuses</option>
             <option value="pending">Pending</option>
@@ -120,7 +120,7 @@ export default function WaitlistTable({ signups }: WaitlistTableProps) {
       </div>
 
       {filteredSignups.length === 0 ? (
-        <div className="p-8 text-center text-[--text-muted]">
+        <div className="p-8 text-center text-muted">
           {localSignups.length === 0
             ? 'No waitlist signups yet'
             : 'No signups match your filters'}
@@ -128,34 +128,34 @@ export default function WaitlistTable({ signups }: WaitlistTableProps) {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[--bg-light]">
+            <thead className="bg-light">
               <tr>
-                <th className="text-left text-xs font-medium text-[--text-muted] uppercase tracking-wider px-4 py-3">
+                <th className="text-left text-xs font-medium text-muted uppercase tracking-wider px-4 py-3">
                   Email
                 </th>
-                <th className="text-left text-xs font-medium text-[--text-muted] uppercase tracking-wider px-4 py-3">
+                <th className="text-left text-xs font-medium text-muted uppercase tracking-wider px-4 py-3">
                   Status
                 </th>
-                <th className="text-left text-xs font-medium text-[--text-muted] uppercase tracking-wider px-4 py-3">
+                <th className="text-left text-xs font-medium text-muted uppercase tracking-wider px-4 py-3">
                   Code Sent
                 </th>
-                <th className="text-left text-xs font-medium text-[--text-muted] uppercase tracking-wider px-4 py-3">
+                <th className="text-left text-xs font-medium text-muted uppercase tracking-wider px-4 py-3">
                   Signed Up
                 </th>
-                <th className="text-right text-xs font-medium text-[--text-muted] uppercase tracking-wider px-4 py-3">
+                <th className="text-right text-xs font-medium text-muted uppercase tracking-wider px-4 py-3">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[--border]">
+            <tbody className="divide-y divide-border">
               {filteredSignups.map((signup) => (
-                <tr key={signup.id} className="hover:bg-[--bg-light]/50">
+                <tr key={signup.id} className="hover:bg-light/50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono">{signup.email}</span>
                       <button
                         onClick={() => copyEmail(signup.email)}
-                        className="text-[--text-muted] hover:text-[--navy]"
+                        className="text-muted hover:text-navy"
                         title="Copy email"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,16 +176,16 @@ export default function WaitlistTable({ signups }: WaitlistTableProps) {
                       <option value="registered">Registered</option>
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[--text-muted]">
+                  <td className="px-4 py-3 text-sm text-muted">
                     {signup.code ? (
-                      <span className="font-mono text-xs bg-[--bg-light] px-2 py-1 rounded">
+                      <span className="font-mono text-xs bg-light px-2 py-1 rounded">
                         {signup.code.code}
                       </span>
                     ) : (
-                      <span className="text-[--text-muted]">-</span>
+                      <span className="text-muted">-</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[--text-muted]">
+                  <td className="px-4 py-3 text-sm text-muted">
                     {formatDate(signup.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-right">

@@ -19,7 +19,7 @@ export default async function DashboardLayout({
   const userIsAdmin = profile.isAdmin;
 
   return (
-    <div className="min-h-screen bg-[--bg-cream] flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
       <Header />
       <DashboardNav isAdmin={userIsAdmin} />
       <main className="flex-1">

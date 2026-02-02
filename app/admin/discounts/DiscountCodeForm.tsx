@@ -132,15 +132,15 @@ export default function DiscountCodeForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border-b border-[--border] bg-[--bg-light]">
-      <h3 className="font-medium text-[--navy] mb-4">
+    <form onSubmit={handleSubmit} className="p-4 border-b border-border bg-light">
+      <h3 className="font-medium text-navy mb-4">
         {editingId ? 'Edit Discount Code' : 'Create Discount Code'}
       </h3>
 
       {/* Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Code *
           </label>
           <input
@@ -149,11 +149,11 @@ export default function DiscountCodeForm({
             onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
             placeholder="e.g., EARLYBIRD20"
             required
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Description *
           </label>
           <input
@@ -162,7 +162,7 @@ export default function DiscountCodeForm({
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="e.g., Early bird discount"
             required
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           />
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function DiscountCodeForm({
       {/* Type, Value, Max Uses */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Type
           </label>
           <select
@@ -181,7 +181,7 @@ export default function DiscountCodeForm({
                 type: e.target.value as 'percentage' | 'fixed' | 'free',
               })
             }
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           >
             <option value="percentage">Percentage Off</option>
             <option value="fixed">Fixed Amount Off</option>
@@ -189,7 +189,7 @@ export default function DiscountCodeForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Value {formData.type === 'percentage' ? '(%)' : formData.type === 'fixed' ? '($)' : ''}
           </label>
           <input
@@ -206,11 +206,11 @@ export default function DiscountCodeForm({
             min={0}
             max={formData.type === 'percentage' ? 100 : undefined}
             step={formData.type === 'fixed' ? '0.01' : '1'}
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-border rounded text-sm disabled:bg-gray-100"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Max Uses (0 = unlimited)
           </label>
           <input
@@ -218,7 +218,7 @@ export default function DiscountCodeForm({
             value={formData.maxUses}
             onChange={(e) => setFormData({ ...formData, maxUses: parseInt(e.target.value) || 0 })}
             min={0}
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           />
         </div>
       </div>
@@ -230,11 +230,11 @@ export default function DiscountCodeForm({
             type="checkbox"
             checked={formData.grantsAccess}
             onChange={(e) => setFormData({ ...formData, grantsAccess: e.target.checked })}
-            className="w-4 h-4 rounded border-[--border] text-[--navy] focus:ring-[--cyan]"
+            className="w-4 h-4 rounded border-border text-navy focus:ring-cyan"
           />
           <div>
-            <span className="text-sm font-medium text-[--text-body]">Grants Early Access</span>
-            <p className="text-xs text-[--text-muted]">
+            <span className="text-sm font-medium text-body">Grants Early Access</span>
+            <p className="text-xs text-muted">
               When enabled, this code allows registration even when registration is gated (invite-only).
             </p>
           </div>
@@ -244,32 +244,32 @@ export default function DiscountCodeForm({
       {/* Valid Date Range */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Valid From (optional)
           </label>
           <input
             type="date"
             value={formData.validFrom}
             onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })}
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[--text-body] mb-1">
+          <label className="block text-sm font-medium text-body mb-1">
             Valid Until (optional)
           </label>
           <input
             type="date"
             value={formData.validUntil}
             onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })}
-            className="w-full px-3 py-2 border border-[--border] rounded text-sm"
+            className="w-full px-3 py-2 border border-border rounded text-sm"
           />
         </div>
       </div>
 
       {/* Valid For Ticket Types */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-[--text-body] mb-2">
+        <label className="block text-sm font-medium text-body mb-2">
           Valid For Ticket Types (leave empty for all types)
         </label>
         <div className="flex flex-wrap gap-2">
@@ -292,7 +292,7 @@ export default function DiscountCodeForm({
 
       {/* Allowed Emails (for complimentary tickets) */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-[--text-body] mb-1">
+        <label className="block text-sm font-medium text-body mb-1">
           Restrict to Specific Emails (for complimentary tickets)
         </label>
         <textarea
@@ -300,9 +300,9 @@ export default function DiscountCodeForm({
           onChange={(e) => setFormData({ ...formData, allowedEmails: e.target.value })}
           placeholder="Enter email addresses, one per line or comma-separated&#10;e.g., speaker@example.com&#10;vip@company.org"
           rows={3}
-          className="w-full px-3 py-2 border border-[--border] rounded text-sm font-mono"
+          className="w-full px-3 py-2 border border-border rounded text-sm font-mono"
         />
-        <p className="text-xs text-[--text-muted] mt-1">
+        <p className="text-xs text-muted mt-1">
           Leave empty to allow anyone. For speaker/VIP complimentary codes, add their emails here.
         </p>
       </div>
@@ -311,7 +311,7 @@ export default function DiscountCodeForm({
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-[--text-body] border border-[--border] rounded text-sm hover:bg-gray-50 transition-colors"
+          className="px-4 py-2 text-body border border-border rounded text-sm hover:bg-gray-50 transition-colors"
         >
           Cancel
         </button>

@@ -28,8 +28,8 @@ export default async function ApplicationsPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl font-bold text-[--navy] mb-2">Your Applications</h1>
-      <p className="text-[--text-muted] mb-8">
+      <h1 className="font-serif text-3xl font-bold text-navy mb-2">Your Applications</h1>
+      <p className="text-muted mb-8">
         View and manage your speaker proposals and scholarship applications.
       </p>
 

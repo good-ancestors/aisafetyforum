@@ -9,7 +9,7 @@ const sessionFormats = [
     id: 'keynote',
     value: 'Keynote',
     label: 'Keynote',
-    description: '20-30 minute presentation to the full audience',
+    description: 'Up to 45 minute presentation to the full audience',
   },
   {
     id: 'lightning',
@@ -87,7 +87,7 @@ export default function SpeakerProposalEditForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[--border]">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-border">
       {error && (
         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
           <p className="font-medium">Error</p>
@@ -98,7 +98,7 @@ export default function SpeakerProposalEditForm({
       <div className="space-y-6">
         {/* Format */}
         <div>
-          <label className="block text-sm font-bold text-[--navy] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Session Format
           </label>
           <div className="space-y-2">
@@ -107,10 +107,10 @@ export default function SpeakerProposalEditForm({
                 key={format.id}
                 className={`flex items-start gap-3 p-3 border-l-4 ${
                   selectedFormat === format.value
-                    ? 'border-[--cyan] bg-[--cyan]/5 ring-2 ring-[--cyan]'
-                    : 'border-[--navy] bg-[--bg-light]'
+                    ? 'border-cyan bg-cyan/5 ring-2 ring-cyan'
+                    : 'border-navy bg-light'
                 } rounded cursor-pointer ${
-                  isEditable ? 'hover:bg-[--bg-light]' : 'opacity-75 cursor-not-allowed'
+                  isEditable ? 'hover:bg-light' : 'opacity-75 cursor-not-allowed'
                 } transition-colors`}
               >
                 <input
@@ -120,11 +120,11 @@ export default function SpeakerProposalEditForm({
                   checked={selectedFormat === format.value}
                   onChange={(e) => isEditable && setSelectedFormat(e.target.value)}
                   disabled={!isEditable}
-                  className="mt-1 w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                  className="mt-1 w-4 h-4 text-cyan border-border focus:ring-cyan"
                 />
                 <div>
-                  <div className="font-bold text-[--navy] text-sm">{format.label}</div>
-                  <div className="text-xs text-[--text-muted]">{format.description}</div>
+                  <div className="font-bold text-navy text-sm">{format.label}</div>
+                  <div className="text-xs text-muted">{format.description}</div>
                 </div>
               </label>
             ))}
@@ -133,10 +133,10 @@ export default function SpeakerProposalEditForm({
 
         {/* Abstract */}
         <div>
-          <label htmlFor="abstract" className="block text-sm font-bold text-[--navy] mb-2">
+          <label htmlFor="abstract" className="block text-sm font-bold text-navy mb-2">
             Session Abstract
           </label>
-          <p className="text-sm text-[--text-muted] mb-2">
+          <p className="text-sm text-muted mb-2">
             What you&apos;d like to cover and why it matters
           </p>
           <textarea
@@ -147,13 +147,13 @@ export default function SpeakerProposalEditForm({
             rows={6}
             defaultValue={proposal.abstract}
             disabled={!isEditable}
-            className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent disabled:bg-[--bg-light] disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-light disabled:cursor-not-allowed"
           />
         </div>
 
         {/* Travel Support */}
         <div>
-          <label className="block text-sm font-bold text-[--navy] mb-2">
+          <label className="block text-sm font-bold text-navy mb-2">
             Travel Support
           </label>
           <div className="space-y-2">
@@ -165,7 +165,7 @@ export default function SpeakerProposalEditForm({
                 checked={travelSupport === 'No'}
                 onChange={(e) => isEditable && setTravelSupport(e.target.value)}
                 disabled={!isEditable}
-                className="w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
               <span className="text-sm">No thanks, I can cover my own travel</span>
             </label>
@@ -177,7 +177,7 @@ export default function SpeakerProposalEditForm({
                 checked={travelSupport === 'Yes'}
                 onChange={(e) => isEditable && setTravelSupport(e.target.value)}
                 disabled={!isEditable}
-                className="w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
               <span className="text-sm">Yes, I&apos;d need support to attend</span>
             </label>
@@ -189,7 +189,7 @@ export default function SpeakerProposalEditForm({
                 checked={travelSupport === 'Maybe'}
                 onChange={(e) => isEditable && setTravelSupport(e.target.value)}
                 disabled={!isEditable}
-                className="w-4 h-4 text-[--cyan] border-[--border] focus:ring-[--cyan]"
+                className="w-4 h-4 text-cyan border-border focus:ring-cyan"
               />
               <span className="text-sm">Possibly — I&apos;d like to explore options</span>
             </label>
@@ -199,10 +199,10 @@ export default function SpeakerProposalEditForm({
         {/* Travel Estimate / Additional Info */}
         {(travelSupport === 'Yes' || travelSupport === 'Maybe') && (
           <div>
-            <label htmlFor="anythingElse" className="block text-sm font-bold text-[--navy] mb-2">
+            <label htmlFor="anythingElse" className="block text-sm font-bold text-navy mb-2">
               Travel Support Details
             </label>
-            <p className="text-sm text-[--text-muted] mb-2">
+            <p className="text-sm text-muted mb-2">
               Include where you&apos;re travelling from and accommodation needs
             </p>
             <textarea
@@ -212,7 +212,7 @@ export default function SpeakerProposalEditForm({
               defaultValue={proposal.anythingElse}
               disabled={!isEditable}
               placeholder="e.g. $400 domestic flight from Brisbane & $300 for 2 nights accommodation"
-              className="w-full px-4 py-2 border border-[--border] rounded-md focus:outline-none focus:ring-2 focus:ring-[--cyan] focus:border-transparent disabled:bg-[--bg-light] disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-light disabled:cursor-not-allowed"
             />
           </div>
         )}
@@ -223,14 +223,14 @@ export default function SpeakerProposalEditForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-8 py-3 text-base font-bold bg-[--navy] text-white rounded-md hover:bg-[--navy-light] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-8 py-3 text-base font-bold bg-navy text-white rounded-md hover:bg-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
               onClick={() => router.push('/dashboard/applications')}
-              className="px-6 py-3 text-base font-medium border border-[--border] text-[--text-body] rounded-md hover:bg-[--bg-light] transition-colors"
+              className="px-6 py-3 text-base font-medium border border-border text-body rounded-md hover:bg-light transition-colors"
             >
               Cancel
             </button>

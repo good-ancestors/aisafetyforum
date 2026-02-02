@@ -17,10 +17,10 @@ export default async function ProfilePage() {
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl font-bold text-[--navy] mb-2">
+      <h1 className="font-serif text-3xl font-bold text-navy mb-2">
         Edit Profile
       </h1>
-      <p className="text-[--text-muted] mb-8">
+      <p className="text-muted mb-8">
         Update your information. This will be used across your applications and registrations.
       </p>
 
@@ -28,6 +28,7 @@ export default async function ProfilePage() {
         email={user.email}
         initialData={profile ? {
           name: profile.name || '',
+          gender: profile.gender || '',
           title: profile.title || '',
           organisation: profile.organisation || '',
           bio: profile.bio || '',
@@ -35,6 +36,8 @@ export default async function ProfilePage() {
           twitter: profile.twitter || '',
           bluesky: profile.bluesky || '',
           website: profile.website || '',
+          dietaryRequirements: profile.dietaryRequirements || '',
+          avatarUrl: profile.avatarUrl || '',
         } : undefined}
       />
 

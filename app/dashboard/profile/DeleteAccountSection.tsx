@@ -67,7 +67,7 @@ export default function DeleteAccountSection() {
       <h2 className="font-serif text-xl font-bold text-red-700 mb-2">
         Delete Account
       </h2>
-      <p className="text-sm text-[--text-muted] mb-4">
+      <p className="text-sm text-muted mb-4">
         Permanently delete your account and all associated data.
       </p>
 
@@ -125,9 +125,9 @@ export default function DeleteAccountSection() {
                   action cannot be undone.
                 </p>
 
-                <div className="bg-[--bg-light] p-3 rounded text-sm space-y-2">
-                  <p className="font-medium text-[--navy]">What will be deleted:</p>
-                  <ul className="list-disc ml-4 text-[--text-body] space-y-1">
+                <div className="bg-light p-3 rounded text-sm space-y-2">
+                  <p className="font-medium text-navy">What will be deleted:</p>
+                  <ul className="list-disc ml-4 text-body space-y-1">
                     <li>Your profile information</li>
                     {totalApplications > 0 && (
                       <li>
@@ -139,9 +139,9 @@ export default function DeleteAccountSection() {
                   </ul>
 
                   {(deletionInfo?.paidOrderCount || 0) > 0 && (
-                    <div className="mt-3 pt-3 border-t border-[--border]">
-                      <p className="font-medium text-[--navy]">What will be kept:</p>
-                      <ul className="list-disc ml-4 text-[--text-body] space-y-1">
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <p className="font-medium text-navy">What will be kept:</p>
+                      <ul className="list-disc ml-4 text-body space-y-1">
                         <li>
                           {deletionInfo?.paidOrderCount} paid order
                           {(deletionInfo?.paidOrderCount || 0) > 1 ? 's' : ''} (for
@@ -153,7 +153,7 @@ export default function DeleteAccountSection() {
                   )}
                 </div>
 
-                <p className="text-sm text-[--text-muted]">
+                <p className="text-sm text-muted">
                   You will be signed out immediately after deletion.
                 </p>
               </>

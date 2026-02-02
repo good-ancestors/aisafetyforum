@@ -12,6 +12,7 @@ type ProfileFields = {
   name?: string;
   title?: string;
   organisation?: string;
+  gender?: string;
   bio?: string;
   linkedin?: string;
   twitter?: string;
@@ -38,6 +39,7 @@ async function getOrCreateProfile(email: string, fields: ProfileFields = {}) {
     if (fields.name && fields.name !== profile.name) updates.name = fields.name;
     if (fields.title && fields.title !== profile.title) updates.title = fields.title;
     if (fields.organisation && fields.organisation !== profile.organisation) updates.organisation = fields.organisation;
+    if (fields.gender && fields.gender !== profile.gender) updates.gender = fields.gender;
     if (fields.bio && fields.bio !== profile.bio) updates.bio = fields.bio;
     if (fields.linkedin && fields.linkedin !== profile.linkedin) updates.linkedin = fields.linkedin;
     if (fields.twitter && fields.twitter !== profile.twitter) updates.twitter = fields.twitter;
@@ -58,6 +60,7 @@ async function getOrCreateProfile(email: string, fields: ProfileFields = {}) {
         name: fields.name || null,
         title: fields.title || null,
         organisation: fields.organisation || null,
+        gender: fields.gender || null,
         bio: fields.bio || null,
         linkedin: fields.linkedin || null,
         twitter: fields.twitter || null,
@@ -74,6 +77,7 @@ export type SpeakerProposalFormData = {
   email: string;
   name: string;
   organisation?: string;
+  gender?: string;
   title: string;
   bio: string;
   linkedin?: string;
@@ -104,6 +108,7 @@ export type ScholarshipApplicationFormData = {
   email: string;
   name: string;
   organisation?: string;
+  gender?: string;
   role: string;
   bio: string;
   linkedin?: string;
@@ -123,6 +128,7 @@ export async function submitSpeakerProposal(data: SpeakerProposalFormData) {
       name: data.name,
       title: data.title,
       organisation: data.organisation,
+      gender: data.gender,
       bio: data.bio,
       linkedin: data.linkedin,
       twitter: data.twitter,
@@ -207,6 +213,7 @@ export async function submitScholarshipApplication(data: ScholarshipApplicationF
       name: data.name,
       title: data.role,
       organisation: data.organisation,
+      gender: data.gender,
       bio: data.bio,
       linkedin: data.linkedin,
       twitter: data.twitter,

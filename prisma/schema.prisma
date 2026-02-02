@@ -153,6 +153,9 @@ model Profile {
   name                String?
   title               String?
   organisation        String?
+  gender              String?              // female, male, non-binary, other, or null (prefer not to say)
+  dietaryRequirements String?              // Free text for dietary needs (vegetarian, vegan, allergies, etc.)
+  avatarUrl           String?              // Custom avatar URL (from Uploadthing), overrides Gravatar
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   bio                 String?

@@ -36,22 +36,22 @@ export default function SpeakerProposalsSection({
   }
 
   return (
-    <section className="bg-white rounded-lg border border-[--border] p-6">
+    <section className="bg-white rounded-lg border border-border p-6">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h2 className="font-serif text-xl font-bold text-[--navy]">{title}</h2>
-          {description && <p className="text-sm text-[--text-muted] mt-1">{description}</p>}
+          <h2 className="font-serif text-xl font-bold text-navy">{title}</h2>
+          {description && <p className="text-sm text-muted mt-1">{description}</p>}
         </div>
         <div className="flex items-center gap-4">
           {showViewAllLink && (
-            <Link href="/dashboard/applications" className="text-sm text-[--blue] hover:underline">
+            <Link href="/dashboard/applications" className="text-sm text-blue hover:underline">
               View All
             </Link>
           )}
           {showNewButton && (
             <Link
               href="/speak"
-              className="text-sm bg-[--navy] text-white px-4 py-2 rounded hover:bg-[--navy-light] transition-colors"
+              className="text-sm bg-navy text-white px-4 py-2 rounded hover:bg-navy-light transition-colors"
             >
               New Proposal
             </Link>
@@ -60,11 +60,11 @@ export default function SpeakerProposalsSection({
       </div>
 
       {proposals.length === 0 ? (
-        <div className="text-center py-8 bg-[--bg-light] rounded">
-          <p className="text-[--text-muted] mb-4">
+        <div className="text-center py-8 bg-light rounded">
+          <p className="text-muted mb-4">
             You haven&apos;t submitted any speaker proposals yet.
           </p>
-          <Link href="/speak" className="text-[--blue] hover:underline text-sm">
+          <Link href="/speak" className="text-blue hover:underline text-sm">
             Submit a proposal &rarr;
           </Link>
         </div>
@@ -83,7 +83,7 @@ export default function SpeakerProposalsSection({
                   <>
                     <Link
                       href={`/dashboard/applications/speaker/${proposal.id}`}
-                      className="text-sm text-[--blue] hover:underline"
+                      className="text-sm text-blue hover:underline"
                     >
                       Edit
                     </Link>

@@ -76,8 +76,8 @@ export default function DeleteApplicationButton({
             <p>
               Are you sure you want to delete this {typeLabel}? This action cannot be undone.
             </p>
-            <div className="bg-[--bg-light] p-3 rounded text-sm">
-              <p className="font-medium text-[--navy]">{title}</p>
+            <div className="bg-light p-3 rounded text-sm">
+              <p className="font-medium text-navy">{title}</p>
             </div>
           </div>
         }

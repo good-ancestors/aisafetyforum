@@ -122,20 +122,20 @@ export default function OrderList({ orders }: OrderListProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-[--border]">
+    <div className="bg-white rounded-lg border border-border">
       {/* Filters */}
-      <div className="p-4 border-b border-[--border] flex flex-wrap gap-4">
+      <div className="p-4 border-b border-border flex flex-wrap gap-4">
         <input
           type="text"
           placeholder="Search orders..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 border border-[--border] rounded text-sm flex-1 min-w-[200px]"
+          className="px-3 py-2 border border-border rounded text-sm flex-1 min-w-[200px]"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="px-3 py-2 border border-[--border] rounded text-sm"
+          className="px-3 py-2 border border-border rounded text-sm"
         >
           <option value="all">All Status</option>
           <option value="pending">Pending</option>
@@ -146,7 +146,7 @@ export default function OrderList({ orders }: OrderListProps) {
         <select
           value={methodFilter}
           onChange={(e) => setMethodFilter(e.target.value as MethodFilter)}
-          className="px-3 py-2 border border-[--border] rounded text-sm"
+          className="px-3 py-2 border border-border rounded text-sm"
         >
           <option value="all">All Methods</option>
           <option value="card">Card</option>
@@ -155,42 +155,42 @@ export default function OrderList({ orders }: OrderListProps) {
       </div>
 
       {/* Results Count */}
-      <div className="px-4 py-2 bg-[--bg-light] text-sm text-[--text-muted] border-b border-[--border]">
+      <div className="px-4 py-2 bg-light text-sm text-muted border-b border-border">
         Showing {filteredOrders.length} of {localOrders.length} orders
       </div>
 
       {/* Order List */}
-      <div className="divide-y divide-[--border]">
+      <div className="divide-y divide-border">
         {filteredOrders.length === 0 ? (
-          <div className="p-8 text-center text-[--text-muted]">No orders found</div>
+          <div className="p-8 text-center text-muted">No orders found</div>
         ) : (
           filteredOrders.map((order) => (
             <div key={order.id} className="p-4">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[--navy]">
+                    <span className="font-semibold text-navy">
                       #{order.id.slice(-8).toUpperCase()}
                     </span>
                     <span className={`text-xs px-2 py-0.5 rounded ${getStatusBadge(order.paymentStatus)}`}>
                       {order.paymentStatus}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded bg-[--bg-light] text-[--text-muted]">
+                    <span className="text-xs px-2 py-0.5 rounded bg-light text-muted">
                       {order.paymentMethod}
                     </span>
                   </div>
-                  <p className="text-sm text-[--text-muted] mt-1">
+                  <p className="text-sm text-muted mt-1">
                     {order.purchaserName} ({order.purchaserEmail})
                     {order.orgName && <span className="ml-1">• {order.orgName}</span>}
                   </p>
-                  <p className="text-xs text-[--text-muted]">
+                  <p className="text-xs text-muted">
                     {formatDateTime(order.createdAt)}
                     {order.invoiceNumber && <span className="ml-2">• Invoice: {order.invoiceNumber}</span>}
                     {order.coupon && <span className="ml-2">• Coupon: {order.coupon.code}</span>}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-[--navy]">
+                  <p className="font-semibold text-navy">
                     ${(order.totalAmount / 100).toFixed(2)}
                   </p>
                   {order.discountAmount > 0 && (
@@ -198,7 +198,7 @@ export default function OrderList({ orders }: OrderListProps) {
                       -${(order.discountAmount / 100).toFixed(2)} discount
                     </p>
                   )}
-                  <p className="text-xs text-[--text-muted]">
+                  <p className="text-xs text-muted">
                     {order.registrations.length} ticket(s)
                   </p>
                 </div>
@@ -207,19 +207,19 @@ export default function OrderList({ orders }: OrderListProps) {
               <div className="mt-2">
                 <button
                   onClick={() => setExpandedId(expandedId === order.id ? null : order.id)}
-                  className="text-xs text-[--blue] hover:underline"
+                  className="text-xs text-blue hover:underline"
                 >
                   {expandedId === order.id ? 'Hide' : 'Show'} {order.registrations.length} ticket(s)
                 </button>
                 {expandedId === order.id && (
-                  <div className="bg-[--bg-light] rounded p-2 space-y-1 mt-2">
+                  <div className="bg-light rounded p-2 space-y-1 mt-2">
                     {order.registrations.map((reg) => (
                       <div key={reg.id} className="flex justify-between text-sm">
                         <span>
-                          {reg.name} <span className="text-[--text-muted]">({reg.email})</span>
+                          {reg.name} <span className="text-muted">({reg.email})</span>
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="text-[--text-muted]">{reg.ticketType}</span>
+                          <span className="text-muted">{reg.ticketType}</span>
                           <span className={`text-xs px-1.5 py-0.5 rounded ${getStatusBadge(reg.status)}`}>
                             {reg.status}
                           </span>
@@ -232,7 +232,7 @@ export default function OrderList({ orders }: OrderListProps) {
 
               {/* Actions */}
               {order.paymentStatus !== 'cancelled' && (
-                <div className="mt-3 pt-3 border-t border-[--border] flex gap-2">
+                <div className="mt-3 pt-3 border-t border-border flex gap-2">
                   <button
                     onClick={() =>
                       setCancelDialog({
@@ -274,21 +274,21 @@ export default function OrderList({ orders }: OrderListProps) {
             title="Cancel Order"
             message={
               <div className="space-y-4">
-                <p className="text-[--text-body]">
+                <p className="text-body">
                   Are you sure you want to cancel this order? This will cancel{' '}
                   <strong>{order.registrations.length} ticket{order.registrations.length > 1 ? 's' : ''}</strong>.
                 </p>
 
                 {/* Order details */}
-                <div className="bg-[--bg-light] p-3 rounded-lg text-sm space-y-1">
-                  <p><span className="text-[--text-muted]">Order ID:</span> <strong>#{order.id.slice(-8).toUpperCase()}</strong></p>
-                  <p><span className="text-[--text-muted]">Purchaser:</span> {order.purchaserName} ({order.purchaserEmail})</p>
-                  <p><span className="text-[--text-muted]">Tickets:</span> {order.registrations.length}</p>
+                <div className="bg-light p-3 rounded-lg text-sm space-y-1">
+                  <p><span className="text-muted">Order ID:</span> <strong>#{order.id.slice(-8).toUpperCase()}</strong></p>
+                  <p><span className="text-muted">Purchaser:</span> {order.purchaserName} ({order.purchaserEmail})</p>
+                  <p><span className="text-muted">Tickets:</span> {order.registrations.length}</p>
                   {order.totalAmount > 0 && (
-                    <p><span className="text-[--text-muted]">Total paid:</span> ${refundAmount} AUD</p>
+                    <p><span className="text-muted">Total paid:</span> ${refundAmount} AUD</p>
                   )}
-                  <p><span className="text-[--text-muted]">Payment method:</span> {isCardPayment ? 'Credit/Debit Card' : 'Invoice'}</p>
-                  <p><span className="text-[--text-muted]">Status:</span> {order.paymentStatus}</p>
+                  <p><span className="text-muted">Payment method:</span> {isCardPayment ? 'Credit/Debit Card' : 'Invoice'}</p>
+                  <p><span className="text-muted">Status:</span> {order.paymentStatus}</p>
                 </div>
 
                 {/* Refund status messaging */}
@@ -352,7 +352,7 @@ export default function OrderList({ orders }: OrderListProps) {
                   </div>
                 ) : null}
 
-                <p className="text-xs text-[--text-muted]">
+                <p className="text-xs text-muted">
                   This action cannot be undone. All attendees on this order will lose access to the event.
                 </p>
               </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import OrdersSection from '@/components/dashboard/OrdersSection';
+import ProfileAvatar from '@/components/ProfileAvatar';
 import ScholarshipApplicationsSection from '@/components/dashboard/ScholarshipApplicationsSection';
 import SpeakerProposalsSection from '@/components/dashboard/SpeakerProposalsSection';
 import TicketsSection from '@/components/dashboard/TicketsSection';
@@ -56,37 +57,45 @@ export default async function DashboardPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl font-bold text-[--navy] mb-8">Your Dashboard</h1>
+      <h1 className="font-serif text-3xl font-bold text-navy mb-8">Your Dashboard</h1>
 
       {/* Profile Section */}
-      <section className="bg-white rounded-lg border border-[--border] p-6 mb-8">
+      <section className="bg-white rounded-lg border border-border p-6 mb-8">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="font-serif text-xl font-bold text-[--navy]">Profile</h2>
-          <Link href="/dashboard/profile" className="text-sm text-[--blue] hover:underline">
+          <h2 className="font-serif text-xl font-bold text-navy">Profile</h2>
+          <Link href="/dashboard/profile" className="text-sm text-blue hover:underline">
             Edit Profile
           </Link>
         </div>
         {profile ? (
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-[--text-muted]">Name</span>
-              <p className="font-medium">{profile.name || 'Not set'}</p>
-            </div>
-            <div>
-              <span className="text-[--text-muted]">Email</span>
-              <p className="font-medium">{profile.email}</p>
-            </div>
-            <div>
-              <span className="text-[--text-muted]">Title</span>
-              <p className="font-medium">{profile.title || 'Not set'}</p>
-            </div>
-            <div>
-              <span className="text-[--text-muted]">Organisation</span>
-              <p className="font-medium">{profile.organisation || 'Not set'}</p>
+          <div className="flex gap-6">
+            <ProfileAvatar
+              email={profile.email}
+              name={profile.name}
+              avatarUrl={profile.avatarUrl}
+              size="lg"
+            />
+            <div className="grid grid-cols-2 gap-4 text-sm flex-1">
+              <div>
+                <span className="text-muted">Name</span>
+                <p className="font-medium">{profile.name || 'Not set'}</p>
+              </div>
+              <div>
+                <span className="text-muted">Email</span>
+                <p className="font-medium">{profile.email}</p>
+              </div>
+              <div>
+                <span className="text-muted">Title</span>
+                <p className="font-medium">{profile.title || 'Not set'}</p>
+              </div>
+              <div>
+                <span className="text-muted">Organisation</span>
+                <p className="font-medium">{profile.organisation || 'Not set'}</p>
+              </div>
             </div>
           </div>
         ) : (
-          <p className="text-[--text-muted]">
+          <p className="text-muted">
             No profile found. Register for the event to create one.
           </p>
         )}

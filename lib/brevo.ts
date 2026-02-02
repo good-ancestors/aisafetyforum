@@ -296,7 +296,7 @@ export async function sendTicketConfirmationEmail(params: TicketConfirmationEmai
       <h3 style="color: #0a1f5c;">📋 What's Next?</h3>
       <ul>
         <li><strong>Add to Calendar</strong> - Use the attached .ics file to add the event to your calendar</li>
-        <li><strong>Complete Your Profile</strong> - Log in to update your bio and connect with other attendees</li>
+        <li><strong>Complete Your Profile</strong> - Log in to update your bio, dietary requirements, and connect with other attendees</li>
         <li><strong>Stay Tuned</strong> - We'll send program updates and logistics info closer to the event</li>
       </ul>
 
@@ -347,7 +347,7 @@ ${dashboardUrl}
 WHAT'S NEXT?
 ------------
 - Add to Calendar: Use the attached .ics file to add the event to your calendar
-- Complete Your Profile: Log in to update your bio and connect with other attendees
+- Complete Your Profile: Log in to update your bio, dietary requirements, and connect with other attendees
 - Stay Tuned: We'll send program updates and logistics info closer to the event
 
 If you have any questions, please contact us at ${eventConfig.organization.email}

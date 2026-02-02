@@ -55,7 +55,7 @@ export default function Topics() {
             <span className="absolute top-6 right-6 font-serif text-[2rem] font-bold text-border group-hover:text-cyan transition-colors">
               {topic.number}
             </span>
-            <h3 className="text-lg font-bold text-navy mb-2 pr-8 group-hover:text-[--blue] transition-colors">
+            <h3 className="text-lg font-bold text-navy mb-2 pr-8 group-hover:text-blue transition-colors">
               {topic.title}
             </h3>
             <p className="text-[0.95rem] text-muted leading-relaxed">{topic.description}</p>

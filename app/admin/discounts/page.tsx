@@ -33,37 +33,37 @@ export default async function AdminDiscountsPage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="font-serif text-3xl font-bold text-[--navy]">
+        <h1 className="font-serif text-3xl font-bold text-navy">
           Discounts & Complimentary Tickets
         </h1>
         <div className={`px-3 py-1 rounded-full text-sm font-medium ${modeStyle.bg} ${modeStyle.text}`}>
           Registration: {modeStyle.label}
         </div>
       </div>
-      <p className="text-[--text-muted] mb-8">
+      <p className="text-muted mb-8">
         Manage discount codes, access codes, and email-based complimentary tickets.
       </p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Discount Codes</p>
-          <p className="text-2xl font-bold text-[--navy]">{discountCodes.length}</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Discount Codes</p>
+          <p className="text-2xl font-bold text-navy">{discountCodes.length}</p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Access Codes</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Access Codes</p>
           <p className="text-2xl font-bold text-orange-600">{accessCodesCount}</p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Code Uses</p>
-          <p className="text-2xl font-bold text-[--teal]">{totalCodeUses}</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Code Uses</p>
+          <p className="text-2xl font-bold text-teal">{totalCodeUses}</p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Free Ticket Emails</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Free Ticket Emails</p>
           <p className="text-2xl font-bold text-purple-600">{activeFreeEmailsCount}</p>
         </div>
-        <div className="bg-white rounded-lg border border-[--border] p-4">
-          <p className="text-sm text-[--text-muted]">Waitlist</p>
+        <div className="bg-white rounded-lg border border-border p-4">
+          <p className="text-sm text-muted">Waitlist</p>
           <p className="text-2xl font-bold text-yellow-600">{waitlistStats.pending}</p>
         </div>
       </div>

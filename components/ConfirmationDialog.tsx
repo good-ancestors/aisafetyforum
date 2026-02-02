@@ -81,7 +81,7 @@ export default function ConfirmationDialog({
   const buttonStyles = {
     danger: 'bg-red-600 hover:bg-red-700 text-white',
     warning: 'bg-amber-600 hover:bg-amber-700 text-white',
-    default: 'bg-[--navy] hover:bg-[--navy-light] text-white',
+    default: 'bg-navy hover:bg-navy-light text-white',
   };
 
   const processing = isLoading || isProcessing;
@@ -104,12 +104,12 @@ export default function ConfirmationDialog({
       >
         <h2
           id="dialog-title"
-          className="font-serif text-xl font-bold text-[--navy] mb-4"
+          className="font-serif text-xl font-bold text-navy mb-4"
         >
           {title}
         </h2>
 
-        <div className="text-[--text-body] mb-6">
+        <div className="text-body mb-6">
           {typeof message === 'string' ? <p>{message}</p> : message}
         </div>
 
@@ -119,7 +119,7 @@ export default function ConfirmationDialog({
               type="button"
               onClick={onClose}
               disabled={processing}
-              className="px-4 py-2 text-[--text-body] border border-[--border] rounded hover:bg-[--bg-light] transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-body border border-border rounded hover:bg-light transition-colors disabled:opacity-50"
             >
               {cancelLabel}
             </button>

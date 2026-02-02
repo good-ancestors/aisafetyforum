@@ -127,10 +127,10 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-[--border]">
+      <div className="bg-white rounded-lg border border-border">
         {/* Header with Create Button */}
-        <div className="p-4 border-b border-[--border] flex justify-between items-center">
-          <h2 className="font-semibold text-[--navy]">Discount Codes</h2>
+        <div className="p-4 border-b border-border flex justify-between items-center">
+          <h2 className="font-semibold text-navy">Discount Codes</h2>
           <button
             onClick={showForm ? closeForm : openCreateForm}
             className="px-4 py-2 bg-navy text-white rounded text-sm hover:bg-navy-light transition-colors"
@@ -150,18 +150,18 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
         )}
 
         {/* Filters */}
-        <div className="p-4 border-b border-[--border] flex flex-wrap gap-4">
+        <div className="p-4 border-b border-border flex flex-wrap gap-4">
           <input
             type="text"
             placeholder="Search codes..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border border-[--border] rounded text-sm flex-1 min-w-[200px]"
+            className="px-3 py-2 border border-border rounded text-sm flex-1 min-w-[200px]"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="px-3 py-2 border border-[--border] rounded text-sm"
+            className="px-3 py-2 border border-border rounded text-sm"
           >
             <option value="all">All Status</option>
             <option value="active">Active Only</option>
@@ -170,21 +170,21 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
         </div>
 
         {/* Results Count */}
-        <div className="px-4 py-2 bg-[--bg-light] text-sm text-[--text-muted] border-b border-[--border]">
+        <div className="px-4 py-2 bg-light text-sm text-muted border-b border-border">
           Showing {filteredCodes.length} of {localCodes.length} codes
         </div>
 
         {/* Code List */}
-        <div className="divide-y divide-[--border]">
+        <div className="divide-y divide-border">
           {filteredCodes.length === 0 ? (
-            <div className="p-8 text-center text-[--text-muted]">No discount codes found</div>
+            <div className="p-8 text-center text-muted">No discount codes found</div>
           ) : (
             filteredCodes.map((code) => (
               <div key={code.id} className="p-4">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono font-semibold text-[--navy]">{code.code}</span>
+                      <span className="font-mono font-semibold text-navy">{code.code}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
                           code.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
@@ -197,12 +197,12 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
                           Access Code
                         </span>
                       )}
-                      <span className="text-xs px-2 py-0.5 rounded bg-[--bg-light] text-[--text-muted]">
+                      <span className="text-xs px-2 py-0.5 rounded bg-light text-muted">
                         {formatValue(code.type, code.value)}
                       </span>
                     </div>
-                    <p className="text-sm text-[--text-muted] mt-1">{code.description}</p>
-                    <div className="flex flex-wrap gap-3 mt-2 text-xs text-[--text-muted]">
+                    <p className="text-sm text-muted mt-1">{code.description}</p>
+                    <div className="flex flex-wrap gap-3 mt-2 text-xs text-muted">
                       <span>
                         Used: {code.usageCount}
                         {code.maxUses && code.maxUses > 0 ? ` / ${code.maxUses}` : ' (unlimited)'}
@@ -217,11 +217,11 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
                     </div>
                     {code.validFor.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
-                        <span className="text-xs text-[--text-muted]">Valid for:</span>
+                        <span className="text-xs text-muted">Valid for:</span>
                         {code.validFor.map((ticket) => (
                           <span
                             key={ticket}
-                            className="text-xs bg-[--bg-light] text-[--text-muted] px-2 py-0.5 rounded"
+                            className="text-xs bg-light text-muted px-2 py-0.5 rounded"
                           >
                             {ticket}
                           </span>
@@ -230,7 +230,7 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
                     )}
                     {code.allowedEmails.length > 0 && (
                       <div className="mt-2">
-                        <span className="text-xs text-[--text-muted]">
+                        <span className="text-xs text-muted">
                           Restricted to {code.allowedEmails.length} email(s):{' '}
                           <span className="font-mono">{code.allowedEmails.slice(0, 3).join(', ')}</span>
                           {code.allowedEmails.length > 3 && ` +${code.allowedEmails.length - 3} more`}
@@ -242,7 +242,7 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
                     <button
                       onClick={() => openEditForm(code)}
                       disabled={isPending}
-                      className="text-xs px-3 py-1 bg-[--bg-light] text-[--text-body] rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
+                      className="text-xs px-3 py-1 bg-light text-body rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
                     >
                       Edit
                     </button>

@@ -45,7 +45,7 @@ export default function Program() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-cyan mt-1">•</span>
-                <span>Introduction to AI safety from both perspectives</span>
+                <span>Introduction to AI safety from different perspectives</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-cyan mt-1">•</span>

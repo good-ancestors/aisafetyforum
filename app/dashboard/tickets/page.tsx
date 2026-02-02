@@ -65,14 +65,14 @@ export default async function TicketsPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="font-serif text-3xl font-bold text-[--navy] mb-2">Your Tickets</h1>
-      <p className="text-[--text-muted] mb-8">View and manage your event tickets and orders.</p>
+      <h1 className="font-serif text-3xl font-bold text-navy mb-2">Your Tickets</h1>
+      <p className="text-muted mb-8">View and manage your event tickets and orders.</p>
 
       {!hasContent ? (
-        <div className="bg-white rounded-lg border border-[--border] p-8 text-center">
-          <div className="w-16 h-16 bg-[--bg-light] rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white rounded-lg border border-border p-8 text-center">
+          <div className="w-16 h-16 bg-light rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-[--text-muted]"
+              className="w-8 h-8 text-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -85,13 +85,13 @@ export default async function TicketsPage() {
               />
             </svg>
           </div>
-          <h2 className="font-serif text-xl font-bold text-[--navy] mb-2">No Tickets Yet</h2>
-          <p className="text-[--text-muted] mb-6">
+          <h2 className="font-serif text-xl font-bold text-navy mb-2">No Tickets Yet</h2>
+          <p className="text-muted mb-6">
             You haven&apos;t registered for the event yet. Get your ticket now!
           </p>
           <Link
             href="/register"
-            className="inline-block bg-[--navy] text-white px-6 py-3 rounded font-medium hover:bg-[--navy-light] transition-colors"
+            className="inline-block bg-navy text-white px-6 py-3 rounded font-medium hover:bg-navy-light transition-colors"
           >
             Register Now
           </Link>
@@ -113,11 +113,11 @@ export default async function TicketsPage() {
           <OrdersSection orders={paidOrders} />
 
           {/* CTA */}
-          <div className="bg-[--bg-light] rounded-lg p-6 text-center">
-            <p className="text-[--text-muted] mb-4">Need to purchase additional tickets?</p>
+          <div className="bg-light rounded-lg p-6 text-center">
+            <p className="text-muted mb-4">Need to purchase additional tickets?</p>
             <Link
               href="/register"
-              className="inline-block bg-[--navy] text-white px-6 py-2 rounded font-medium hover:bg-[--navy-light] transition-colors"
+              className="inline-block bg-navy text-white px-6 py-2 rounded font-medium hover:bg-navy-light transition-colors"
             >
               Register More Attendees
             </Link>

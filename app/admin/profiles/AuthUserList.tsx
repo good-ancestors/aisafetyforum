@@ -74,20 +74,20 @@ export default function AuthUserList({ authUsers }: AuthUserListProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-[--border]">
+    <div className="bg-white rounded-lg border border-border">
       {/* Filters */}
-      <div className="p-4 border-b border-[--border] flex flex-wrap gap-4">
+      <div className="p-4 border-b border-border flex flex-wrap gap-4">
         <input
           type="text"
           placeholder="Search users..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 border border-[--border] rounded text-sm flex-1 min-w-[200px]"
+          className="px-3 py-2 border border-border rounded text-sm flex-1 min-w-[200px]"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="px-3 py-2 border border-[--border] rounded text-sm"
+          className="px-3 py-2 border border-border rounded text-sm"
         >
           <option value="all">All Users</option>
           <option value="with-profile">With Profile</option>
@@ -97,21 +97,21 @@ export default function AuthUserList({ authUsers }: AuthUserListProps) {
       </div>
 
       {/* Results Count */}
-      <div className="px-4 py-2 bg-[--bg-light] text-sm text-[--text-muted] border-b border-[--border]">
+      <div className="px-4 py-2 bg-light text-sm text-muted border-b border-border">
         Showing {filteredUsers.length} of {localUsers.length} auth users
       </div>
 
       {/* User List */}
-      <div className="divide-y divide-[--border]">
+      <div className="divide-y divide-border">
         {filteredUsers.length === 0 ? (
-          <div className="p-8 text-center text-[--text-muted]">No users found</div>
+          <div className="p-8 text-center text-muted">No users found</div>
         ) : (
           filteredUsers.map((user) => (
             <div key={user.id} className="p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-[--navy]">
+                    <span className="font-semibold text-navy">
                       {user.name || 'No name'}
                     </span>
                     {user.isAdmin && (
@@ -130,23 +130,23 @@ export default function AuthUserList({ authUsers }: AuthUserListProps) {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-[--text-muted] mt-1">
+                  <p className="text-sm text-muted mt-1">
                     {user.email}
                     {user.organisation && <span className="ml-2">• {user.organisation}</span>}
                     {user.title && <span className="ml-2">• {user.title}</span>}
                   </p>
-                  <div className="flex flex-wrap gap-3 mt-2 text-xs text-[--text-muted]">
+                  <div className="flex flex-wrap gap-3 mt-2 text-xs text-muted">
                     <span>Signed up {formatDate(user.createdAt)}</span>
                     {user.ticketCount > 0 && (
                       <span className="text-green-600">{user.ticketCount} ticket(s)</span>
                     )}
                     {user.speakerProposalCount > 0 && (
-                      <span className="text-[--blue]">
+                      <span className="text-blue">
                         {user.speakerProposalCount} speaker proposal(s)
                       </span>
                     )}
                     {user.scholarshipCount > 0 && (
-                      <span className="text-[--teal]">
+                      <span className="text-teal">
                         {user.scholarshipCount} scholarship app(s)
                       </span>
                     )}

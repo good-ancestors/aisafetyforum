@@ -31,6 +31,7 @@ export default async function Scholarship() {
       select: {
         email: true,
         name: true,
+        gender: true,
         title: true,
         organisation: true,
         bio: true,
@@ -44,6 +45,7 @@ export default async function Scholarship() {
       initialProfile = {
         email: profile.email,
         name: profile.name || '',
+        gender: profile.gender || '',
         role: profile.title || '',
         organisation: profile.organisation || '',
         bio: profile.bio || '',
@@ -167,7 +169,7 @@ export default async function Scholarship() {
 
             <h2 className="font-bold text-xl text-navy mb-4 mt-8">What We&apos;re Looking For</h2>
             <p className="text-body">
-              We want to hear how attending the forum would support your work or development in AI safety, and why a scholarship would make a meaningful difference for you. We value genuine interest and diverse perspectives over credentials.
+              We want to hear how sponsorship to attend the forum would support your work or your contribution to AI safety. Tell us why a scholarship would make a meaningful difference for you. We value interest, contributions and diverse perspectives over credentials.
             </p>
           </div>
 

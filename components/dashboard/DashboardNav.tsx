@@ -42,7 +42,7 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
   };
 
   return (
-    <nav className="bg-white border-b border-[--border]">
+    <nav className="bg-white border-b border-border">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center gap-1 overflow-x-auto">
           {/* User Navigation */}
@@ -52,8 +52,8 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
               href={item.href}
               className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                 isActive(item.href)
-                  ? 'text-[--navy] border-[--navy]'
-                  : 'text-[--text-muted] border-transparent hover:text-[--navy] hover:border-[--border]'
+                  ? 'text-navy border-navy'
+                  : 'text-muted border-transparent hover:text-navy hover:border-border'
               }`}
             >
               {item.label}
@@ -63,7 +63,7 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
           {/* Admin Section Divider */}
           {isAdmin && (
             <>
-              <div className="h-6 w-px bg-[--border] mx-2" />
+              <div className="h-6 w-px bg-border mx-2" />
               <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded font-medium">
                 Admin
               </span>
@@ -78,8 +78,8 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
                 href={item.href}
                 className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   isActive(item.href)
-                    ? 'text-[--navy] border-[--navy]'
-                    : 'text-[--text-muted] border-transparent hover:text-[--navy] hover:border-[--border]'
+                    ? 'text-navy border-navy'
+                    : 'text-muted border-transparent hover:text-navy hover:border-border'
                 }`}
               >
                 {item.label}

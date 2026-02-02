@@ -109,12 +109,12 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-[--border]">
+      <div className="bg-white rounded-lg border border-border">
         {/* Header with Add Button */}
-        <div className="p-4 border-b border-[--border] flex justify-between items-center">
+        <div className="p-4 border-b border-border flex justify-between items-center">
           <div>
-            <h2 className="font-semibold text-[--navy]">Complimentary Ticket Emails</h2>
-            <p className="text-xs text-[--text-muted] mt-1">
+            <h2 className="font-semibold text-navy">Complimentary Ticket Emails</h2>
+            <p className="text-xs text-muted mt-1">
               Emails here automatically get free tickets when they register (no code needed)
             </p>
           </div>
@@ -155,18 +155,18 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
         )}
 
         {/* Filters */}
-        <div className="p-4 border-b border-[--border] flex flex-wrap gap-4">
+        <div className="p-4 border-b border-border flex flex-wrap gap-4">
           <input
             type="text"
             placeholder="Search emails..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border border-[--border] rounded text-sm flex-1 min-w-[200px]"
+            className="px-3 py-2 border border-border rounded text-sm flex-1 min-w-[200px]"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="px-3 py-2 border border-[--border] rounded text-sm"
+            className="px-3 py-2 border border-border rounded text-sm"
           >
             <option value="all">All Status</option>
             <option value="active">Active Only</option>
@@ -175,14 +175,14 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
         </div>
 
         {/* Results Count */}
-        <div className="px-4 py-2 bg-[--bg-light] text-sm text-[--text-muted] border-b border-[--border]">
+        <div className="px-4 py-2 bg-light text-sm text-muted border-b border-border">
           Showing {filteredEmails.length} of {localEmails.length} emails
         </div>
 
         {/* Email List */}
-        <div className="divide-y divide-[--border]">
+        <div className="divide-y divide-border">
           {filteredEmails.length === 0 ? (
-            <div className="p-8 text-center text-[--text-muted]">
+            <div className="p-8 text-center text-muted">
               No complimentary ticket emails found
             </div>
           ) : (
@@ -191,7 +191,7 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono font-semibold text-[--navy]">{email.email}</span>
+                      <span className="font-mono font-semibold text-navy">{email.email}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
                           email.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
@@ -211,7 +211,7 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                           type="text"
                           value={editReason}
                           onChange={(e) => setEditReason(e.target.value)}
-                          className="flex-1 px-2 py-1 text-sm border border-[--border] rounded"
+                          className="flex-1 px-2 py-1 text-sm border border-border rounded"
                         />
                         <button
                           onClick={() => handleEditReason(email.id)}
@@ -228,9 +228,9 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                         </button>
                       </div>
                     ) : (
-                      <p className="text-sm text-[--text-muted] mt-1">{email.reason}</p>
+                      <p className="text-sm text-muted mt-1">{email.reason}</p>
                     )}
-                    <p className="text-xs text-[--text-muted] mt-1">
+                    <p className="text-xs text-muted mt-1">
                       Added: {formatDate(email.createdAt)}
                     </p>
                   </div>
@@ -239,7 +239,7 @@ export default function FreeTicketEmailList({ emails }: FreeTicketEmailListProps
                       <button
                         onClick={() => startEdit(email)}
                         disabled={isPending}
-                        className="text-xs px-3 py-1 bg-[--bg-light] text-[--text-body] rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
+                        className="text-xs px-3 py-1 bg-light text-body rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
                       >
                         Edit
                       </button>

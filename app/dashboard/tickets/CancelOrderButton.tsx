@@ -115,19 +115,19 @@ export default function CancelOrderButton({
         title="Cancel Order"
         message={
           <div className="space-y-4">
-            <p className="text-[--text-body]">
+            <p className="text-body">
               Are you sure you want to cancel this order? This will cancel{' '}
               <strong>{ticketCount} ticket{ticketCount > 1 ? 's' : ''}</strong>.
             </p>
 
             {/* Order details */}
-            <div className="bg-[--bg-light] p-3 rounded-lg text-sm space-y-1">
-              <p><span className="text-[--text-muted]">Tickets:</span> {ticketCount}</p>
+            <div className="bg-light p-3 rounded-lg text-sm space-y-1">
+              <p><span className="text-muted">Tickets:</span> {ticketCount}</p>
               {totalAmount > 0 && (
-                <p><span className="text-[--text-muted]">Total paid:</span> ${refundAmount} AUD</p>
+                <p><span className="text-muted">Total paid:</span> ${refundAmount} AUD</p>
               )}
-              <p><span className="text-[--text-muted]">Payment method:</span> {paymentMethod === 'card' ? 'Credit/Debit Card' : 'Invoice'}</p>
-              <p><span className="text-[--text-muted]">Status:</span> {paymentStatus}</p>
+              <p><span className="text-muted">Payment method:</span> {paymentMethod === 'card' ? 'Credit/Debit Card' : 'Invoice'}</p>
+              <p><span className="text-muted">Status:</span> {paymentStatus}</p>
             </div>
 
             {/* Refund status - very clear messaging */}
@@ -203,7 +203,7 @@ export default function CancelOrderButton({
               </div>
             )}
 
-            <p className="text-xs text-[--text-muted]">
+            <p className="text-xs text-muted">
               This action cannot be undone. All attendees on this order will lose access to the event.
             </p>
           </div>

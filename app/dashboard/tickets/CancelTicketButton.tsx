@@ -98,16 +98,16 @@ export default function CancelTicketButton({
         title="Cancel Ticket"
         message={
           <div className="space-y-4">
-            <p className="text-[--text-body]">
+            <p className="text-body">
               Are you sure you want to cancel this ticket?
             </p>
 
             {/* Ticket details */}
-            <div className="bg-[--bg-light] p-3 rounded-lg text-sm space-y-1">
-              <p><span className="text-[--text-muted]">Attendee:</span> <strong>{attendeeName}</strong></p>
-              <p><span className="text-[--text-muted]">Ticket:</span> {ticketType}</p>
+            <div className="bg-light p-3 rounded-lg text-sm space-y-1">
+              <p><span className="text-muted">Attendee:</span> <strong>{attendeeName}</strong></p>
+              <p><span className="text-muted">Ticket:</span> {ticketType}</p>
               {ticketPrice > 0 && (
-                <p><span className="text-[--text-muted]">Price paid:</span> ${refundAmount} AUD</p>
+                <p><span className="text-muted">Price paid:</span> ${refundAmount} AUD</p>
               )}
             </div>
 
@@ -170,7 +170,7 @@ export default function CancelTicketButton({
               </div>
             )}
 
-            <p className="text-xs text-[--text-muted]">
+            <p className="text-xs text-muted">
               This action cannot be undone. The attendee will no longer have access to the event.
             </p>
           </div>

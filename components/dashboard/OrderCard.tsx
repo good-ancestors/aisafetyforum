@@ -54,19 +54,19 @@ export default function OrderCard({
 
   const containerClass = isPending
     ? 'border border-amber-200 rounded-lg overflow-hidden bg-amber-50/50'
-    : 'border border-[--border] rounded-lg overflow-hidden';
+    : 'border border-border rounded-lg overflow-hidden';
 
   const headerClass = isPending
     ? 'bg-amber-100/50 px-4 py-3 border-b border-amber-200'
-    : 'bg-[--bg-light] px-4 py-3 border-b border-[--border]';
+    : 'bg-light px-4 py-3 border-b border-border';
 
   const registrationBgClass = isPending
     ? 'bg-white p-3 rounded border border-amber-100'
-    : 'bg-[--bg-light] p-3 rounded';
+    : 'bg-light p-3 rounded';
 
   const footerClass = isPending
     ? 'bg-amber-100/50 px-4 py-3 border-t border-amber-200'
-    : 'bg-[--bg-light] px-4 py-3 border-t border-[--border]';
+    : 'bg-light px-4 py-3 border-t border-border';
 
   return (
     <div className={containerClass}>
@@ -75,13 +75,13 @@ export default function OrderCard({
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-[--navy]">Order {orderId}</span>
+              <span className="font-semibold text-navy">Order {orderId}</span>
               {statusBadge}
             </div>
-            <p className="text-xs text-[--text-muted]">
+            <p className="text-xs text-muted">
               {registrations.length} ticket(s) • ${(totalAmount / 100).toFixed(2)} AUD
             </p>
-            <p className="text-xs text-[--text-muted]">
+            <p className="text-xs text-muted">
               {new Date(createdAt).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' })} • {isInvoice ? 'Invoice' : 'Card Payment'}
               {isPending && invoiceDueDate && (
                 <> • Due {new Date(invoiceDueDate).toLocaleDateString('en-AU', { day: '2-digit', month: '2-digit', year: 'numeric' })}</>
@@ -98,7 +98,7 @@ export default function OrderCard({
 
       {/* Tickets in Order */}
       <div className="p-4">
-        <p className="text-sm font-medium text-[--text-muted] mb-3">
+        <p className="text-sm font-medium text-muted mb-3">
           {registrations.length} Ticket(s)
           {isPending && ' - will be confirmed upon payment'}
         </p>
@@ -109,10 +109,10 @@ export default function OrderCard({
               className={`flex justify-between items-center text-sm ${registrationBgClass}`}
             >
               <div>
-                <span className="font-medium text-[--navy]">{reg.name}</span>
-                <span className="text-[--text-muted] ml-2">({reg.email})</span>
+                <span className="font-medium text-navy">{reg.name}</span>
+                <span className="text-muted ml-2">({reg.email})</span>
               </div>
-              <span className="text-[--text-muted]">{reg.ticketType}</span>
+              <span className="text-muted">{reg.ticketType}</span>
             </div>
           ))}
         </div>
@@ -121,7 +121,7 @@ export default function OrderCard({
       {/* Invoice Details (if applicable) */}
       {isInvoice && invoiceNumber && (
         <div className={footerClass}>
-          <p className="text-xs text-[--text-muted]">
+          <p className="text-xs text-muted">
             Invoice: {invoiceNumber}
             {orgName && ` • ${orgName}`}
             {orgABN && ` • ABN: ${orgABN}`}

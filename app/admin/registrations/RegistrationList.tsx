@@ -115,20 +115,20 @@ export default function RegistrationList({ registrations }: RegistrationListProp
   };
 
   return (
-    <div className="bg-white rounded-lg border border-[--border]">
+    <div className="bg-white rounded-lg border border-border">
       {/* Filters */}
-      <div className="p-4 border-b border-[--border] flex flex-wrap gap-4">
+      <div className="p-4 border-b border-border flex flex-wrap gap-4">
         <input
           type="text"
           placeholder="Search registrations..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 border border-[--border] rounded text-sm flex-1 min-w-[200px]"
+          className="px-3 py-2 border border-border rounded text-sm flex-1 min-w-[200px]"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="px-3 py-2 border border-[--border] rounded text-sm"
+          className="px-3 py-2 border border-border rounded text-sm"
         >
           <option value="all">All Status</option>
           <option value="pending">Pending</option>
@@ -139,7 +139,7 @@ export default function RegistrationList({ registrations }: RegistrationListProp
         <select
           value={ticketFilter}
           onChange={(e) => setTicketFilter(e.target.value)}
-          className="px-3 py-2 border border-[--border] rounded text-sm"
+          className="px-3 py-2 border border-border rounded text-sm"
         >
           <option value="all">All Ticket Types</option>
           {ticketTypes.map((type) => (
@@ -151,35 +151,35 @@ export default function RegistrationList({ registrations }: RegistrationListProp
       </div>
 
       {/* Results Count */}
-      <div className="px-4 py-2 bg-[--bg-light] text-sm text-[--text-muted] border-b border-[--border]">
+      <div className="px-4 py-2 bg-light text-sm text-muted border-b border-border">
         Showing {filteredRegistrations.length} of {localRegistrations.length} registrations
       </div>
 
       {/* Registration List */}
-      <div className="divide-y divide-[--border]">
+      <div className="divide-y divide-border">
         {filteredRegistrations.length === 0 ? (
-          <div className="p-8 text-center text-[--text-muted]">No registrations found</div>
+          <div className="p-8 text-center text-muted">No registrations found</div>
         ) : (
           filteredRegistrations.map((reg) => (
             <div key={reg.id} className="p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-[--navy]">{reg.name}</span>
+                    <span className="font-semibold text-navy">{reg.name}</span>
                     <span className={`text-xs px-2 py-0.5 rounded ${getStatusBadge(reg.status)}`}>
                       {reg.status}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded bg-[--bg-light] text-[--text-muted]">
+                    <span className="text-xs px-2 py-0.5 rounded bg-light text-muted">
                       {reg.ticketType}
                     </span>
                   </div>
-                  <p className="text-sm text-[--text-muted] mt-1">
+                  <p className="text-sm text-muted mt-1">
                     {reg.email}
                     {reg.profile?.organisation && (
                       <span className="ml-2">• {reg.profile.organisation}</span>
                     )}
                   </p>
-                  <p className="text-xs text-[--text-muted] mt-1">
+                  <p className="text-xs text-muted mt-1">
                     {formatDateTime(reg.createdAt)}
                     {reg.order && (
                       <span className="ml-2">
@@ -191,7 +191,7 @@ export default function RegistrationList({ registrations }: RegistrationListProp
                 </div>
                 <div className="text-right ml-4 flex flex-col items-end gap-2">
                   <div>
-                    <p className="font-semibold text-[--navy]">
+                    <p className="font-semibold text-navy">
                       ${((reg.amountPaid || reg.ticketPrice || 0) / 100).toFixed(2)}
                     </p>
                     {reg.discountAmount && reg.discountAmount > 0 && (
@@ -199,7 +199,7 @@ export default function RegistrationList({ registrations }: RegistrationListProp
                         -${(reg.discountAmount / 100).toFixed(2)} discount
                       </p>
                     )}
-                    <p className="text-xs text-[--text-muted]">
+                    <p className="text-xs text-muted">
                       #{reg.id.slice(-8).toUpperCase()}
                     </p>
                   </div>
@@ -247,25 +247,25 @@ export default function RegistrationList({ registrations }: RegistrationListProp
             title="Cancel Ticket"
             message={
               <div className="space-y-4">
-                <p className="text-[--text-body]">
+                <p className="text-body">
                   Are you sure you want to cancel this ticket?
                 </p>
 
                 {/* Ticket details */}
-                <div className="bg-[--bg-light] p-3 rounded-lg text-sm space-y-1">
-                  <p><span className="text-[--text-muted]">Attendee:</span> <strong>{reg.name}</strong></p>
-                  <p><span className="text-[--text-muted]">Email:</span> {reg.email}</p>
-                  <p><span className="text-[--text-muted]">Ticket:</span> {reg.ticketType}</p>
+                <div className="bg-light p-3 rounded-lg text-sm space-y-1">
+                  <p><span className="text-muted">Attendee:</span> <strong>{reg.name}</strong></p>
+                  <p><span className="text-muted">Email:</span> {reg.email}</p>
+                  <p><span className="text-muted">Ticket:</span> {reg.ticketType}</p>
                   {ticketPrice > 0 && (
-                    <p><span className="text-[--text-muted]">Price paid:</span> ${refundAmount} AUD</p>
+                    <p><span className="text-muted">Price paid:</span> ${refundAmount} AUD</p>
                   )}
                   {reg.order && (
                     <>
-                      <p><span className="text-[--text-muted]">Payment method:</span> {isCardPayment ? 'Credit/Debit Card' : 'Invoice'}</p>
-                      <p><span className="text-[--text-muted]">Order:</span> #{reg.order.id.slice(-8).toUpperCase()}</p>
+                      <p><span className="text-muted">Payment method:</span> {isCardPayment ? 'Credit/Debit Card' : 'Invoice'}</p>
+                      <p><span className="text-muted">Order:</span> #{reg.order.id.slice(-8).toUpperCase()}</p>
                     </>
                   )}
-                  <p><span className="text-[--text-muted]">Status:</span> {reg.status}</p>
+                  <p><span className="text-muted">Status:</span> {reg.status}</p>
                 </div>
 
                 {/* Refund status messaging */}
@@ -329,7 +329,7 @@ export default function RegistrationList({ registrations }: RegistrationListProp
                   </div>
                 ) : null}
 
-                <p className="text-xs text-[--text-muted]">
+                <p className="text-xs text-muted">
                   This action cannot be undone. The attendee will no longer have access to the event.
                 </p>
               </div>

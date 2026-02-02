@@ -8,6 +8,7 @@ import { isValidEmail } from '@/lib/security';
 
 export interface ProfileUpdateData {
   name: string;
+  gender: string;
   title: string;
   organisation: string;
   bio: string;
@@ -15,6 +16,7 @@ export interface ProfileUpdateData {
   twitter: string;
   bluesky: string;
   website: string;
+  dietaryRequirements: string;
 }
 
 /**
@@ -150,6 +152,7 @@ export async function updateProfile(
       where: { email: normalizedEmail },
       update: {
         name: data.name || null,
+        gender: data.gender || null,
         title: data.title || null,
         organisation: data.organisation || null,
         bio: data.bio || null,
@@ -157,10 +160,12 @@ export async function updateProfile(
         twitter: data.twitter || null,
         bluesky: data.bluesky || null,
         website: data.website || null,
+        dietaryRequirements: data.dietaryRequirements || null,
       },
       create: {
         email: normalizedEmail,
         name: data.name || null,
+        gender: data.gender || null,
         title: data.title || null,
         organisation: data.organisation || null,
         bio: data.bio || null,
@@ -168,6 +173,7 @@ export async function updateProfile(
         twitter: data.twitter || null,
         bluesky: data.bluesky || null,
         website: data.website || null,
+        dietaryRequirements: data.dietaryRequirements || null,
       },
     });
 
@@ -180,6 +186,45 @@ export async function updateProfile(
     return {
       success: false,
       error: 'Failed to update profile. Please try again.',
+    };
+  }
+}
+
+/**
+ * Update avatar URL for a profile.
+ * Can be called separately from the main profile update.
+ */
+export async function updateAvatar(
+  email: string,
+  avatarUrl: string | null
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    const normalizedEmail = email.toLowerCase();
+
+    // Prevent users from updating other users' profiles
+    if (user.email.toLowerCase() !== normalizedEmail) {
+      return { success: false, error: 'Unauthorized: Cannot update another user\'s profile' };
+    }
+
+    await prisma.profile.update({
+      where: { email: normalizedEmail },
+      data: { avatarUrl },
+    });
+
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/profile');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating avatar:', error);
+    return {
+      success: false,
+      error: 'Failed to update avatar. Please try again.',
     };
   }
 }

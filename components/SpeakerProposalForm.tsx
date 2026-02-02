@@ -6,6 +6,7 @@ import { submitSpeakerProposal, type SpeakerProposalFormData } from '@/lib/actio
 export interface SpeakerInitialProfile {
   email: string;
   name: string;
+  gender: string;
   title: string;
   organisation: string;
   bio: string;
@@ -20,7 +21,7 @@ const sessionFormats = [
     id: 'keynote',
     value: 'Keynote',
     label: 'Keynote',
-    description: '20-30 minute presentation to the full audience',
+    description: 'Up to 45 minute presentation to the full audience',
   },
   {
     id: 'lightning',
@@ -71,6 +72,7 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
       email: formData.get('email') as string,
       name: formData.get('name') as string,
       organisation: (formData.get('organisation') as string) || undefined,
+      gender: (formData.get('gender') as string) || undefined,
       title: formData.get('title') as string,
       bio: formData.get('bio') as string,
       linkedin: (formData.get('linkedin') as string) || undefined,
@@ -172,7 +174,7 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
             Tell us about your session idea *
           </label>
           <p className="text-sm text-muted mb-2">
-            Share what you&apos;d like to cover and why it matters. Don&apos;t worry about perfection — we&apos;re excited to hear your ideas! (Around 200 words)
+            Share what you&apos;d like to cover, why it matters, how it fits with the goals of the forum, and an estimated duration. Don&apos;t worry about perfection — we&apos;re excited to hear your ideas! (Around 200 words)
           </p>
           <textarea
             id="abstract"
@@ -218,6 +220,28 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
             defaultValue={initialProfile?.name}
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
+        </div>
+
+        {/* Gender */}
+        <div>
+          <label htmlFor="gender" className="block text-sm font-bold text-navy mb-2">
+            Gender
+          </label>
+          <p className="text-sm text-muted mb-2">
+            Optional — helps us understand our community and work toward gender balance
+          </p>
+          <select
+            id="gender"
+            name="gender"
+            defaultValue={initialProfile?.gender || ''}
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
+          >
+            <option value="">Prefer not to say</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="non-binary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
         </div>
 
         {/* Title/Role */}

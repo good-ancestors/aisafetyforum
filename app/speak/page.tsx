@@ -31,6 +31,7 @@ export default async function Speak() {
       select: {
         email: true,
         name: true,
+        gender: true,
         title: true,
         organisation: true,
         bio: true,
@@ -44,6 +45,7 @@ export default async function Speak() {
       initialProfile = {
         email: profile.email,
         name: profile.name || '',
+        gender: profile.gender || '',
         title: profile.title || '',
         organisation: profile.organisation || '',
         bio: profile.bio || '',
