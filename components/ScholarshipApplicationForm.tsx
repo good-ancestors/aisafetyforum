@@ -3,8 +3,24 @@
 import { useState } from 'react';
 import { submitScholarshipApplication, type ScholarshipApplicationFormData } from '@/lib/actions';
 
+export interface ScholarshipInitialProfile {
+  email: string;
+  name: string;
+  role: string;
+  organisation: string;
+  bio: string;
+  linkedin: string;
+  twitter: string;
+  bluesky: string;
+  website: string;
+}
+
+interface ScholarshipApplicationFormProps {
+  initialProfile?: ScholarshipInitialProfile;
+}
+
 // eslint-disable-next-line max-lines-per-function -- Multi-field application form with validation and submission states
-export default function ScholarshipApplicationForm() {
+export default function ScholarshipApplicationForm({ initialProfile }: ScholarshipApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,6 +120,7 @@ export default function ScholarshipApplicationForm() {
             id="email"
             name="email"
             required
+            defaultValue={initialProfile?.email}
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
@@ -118,6 +135,7 @@ export default function ScholarshipApplicationForm() {
             id="name"
             name="name"
             required
+            defaultValue={initialProfile?.name}
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
@@ -135,6 +153,7 @@ export default function ScholarshipApplicationForm() {
             id="role"
             name="role"
             required
+            defaultValue={initialProfile?.role}
             placeholder="e.g. Research Fellow"
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
@@ -152,6 +171,7 @@ export default function ScholarshipApplicationForm() {
             type="text"
             id="organisation"
             name="organisation"
+            defaultValue={initialProfile?.organisation}
             placeholder="e.g. Australian National University"
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
@@ -171,6 +191,7 @@ export default function ScholarshipApplicationForm() {
             required
             maxLength={450}
             rows={4}
+            defaultValue={initialProfile?.bio}
             placeholder="e.g. Your research focus, current work, or relevant experience..."
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
@@ -189,6 +210,7 @@ export default function ScholarshipApplicationForm() {
               type="url"
               id="linkedin"
               name="linkedin"
+              defaultValue={initialProfile?.linkedin}
               placeholder="LinkedIn URL (e.g. linkedin.com/in/yourname)"
               className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
@@ -196,6 +218,7 @@ export default function ScholarshipApplicationForm() {
               type="url"
               id="twitter"
               name="twitter"
+              defaultValue={initialProfile?.twitter}
               placeholder="X/Twitter URL (e.g. x.com/yourhandle)"
               className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
@@ -203,6 +226,7 @@ export default function ScholarshipApplicationForm() {
               type="url"
               id="bluesky"
               name="bluesky"
+              defaultValue={initialProfile?.bluesky}
               placeholder="Bluesky URL (e.g. bsky.app/profile/yourname)"
               className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />
@@ -210,6 +234,7 @@ export default function ScholarshipApplicationForm() {
               type="url"
               id="website"
               name="website"
+              defaultValue={initialProfile?.website}
               placeholder="Personal website or academic profile URL"
               className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
             />

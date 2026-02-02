@@ -2,7 +2,9 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import ScholarshipApplicationForm from '@/components/ScholarshipApplicationForm';
+import { getCurrentUser } from '@/lib/auth/server';
 import { eventConfig } from '@/lib/config';
+import { prisma } from '@/lib/prisma';
 import type { Metadata } from 'next';
 
 // ISR: regenerate every 24h. Currently all content is static (config-driven),
@@ -19,7 +21,40 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Scholarship() {
+export default async function Scholarship() {
+  // Get current user's profile for prefilling
+  let initialProfile = undefined;
+  const user = await getCurrentUser();
+  if (user) {
+    const profile = await prisma.profile.findUnique({
+      where: { email: user.email.toLowerCase() },
+      select: {
+        email: true,
+        name: true,
+        title: true,
+        organisation: true,
+        bio: true,
+        linkedin: true,
+        twitter: true,
+        bluesky: true,
+        website: true,
+      },
+    });
+    if (profile) {
+      initialProfile = {
+        email: profile.email,
+        name: profile.name || '',
+        role: profile.title || '',
+        organisation: profile.organisation || '',
+        bio: profile.bio || '',
+        linkedin: profile.linkedin || '',
+        twitter: profile.twitter || '',
+        bluesky: profile.bluesky || '',
+        website: profile.website || '',
+      };
+    }
+  }
+
   return (
     <>
       <Header />
@@ -137,7 +172,7 @@ export default function Scholarship() {
           </div>
 
           {/* Form */}
-          <ScholarshipApplicationForm />
+          <ScholarshipApplicationForm initialProfile={initialProfile} />
 
           {/* Additional Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
