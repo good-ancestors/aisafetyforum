@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { prisma } from './prisma';
 
 /**
@@ -317,3 +318,50 @@ export const getCachedFreeTicketEmails = unstable_cache(
   ['free-ticket-emails'],
   { revalidate: 30, tags: ['discounts', 'free-tickets'] }
 );
+
+// ============================================
+// User Dashboard Data (request-level caching)
+// ============================================
+
+/**
+ * Get user's dashboard data with all related info.
+ * Uses React cache() for request-level deduplication.
+ */
+export const getUserDashboardData = cache(async (email: string) => {
+  const normalizedEmail = email.toLowerCase();
+
+  const [profile, purchasedOrders] = await Promise.all([
+    // Get profile and all related data for this user
+    prisma.profile.findUnique({
+      where: { email: normalizedEmail },
+      include: {
+        registrations: {
+          where: { status: 'paid' },
+          include: { order: true },
+          orderBy: { createdAt: 'desc' },
+        },
+        speakerProposals: {
+          orderBy: { createdAt: 'desc' },
+        },
+        fundingApplications: {
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    }),
+    // Get orders where this user is the purchaser (for group tickets)
+    prisma.order.findMany({
+      where: {
+        purchaserEmail: normalizedEmail,
+        paymentStatus: 'paid',
+      },
+      include: {
+        registrations: {
+          include: { profile: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
+
+  return { profile, purchasedOrders };
+});

@@ -6,7 +6,7 @@ import ScholarshipApplicationsSection from '@/components/dashboard/ScholarshipAp
 import SpeakerProposalsSection from '@/components/dashboard/SpeakerProposalsSection';
 import TicketsSection from '@/components/dashboard/TicketsSection';
 import { getCurrentUser } from '@/lib/auth/server';
-import { prisma } from '@/lib/prisma';
+import { getUserDashboardData } from '@/lib/cached-queries';
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -15,45 +15,8 @@ export default async function DashboardPage() {
     redirect('/auth/email-otp');
   }
 
-  const email = user.email.toLowerCase();
-
-  // Run both queries in parallel for better performance
-  const [profile, purchasedOrders] = await Promise.all([
-    // Get profile and all related data for this user
-    prisma.profile.findUnique({
-      where: { email },
-      include: {
-        registrations: {
-          where: { status: 'paid' },
-          include: {
-            order: true,
-          },
-          orderBy: { createdAt: 'desc' },
-        },
-        speakerProposals: {
-          orderBy: { createdAt: 'desc' },
-        },
-        fundingApplications: {
-          orderBy: { createdAt: 'desc' },
-        },
-      },
-    }),
-    // Get orders where this user is the purchaser (for group tickets)
-    prisma.order.findMany({
-      where: {
-        purchaserEmail: email,
-        paymentStatus: 'paid',
-      },
-      include: {
-        registrations: {
-          include: {
-            profile: true,
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    }),
-  ]);
+  // Single cached call gets all dashboard data
+  const { profile, purchasedOrders } = await getUserDashboardData(user.email);
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">

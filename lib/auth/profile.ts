@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, type AuthUser } from './server';
 import type { Profile } from '@prisma/client';
@@ -10,9 +11,10 @@ import type { Profile } from '@prisma/client';
  * 2. Falls back to email lookup if neonAuthUserId not linked yet
  * 3. Auto-links the profile to neonAuthUserId if found by email
  *
+ * Cached at request level - multiple calls in the same request only execute once.
  * Returns null if not authenticated or no profile exists.
  */
-export async function getCurrentProfile(): Promise<Profile | null> {
+export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
   const user = await getCurrentUser() as AuthUser | null;
 
   if (!user) {
@@ -20,7 +22,7 @@ export async function getCurrentProfile(): Promise<Profile | null> {
   }
 
   return getOrLinkProfile(user);
-}
+});
 
 /**
  * Get or link a profile for a given auth user.
@@ -28,34 +30,32 @@ export async function getCurrentProfile(): Promise<Profile | null> {
  *
  * Email changes should be done through the app (user profile update or admin),
  * not synced from Neon Auth.
+ *
+ * Optimized to run both lookups in parallel, then link if needed.
  */
-export async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
+async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
   const normalizedEmail = user.email.toLowerCase();
 
-  // First, try to find by neonAuthUserId (most reliable, survives email changes)
-  let profile = await prisma.profile.findUnique({
-    where: { neonAuthUserId: user.id },
-  });
+  // Run both lookups in parallel
+  const [profileById, profileByEmail] = await Promise.all([
+    prisma.profile.findUnique({ where: { neonAuthUserId: user.id } }),
+    prisma.profile.findUnique({ where: { email: normalizedEmail } }),
+  ]);
 
-  if (profile) {
-    return profile;
+  // Found by neonAuthUserId (most reliable)
+  if (profileById) {
+    return profileById;
   }
 
-  // No profile linked by neonAuthUserId yet, try by email
+  // Found by email - link to neonAuthUserId for future lookups
   // This handles the case where:
   // - Someone bought a ticket for this email before they signed up
   // - Or the profile was created before we added neonAuthUserId
-  profile = await prisma.profile.findUnique({
-    where: { email: normalizedEmail },
-  });
-
-  if (profile) {
-    // Found by email - link to neonAuthUserId for future lookups
-    profile = await prisma.profile.update({
-      where: { id: profile.id },
+  if (profileByEmail) {
+    return prisma.profile.update({
+      where: { id: profileByEmail.id },
       data: { neonAuthUserId: user.id },
     });
-    return profile;
   }
 
   // No profile exists at all
@@ -65,8 +65,10 @@ export async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> 
 /**
  * Get or create a profile for the current authenticated user.
  * Creates a minimal profile if none exists.
+ *
+ * Cached at request level - multiple calls in the same request only execute once.
  */
-export async function getOrCreateCurrentProfile(): Promise<Profile | null> {
+export const getOrCreateCurrentProfile = cache(async (): Promise<Profile | null> => {
   const user = await getCurrentUser() as AuthUser | null;
 
   if (!user) {
@@ -88,4 +90,4 @@ export async function getOrCreateCurrentProfile(): Promise<Profile | null> {
       name: user.name || null,
     },
   });
-}
+});
