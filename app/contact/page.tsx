@@ -41,16 +41,6 @@ export default function ContactPage() {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-bold text-navy mb-2">Email</h3>
-                  <a
-                    href={`mailto:${eventConfig.organization.email}`}
-                    className="text-brand-blue hover:text-cyan transition-colors"
-                  >
-                    {eventConfig.organization.email}
-                  </a>
-                </div>
-
-                <div>
                   <h3 className="font-bold text-navy mb-2">Event Dates</h3>
                   <p className="text-body">{eventConfig.datesLong}</p>
                 </div>
