@@ -13,15 +13,19 @@ export async function getAuthServer() {
 
 /**
  * Get the current authenticated user session and user.
- * Uses the neonAuth() utility which reads session from cookies.
- * Returns { session: null, user: null } if auth is not configured or session is invalid.
  *
- * Wrapped in cache() for request-level deduplication - multiple calls in the same
- * request lifecycle will only execute once.
+ * Uses React.cache() for request-level deduplication - multiple calls in the
+ * same request only execute once. This is the recommended pattern for Next.js
+ * App Router rather than cross-request caching (which risks stale auth state).
  *
- * Wrapped in try-catch because neonAuth() may attempt to modify cookies
- * (e.g. clearing a stale session after account deletion), which throws
- * in Server Components. Catching this gracefully treats it as unauthenticated.
+ * Session validation queries the database, which is intentional for security:
+ * - Sessions can be revoked immediately
+ * - No stale auth state from caching
+ *
+ * Performance is handled at other layers:
+ * - Middleware filters unauthenticated requests early
+ * - Profile lookups are cached (safe - profiles don't change auth state)
+ * - Data queries are cached with unstable_cache
  */
 export const getSession = cache(async () => {
   if (!process.env.NEON_AUTH_BASE_URL) {
@@ -30,14 +34,11 @@ export const getSession = cache(async () => {
   try {
     const start = performance.now();
     const { neonAuth } = await import('@neondatabase/auth/next/server');
-    const importTime = performance.now() - start;
-
-    const authStart = performance.now();
     const result = await neonAuth();
-    const authTime = performance.now() - authStart;
+    const authTime = performance.now() - start;
 
-    if (importTime > 50 || authTime > 50) {
-      console.log(`[PERF] getSession: import=${importTime.toFixed(0)}ms, auth=${authTime.toFixed(0)}ms`);
+    if (authTime > 100) {
+      console.log(`[PERF] getSession: ${authTime.toFixed(0)}ms`);
     }
     return result;
   } catch {

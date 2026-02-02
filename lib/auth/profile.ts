@@ -28,22 +28,18 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
 /**
  * Cached profile lookup by user ID and email.
  * Uses unstable_cache for cross-request caching (60s TTL).
- * This dramatically reduces DB queries during navigation/prefetching.
+ *
+ * Profile caching is safe (unlike session caching) because:
+ * - Profile data doesn't affect auth state
+ * - Changes are invalidated via 'profiles' tag
  */
 const getCachedProfileLookup = unstable_cache(
   async (userId: string, email: string): Promise<Profile | null> => {
-    const start = performance.now();
-
     // Run both lookups in parallel
     const [profileById, profileByEmail] = await Promise.all([
       prisma.profile.findUnique({ where: { neonAuthUserId: userId } }),
       prisma.profile.findUnique({ where: { email } }),
     ]);
-
-    const lookupTime = performance.now() - start;
-    if (lookupTime > 50) {
-      console.log(`[PERF] getCachedProfileLookup: ${lookupTime.toFixed(0)}ms`);
-    }
 
     // Found by neonAuthUserId (most reliable)
     if (profileById) {
@@ -63,8 +59,6 @@ const getCachedProfileLookup = unstable_cache(
 
 async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
   const normalizedEmail = user.email.toLowerCase();
-
-  // Get cached profile lookup result
   const profile = await getCachedProfileLookup(user.id, normalizedEmail);
 
   if (!profile) {
@@ -74,16 +68,10 @@ async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
   // If profile exists but isn't linked to this auth user, link it now
   // This write operation can't be cached, but only happens once per user
   if (!profile.neonAuthUserId) {
-    const linkStart = performance.now();
-    const result = await prisma.profile.update({
+    return prisma.profile.update({
       where: { id: profile.id },
       data: { neonAuthUserId: user.id },
     });
-    const linkTime = performance.now() - linkStart;
-    if (linkTime > 50) {
-      console.log(`[PERF] getOrLinkProfile link: ${linkTime.toFixed(0)}ms`);
-    }
-    return result;
   }
 
   return profile;

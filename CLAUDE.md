@@ -1,7 +1,7 @@
 # Tech Stack
 
 ## Framework
-* Next.js 15+ with App Router
+* Next.js 16+ with App Router
 * React 19+
 * TypeScript 5
 
@@ -17,6 +17,7 @@
 * Database schema in `/prisma/schema.prisma`
 * Global styles in `/app/globals.css` with CSS custom properties
 * Static assets in `/public/`
+* **Request interception**: `proxy.ts` (NOT `middleware.ts` - deprecated in Next.js 16)
 
 ## Design System
 
@@ -84,6 +85,25 @@ Borders:
 * **Schema**: Auth data in `neon_auth` schema; profile data in `public.Profile`
 * **Key files**: `lib/auth/client.ts`, `lib/auth/server.ts`, `lib/auth/profile.ts`
 * **neon_auth access**: Use `prisma.$executeRaw` / `$queryRaw` (not in Prisma schema). See `lib/admin-actions.ts`
+
+### Auth Architecture (Next.js 16)
+```
+proxy.ts (neonAuthMiddleware)     ← Early redirect for unauthenticated users
+    ↓
+Layout (getSession via neonAuth)  ← Full session validation (DB query, required for security)
+    ↓
+Profile lookup (unstable_cache)   ← Cached 60s, safe to cache (doesn't affect auth)
+    ↓
+Data queries (unstable_cache)     ← Cached 30s with tag-based revalidation
+```
+
+### Important Auth Rules
+* **DO NOT** cache session validation - security risk (stale sessions)
+* **DO NOT** use `middleware.ts` - deprecated, use `proxy.ts` instead
+* **DO NOT** put heavy logic in `proxy.ts` - keep it lightweight (redirects only)
+* **DO** cache profile lookups (safe, doesn't grant access)
+* **DO** use `unstable_cache` for data queries with appropriate tags
+* **DO** use `prefetch={false}` on dashboard navigation links to prevent request storms
 
 ## Content Structure
 
