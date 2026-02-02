@@ -48,6 +48,7 @@ export default function MobileNav({
           <li key={link.href}>
             <Link
               href={link.href}
+              prefetch={false}
               className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
               onClick={onClose}
             >
@@ -76,6 +77,7 @@ export default function MobileNav({
             <li>
               <Link
                 href="/dashboard"
+                prefetch={false}
                 className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                 onClick={onClose}
               >
@@ -85,6 +87,7 @@ export default function MobileNav({
             <li>
               <Link
                 href="/dashboard/profile"
+                prefetch={false}
                 className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                 onClick={onClose}
               >
@@ -94,6 +97,7 @@ export default function MobileNav({
             <li>
               <Link
                 href="/dashboard/tickets"
+                prefetch={false}
                 className="block text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                 onClick={onClose}
               >
@@ -104,6 +108,7 @@ export default function MobileNav({
               <li>
                 <Link
                   href="/admin/invoices"
+                  prefetch={false}
                   className="flex items-center gap-2 text-dark px-4 py-3 font-medium text-[0.95rem] hover:bg-light transition-colors"
                   onClick={onClose}
                 >
@@ -145,6 +150,7 @@ export default function MobileNav({
             <li className="p-4 pt-2">
               <Link
                 href="/register"
+                prefetch={false}
                 className="block text-center px-6 py-3 text-[0.95rem] font-semibold bg-navy text-white rounded-md hover:bg-navy-dark transition-colors"
                 onClick={onClose}
               >

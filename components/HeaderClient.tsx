@@ -99,7 +99,7 @@ export default function HeaderClient() {
             <ul className="flex list-none">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-dark px-3 xl:px-5 py-3 font-medium text-[0.95rem] hover:text-brand-blue transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 xl:after:left-5 xl:after:right-5 after:h-0.5 after:bg-cyan after:opacity-0 hover:after:opacity-100 after:transition-opacity">
+                  <Link href={link.href} prefetch={false} className="text-dark px-3 xl:px-5 py-3 font-medium text-[0.95rem] hover:text-brand-blue transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-3 after:right-3 xl:after:left-5 xl:after:right-5 after:h-0.5 after:bg-cyan after:opacity-0 hover:after:opacity-100 after:transition-opacity">
                     {link.label}
                   </Link>
                 </li>
