@@ -1,5 +1,22 @@
 # Tech Stack
 
+## Development Practices
+
+### Before Creating New Files
+* **Check if similar file exists**: `ls *.ts` or `glob` for patterns like `proxy.ts`, `middleware.ts`
+* **Check framework conventions**: Next.js 16 uses `proxy.ts` not `middleware.ts`
+* **Search codebase first**: Use Grep/Glob before assuming something doesn't exist
+
+### Before Performance Optimization
+* **Measure first**: Add `console.log(\`[PERF] ${name}: ${time}ms\`)` timing
+* **Trace full request flow**: Identify ALL operations, not just obvious ones
+* **Identify root cause**: Don't treat symptoms (e.g., "add caching") without understanding cause
+
+### When Unsure About Framework Conventions
+* **Check current docs**: Next.js, React, and library APIs change frequently
+* **Verify versions**: This project uses Next.js 16+, React 19+ (not 15/18)
+* **Search for deprecations**: Features like `middleware.ts` get renamed/deprecated
+
 ## Framework
 * Next.js 16+ with App Router
 * React 19+
