@@ -3,6 +3,13 @@ import { cache } from 'react';
 import { cookies } from 'next/headers';
 
 /**
+ * Better Auth session cookie name.
+ * Source: https://www.better-auth.com/docs/integrations/next
+ * Default is 'better-auth.session_token' (prefix 'better-auth', name 'session_token')
+ */
+const SESSION_COOKIE_NAME = 'better-auth.session_token';
+
+/**
  * Get the auth server instance. Returns null if NEON_AUTH_BASE_URL is not configured.
  */
 export async function getAuthServer() {
@@ -51,9 +58,9 @@ export const getSession = cache(async () => {
   }
 
   try {
-    // Read session token to use as cache key
+    // Read session cookie (name from Better Auth docs)
     const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('better_auth.session_token')?.value;
+    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
     if (!sessionToken) {
       return { session: null, user: null };
