@@ -1,4 +1,6 @@
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { cookies } from 'next/headers';
 
 /**
  * Get the auth server instance. Returns null if NEON_AUTH_BASE_URL is not configured.
@@ -23,22 +25,45 @@ export async function getAuthServer() {
  * (e.g. clearing a stale session after account deletion), which throws
  * in Server Components. Catching this gracefully treats it as unauthenticated.
  */
+/**
+ * Validate and cache session by token.
+ * The session token is passed as argument so different tokens get different cache entries.
+ * This dramatically reduces auth DB queries during navigation/prefetching.
+ */
+const validateSessionByToken = unstable_cache(
+  async (_sessionToken: string) => {
+    const start = performance.now();
+    const { neonAuth } = await import('@neondatabase/auth/next/server');
+    const result = await neonAuth();
+    const authTime = performance.now() - start;
+    console.log(`[PERF] validateSessionByToken CACHE MISS: ${authTime.toFixed(0)}ms`);
+    return result;
+  },
+  ['session-validation'],
+  { revalidate: 30, tags: ['session'] }
+);
+
 export const getSession = cache(async () => {
   if (!process.env.NEON_AUTH_BASE_URL) {
     return { session: null, user: null };
   }
   try {
     const start = performance.now();
-    const { neonAuth } = await import('@neondatabase/auth/next/server');
-    const importTime = performance.now() - start;
 
-    const authStart = performance.now();
-    const result = await neonAuth();
-    const authTime = performance.now() - authStart;
+    // Get session token from cookies to use as cache key
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('better_auth.session_token')?.value || '';
 
-    if (importTime > 50 || authTime > 50) {
-      console.log(`[PERF] getSession: import=${importTime.toFixed(0)}ms, auth=${authTime.toFixed(0)}ms`);
+    // No session token = not logged in
+    if (!sessionToken) {
+      console.log(`[PERF] getSession: no session token`);
+      return { session: null, user: null };
     }
+
+    // Validate session with caching based on token
+    const result = await validateSessionByToken(sessionToken);
+    const totalTime = performance.now() - start;
+    console.log(`[PERF] getSession total: ${totalTime.toFixed(0)}ms`);
     return result;
   } catch {
     return { session: null, user: null };

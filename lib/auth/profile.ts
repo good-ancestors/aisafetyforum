@@ -41,9 +41,8 @@ const getCachedProfileLookup = unstable_cache(
     ]);
 
     const lookupTime = performance.now() - start;
-    if (lookupTime > 50) {
-      console.log(`[PERF] getCachedProfileLookup: ${lookupTime.toFixed(0)}ms`);
-    }
+    // This only runs on cache MISS
+    console.log(`[PERF] getCachedProfileLookup CACHE MISS: ${lookupTime.toFixed(0)}ms`);
 
     // Found by neonAuthUserId (most reliable)
     if (profileById) {
@@ -64,8 +63,11 @@ const getCachedProfileLookup = unstable_cache(
 async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
   const normalizedEmail = user.email.toLowerCase();
 
+  const cacheStart = performance.now();
   // Get cached profile lookup result
   const profile = await getCachedProfileLookup(user.id, normalizedEmail);
+  const cacheTime = performance.now() - cacheStart;
+  console.log(`[PERF] getOrLinkProfile total: ${cacheTime.toFixed(0)}ms`);
 
   if (!profile) {
     return null;
