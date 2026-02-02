@@ -1,13 +1,19 @@
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
-import { cookies } from 'next/headers';
 
 /**
- * Better Auth session cookie name.
- * Source: https://www.better-auth.com/docs/integrations/next
- * Default is 'better-auth.session_token' (prefix 'better-auth', name 'session_token')
+ * Server-side authentication utilities for Neon Auth.
+ *
+ * IMPORTANT - Use official APIs only:
+ * - Always use neonAuth() for session validation, never read cookies directly
+ * - Cookie names are internal implementation details (e.g., __Secure-neon-auth.session_token)
+ * - These details can change between versions and break your code
+ * - The official API handles all edge cases correctly
+ *
+ * For caching session validation:
+ * - Use React.cache() for request-level deduplication (safe, standard pattern)
+ * - Do NOT use unstable_cache with custom cookie reading (fragile, hardcodes internals)
+ * - If cross-request caching is needed, consult Neon Auth docs for supported patterns
  */
-const SESSION_COOKIE_NAME = 'better-auth.session_token';
 
 /**
  * Get the auth server instance. Returns null if NEON_AUTH_BASE_URL is not configured.
@@ -21,36 +27,12 @@ export async function getAuthServer() {
 }
 
 /**
- * Cached session validation.
- *
- * Uses unstable_cache with 30s TTL to avoid DB query on every request.
- * The session token is passed as argument so different sessions get different cache entries.
- *
- * Security tradeoff (acceptable for most apps):
- * - If session is revoked, user may access for up to 30s
- * - For critical operations (password change, etc.), add explicit fresh validation
- *
- * Performance gain:
- * - First request: ~200-500ms (DB query)
- * - Subsequent requests (30s): ~5ms (cached)
- */
-const validateSession = unstable_cache(
-  async (_sessionToken: string) => {
-    const { neonAuth } = await import('@neondatabase/auth/next/server');
-    return neonAuth();
-  },
-  ['session-validation'],
-  { revalidate: 30, tags: ['session'] }
-);
-
-/**
  * Get the current authenticated user session and user.
  *
- * Uses two layers of caching:
- * 1. unstable_cache (30s) - caches across requests for same session token
- * 2. React.cache() - deduplicates within a single request
+ * Uses React.cache() to deduplicate calls within a single request.
+ * This prevents multiple DB queries when multiple components call getSession().
  *
- * This dramatically improves navigation performance while maintaining security.
+ * Note: This calls the official neonAuth() which handles all session validation.
  */
 export const getSession = cache(async () => {
   if (!process.env.NEON_AUTH_BASE_URL) {
@@ -58,24 +40,8 @@ export const getSession = cache(async () => {
   }
 
   try {
-    // Read session cookie (name from Better Auth docs)
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-    if (!sessionToken) {
-      return { session: null, user: null };
-    }
-
-    const start = performance.now();
-    const result = await validateSession(sessionToken);
-    const authTime = performance.now() - start;
-
-    // Log slow validations (likely cache misses)
-    if (authTime > 100) {
-      console.log(`[PERF] getSession: ${authTime.toFixed(0)}ms (likely cache miss)`);
-    }
-
-    return result;
+    const { neonAuth } = await import('@neondatabase/auth/next/server');
+    return await neonAuth();
   } catch {
     return { session: null, user: null };
   }

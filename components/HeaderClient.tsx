@@ -21,19 +21,43 @@ interface UserProfile {
   avatarUrl: string | null;
 }
 
-export default function HeaderClient() {
+/**
+ * Props for server-side data passing.
+ * When provided, skips client-side /api/auth/me fetch for better performance.
+ * Used by dashboard layout which already has this data.
+ */
+interface HeaderClientProps {
+  initialUserEmail?: string | null;
+  initialProfile?: UserProfile | null;
+  initialIsAdmin?: boolean;
+}
+
+export default function HeaderClient({
+  initialUserEmail,
+  initialProfile,
+  initialIsAdmin,
+}: HeaderClientProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isAdmin, setIsAdmin] = useState(initialIsAdmin ?? false);
+  const [profile, setProfile] = useState<UserProfile | null>(initialProfile ?? null);
   const router = useRouter();
   const { data: session } = authClient.useSession();
 
-  const userEmail = session?.user?.email ?? null;
+  // Use server-provided email if available, otherwise fall back to client session
+  const userEmail = initialUserEmail !== undefined ? initialUserEmail : (session?.user?.email ?? null);
   const user = userEmail ? { email: userEmail } : null;
 
+  // Skip fetch if server provided the data (initialUserEmail is defined, even if null)
+  const hasServerData = initialUserEmail !== undefined;
+
   useEffect(() => {
+    // Skip client fetch if server already provided the data
+    if (hasServerData) {
+      return;
+    }
+
     let cancelled = false;
 
     if (!userEmail) {
@@ -68,7 +92,7 @@ export default function HeaderClient() {
     return () => {
       cancelled = true;
     };
-  }, [userEmail]);
+  }, [userEmail, hasServerData]);
 
   async function handleSignOut() {
     await authClient.signOut({
