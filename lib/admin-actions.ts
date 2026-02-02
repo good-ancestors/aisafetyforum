@@ -1,36 +1,32 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireAdmin } from './auth/admin';
+import {
+  getCachedInvoiceOrders,
+  getCachedAllOrders,
+  getCachedOrderStats,
+  getCachedAllRegistrations,
+  getCachedRegistrationStats,
+  getCachedSpeakerProposals,
+  getCachedScholarshipApplications,
+  getCachedApplicationStats,
+  getCachedAllProfiles,
+  getCachedProfileStats,
+  getCachedDiscountCodes,
+  getCachedFreeTicketEmails,
+} from './cached-queries';
 import { completeOrder } from './order-completion';
 import { prisma } from './prisma';
 
 /**
- * Get all orders with invoice payment method
+ * Get all orders with invoice payment method (cached for 30s)
  */
 export async function getInvoiceOrders(status?: 'pending' | 'paid' | 'all') {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where = {
-    paymentMethod: 'invoice',
-    ...(status && status !== 'all' ? { paymentStatus: status } : {}),
-  };
-
-  const orders = await prisma.order.findMany({
-    where,
-    include: {
-      registrations: {
-        include: {
-          profile: true,
-        },
-      },
-      coupon: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  return orders;
+  return getCachedInvoiceOrders(status);
 }
 
 /**
@@ -63,6 +59,9 @@ export async function markInvoiceAsPaid(orderId: string) {
       return { success: false, error: result.error || 'Failed to complete order' };
     }
 
+    revalidateTag('orders', 'max');
+    revalidateTag('invoices', 'max');
+    revalidateTag('registrations', 'max');
     return { success: true };
   } catch (error) {
     console.error('Error marking invoice as paid:', error);
@@ -196,7 +195,7 @@ export async function resendInvoiceEmail(orderId: string) {
 // ============================================
 
 /**
- * Get all orders with optional filtering
+ * Get all orders with optional filtering (cached for 30s)
  */
 export async function getAllOrders(filters?: {
   status?: 'pending' | 'paid' | 'cancelled' | 'failed';
@@ -205,52 +204,17 @@ export async function getAllOrders(filters?: {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where: Record<string, unknown> = {};
-  if (filters?.status) where.paymentStatus = filters.status;
-  if (filters?.paymentMethod) where.paymentMethod = filters.paymentMethod;
-
-  return prisma.order.findMany({
-    where,
-    include: {
-      registrations: {
-        include: { profile: true },
-      },
-      coupon: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedAllOrders(filters);
 }
 
 /**
- * Get order statistics
+ * Get order statistics (cached for 30s)
  */
 export async function getOrderStats() {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const [total, pending, paid, cancelled, cardOrders, invoiceOrders] = await Promise.all([
-    prisma.order.count(),
-    prisma.order.count({ where: { paymentStatus: 'pending' } }),
-    prisma.order.count({ where: { paymentStatus: 'paid' } }),
-    prisma.order.count({ where: { paymentStatus: 'cancelled' } }),
-    prisma.order.aggregate({
-      where: { paymentMethod: 'card', paymentStatus: 'paid' },
-      _sum: { totalAmount: true },
-    }),
-    prisma.order.aggregate({
-      where: { paymentMethod: 'invoice', paymentStatus: 'paid' },
-      _sum: { totalAmount: true },
-    }),
-  ]);
-
-  return {
-    total,
-    pending,
-    paid,
-    cancelled,
-    cardRevenue: cardOrders._sum.totalAmount || 0,
-    invoiceRevenue: invoiceOrders._sum.totalAmount || 0,
-  };
+  return getCachedOrderStats();
 }
 
 // ============================================
@@ -258,7 +222,7 @@ export async function getOrderStats() {
 // ============================================
 
 /**
- * Get all registrations with optional filtering
+ * Get all registrations with optional filtering (cached for 30s)
  */
 export async function getAllRegistrations(filters?: {
   status?: 'pending' | 'paid' | 'cancelled' | 'refunded';
@@ -266,51 +230,17 @@ export async function getAllRegistrations(filters?: {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where: Record<string, unknown> = {};
-  if (filters?.status) where.status = filters.status;
-
-  return prisma.registration.findMany({
-    where,
-    include: {
-      profile: true,
-      order: true,
-      coupon: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedAllRegistrations(filters);
 }
 
 /**
- * Get registration statistics
+ * Get registration statistics (cached for 30s)
  */
 export async function getRegistrationStats() {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const [total, pending, paid, cancelled, refunded, ticketTypes] = await Promise.all([
-    prisma.registration.count(),
-    prisma.registration.count({ where: { status: 'pending' } }),
-    prisma.registration.count({ where: { status: 'paid' } }),
-    prisma.registration.count({ where: { status: 'cancelled' } }),
-    prisma.registration.count({ where: { status: 'refunded' } }),
-    prisma.registration.groupBy({
-      by: ['ticketType'],
-      where: { status: 'paid' },
-      _count: true,
-    }),
-  ]);
-
-  return {
-    total,
-    pending,
-    paid,
-    cancelled,
-    refunded,
-    ticketTypes: ticketTypes.map((t) => ({
-      type: t.ticketType,
-      count: t._count,
-    })),
-  };
+  return getCachedRegistrationStats();
 }
 
 // ============================================
@@ -318,7 +248,7 @@ export async function getRegistrationStats() {
 // ============================================
 
 /**
- * Get all speaker proposals
+ * Get all speaker proposals (cached for 30s)
  */
 export async function getAllSpeakerProposals(filters?: {
   status?: 'pending' | 'accepted' | 'rejected';
@@ -326,18 +256,11 @@ export async function getAllSpeakerProposals(filters?: {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where: Record<string, unknown> = {};
-  if (filters?.status) where.status = filters.status;
-
-  return prisma.speakerProposal.findMany({
-    where,
-    include: { profile: true },
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedSpeakerProposals(filters);
 }
 
 /**
- * Get all scholarship/funding applications
+ * Get all scholarship/funding applications (cached for 30s)
  */
 export async function getAllScholarshipApplications(filters?: {
   status?: 'pending' | 'approved' | 'rejected';
@@ -345,57 +268,17 @@ export async function getAllScholarshipApplications(filters?: {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where: Record<string, unknown> = {};
-  if (filters?.status) where.status = filters.status;
-
-  return prisma.fundingApplication.findMany({
-    where,
-    include: { profile: true },
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedScholarshipApplications(filters);
 }
 
 /**
- * Get application statistics
+ * Get application statistics (cached for 30s)
  */
 export async function getApplicationStats() {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const [
-    speakerTotal,
-    speakerPending,
-    speakerAccepted,
-    speakerRejected,
-    scholarshipTotal,
-    scholarshipPending,
-    scholarshipApproved,
-    scholarshipRejected,
-  ] = await Promise.all([
-    prisma.speakerProposal.count(),
-    prisma.speakerProposal.count({ where: { status: 'pending' } }),
-    prisma.speakerProposal.count({ where: { status: 'accepted' } }),
-    prisma.speakerProposal.count({ where: { status: 'rejected' } }),
-    prisma.fundingApplication.count(),
-    prisma.fundingApplication.count({ where: { status: 'pending' } }),
-    prisma.fundingApplication.count({ where: { status: 'approved' } }),
-    prisma.fundingApplication.count({ where: { status: 'rejected' } }),
-  ]);
-
-  return {
-    speaker: {
-      total: speakerTotal,
-      pending: speakerPending,
-      accepted: speakerAccepted,
-      rejected: speakerRejected,
-    },
-    scholarship: {
-      total: scholarshipTotal,
-      pending: scholarshipPending,
-      approved: scholarshipApproved,
-      rejected: scholarshipRejected,
-    },
-  };
+  return getCachedApplicationStats();
 }
 
 /**
@@ -414,6 +297,7 @@ export async function updateSpeakerProposalStatus(
       data: { status },
     });
 
+    revalidateTag('applications', 'max');
     revalidatePath('/admin/applications');
     return { success: true };
   } catch (error) {
@@ -438,6 +322,7 @@ export async function updateScholarshipStatus(
       data: { status },
     });
 
+    revalidateTag('applications', 'max');
     revalidatePath('/admin/applications');
     return { success: true };
   } catch (error) {
@@ -451,57 +336,23 @@ export async function updateScholarshipStatus(
 // ============================================
 
 /**
- * Get all profiles
+ * Get all profiles (cached for 30s)
  */
 export async function getAllProfiles(filters?: { isAdmin?: boolean }) {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where: Record<string, unknown> = {};
-  if (filters?.isAdmin !== undefined) where.isAdmin = filters.isAdmin;
-
-  return prisma.profile.findMany({
-    where,
-    include: {
-      registrations: { where: { status: 'paid' } },
-      speakerProposals: true,
-      fundingApplications: true,
-      _count: {
-        select: {
-          registrations: true,
-          speakerProposals: true,
-          fundingApplications: true,
-        },
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedAllProfiles(filters);
 }
 
 /**
- * Get profile statistics
+ * Get profile statistics (cached for 30s)
  */
 export async function getProfileStats() {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const [total, admins, withTickets, withApplications] = await Promise.all([
-    prisma.profile.count(),
-    prisma.profile.count({ where: { isAdmin: true } }),
-    prisma.profile.count({
-      where: { registrations: { some: { status: 'paid' } } },
-    }),
-    prisma.profile.count({
-      where: {
-        OR: [
-          { speakerProposals: { some: {} } },
-          { fundingApplications: { some: {} } },
-        ],
-      },
-    }),
-  ]);
-
-  return { total, admins, withTickets, withApplications };
+  return getCachedProfileStats();
 }
 
 /**
@@ -525,6 +376,7 @@ export async function toggleAdminStatus(
       data: { isAdmin: !profile.isAdmin },
     });
 
+    revalidateTag('profiles', 'max');
     revalidatePath('/admin/profiles');
     return { success: true, isAdmin: updated.isAdmin };
   } catch (error) {
@@ -892,23 +744,13 @@ export async function toggleAuthUserAdmin(
 // ============================================
 
 /**
- * Get all discount codes
+ * Get all discount codes (cached for 30s)
  */
 export async function getAllDiscountCodes() {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  return prisma.discountCode.findMany({
-    include: {
-      _count: {
-        select: {
-          orders: true,
-          registrations: true,
-        },
-      },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedDiscountCodes();
 }
 
 /**
@@ -946,6 +788,7 @@ export async function createDiscountCode(data: {
       },
     });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true };
   } catch (error) {
@@ -1000,6 +843,7 @@ export async function updateDiscountCode(
       },
     });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true };
   } catch (error) {
@@ -1029,6 +873,7 @@ export async function toggleDiscountCodeStatus(
       data: { active: !code.active },
     });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true, active: updated.active };
   } catch (error) {
@@ -1064,6 +909,7 @@ export async function deleteDiscountCode(
 
     await prisma.discountCode.delete({ where: { id } });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true };
   } catch (error) {
@@ -1135,6 +981,8 @@ export async function adminCancelOrder(
       ),
     ]);
 
+    revalidateTag('orders', 'max');
+    revalidateTag('registrations', 'max');
     revalidatePath('/admin/orders');
     revalidatePath('/admin/registrations');
     return { success: true, refundId };
@@ -1216,6 +1064,8 @@ export async function adminCancelRegistration(
       }
     }
 
+    revalidateTag('orders', 'max');
+    revalidateTag('registrations', 'max');
     revalidatePath('/admin/orders');
     revalidatePath('/admin/registrations');
     return { success: true, refundId };
@@ -1266,6 +1116,8 @@ export async function deleteProfile(
       prisma.profile.delete({ where: { id: profileId } }),
     ]);
 
+    revalidateTag('profiles', 'max');
+    revalidateTag('applications', 'max');
     revalidatePath('/admin/profiles');
     return { success: true };
   } catch (error) {
@@ -1279,17 +1131,13 @@ export async function deleteProfile(
 // ============================================
 
 /**
- * Get all free ticket emails
+ * Get all free ticket emails (cached for 30s)
  */
 export async function getAllFreeTicketEmails(activeOnly = false) {
   const admin = await requireAdmin();
   if (!admin) throw new Error('Unauthorized');
 
-  const where = activeOnly ? { active: true } : {};
-  return prisma.freeTicketEmail.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-  });
+  return getCachedFreeTicketEmails(activeOnly);
 }
 
 /**
@@ -1311,6 +1159,7 @@ export async function addFreeTicketEmail(
       },
     });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true };
   } catch (error) {
@@ -1348,6 +1197,7 @@ export async function addBulkFreeTicketEmails(
     const successful = results.filter((r) => r.status === 'fulfilled').length;
     const failed = results.filter((r) => r.status === 'rejected').length;
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true, added: successful, failed };
   } catch (error) {
@@ -1374,6 +1224,7 @@ export async function toggleFreeTicketEmailStatus(
       data: { active: !email.active },
     });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true, active: updated.active };
   } catch (error) {
@@ -1394,6 +1245,7 @@ export async function deleteFreeTicketEmail(
 
     await prisma.freeTicketEmail.delete({ where: { id } });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true };
   } catch (error) {
@@ -1418,6 +1270,7 @@ export async function updateFreeTicketEmail(
       data: { reason },
     });
 
+    revalidateTag('discounts', 'max');
     revalidatePath('/admin/discounts');
     return { success: true };
   } catch (error) {
