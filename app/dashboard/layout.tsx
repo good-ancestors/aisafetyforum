@@ -9,8 +9,15 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const layoutStart = performance.now();
+
   // Get or create profile (auto-creates for new signups)
   const profile = await getOrCreateCurrentProfile();
+
+  const profileTime = performance.now() - layoutStart;
+  if (profileTime > 100) {
+    console.log(`[PERF] DashboardLayout profile fetch: ${profileTime.toFixed(0)}ms`);
+  }
 
   if (!profile) {
     redirect('/auth/email-otp');

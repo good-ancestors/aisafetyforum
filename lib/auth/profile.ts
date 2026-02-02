@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, type AuthUser } from './server';
@@ -25,41 +26,67 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
 });
 
 /**
- * Get or link a profile for a given auth user.
- * Handles the neonAuthUserId linking on first authentication.
- *
- * Email changes should be done through the app (user profile update or admin),
- * not synced from Neon Auth.
- *
- * Optimized to run both lookups in parallel, then link if needed.
+ * Cached profile lookup by user ID and email.
+ * Uses unstable_cache for cross-request caching (60s TTL).
+ * This dramatically reduces DB queries during navigation/prefetching.
  */
+const getCachedProfileLookup = unstable_cache(
+  async (userId: string, email: string): Promise<Profile | null> => {
+    const start = performance.now();
+
+    // Run both lookups in parallel
+    const [profileById, profileByEmail] = await Promise.all([
+      prisma.profile.findUnique({ where: { neonAuthUserId: userId } }),
+      prisma.profile.findUnique({ where: { email } }),
+    ]);
+
+    const lookupTime = performance.now() - start;
+    if (lookupTime > 50) {
+      console.log(`[PERF] getCachedProfileLookup: ${lookupTime.toFixed(0)}ms`);
+    }
+
+    // Found by neonAuthUserId (most reliable)
+    if (profileById) {
+      return profileById;
+    }
+
+    // Found by email - need to link (can't do in cached function, return for linking)
+    if (profileByEmail) {
+      return profileByEmail;
+    }
+
+    return null;
+  },
+  ['profile-lookup'],
+  { revalidate: 60, tags: ['profiles'] }
+);
+
 async function getOrLinkProfile(user: AuthUser): Promise<Profile | null> {
   const normalizedEmail = user.email.toLowerCase();
 
-  // Run both lookups in parallel
-  const [profileById, profileByEmail] = await Promise.all([
-    prisma.profile.findUnique({ where: { neonAuthUserId: user.id } }),
-    prisma.profile.findUnique({ where: { email: normalizedEmail } }),
-  ]);
+  // Get cached profile lookup result
+  const profile = await getCachedProfileLookup(user.id, normalizedEmail);
 
-  // Found by neonAuthUserId (most reliable)
-  if (profileById) {
-    return profileById;
+  if (!profile) {
+    return null;
   }
 
-  // Found by email - link to neonAuthUserId for future lookups
-  // This handles the case where:
-  // - Someone bought a ticket for this email before they signed up
-  // - Or the profile was created before we added neonAuthUserId
-  if (profileByEmail) {
-    return prisma.profile.update({
-      where: { id: profileByEmail.id },
+  // If profile exists but isn't linked to this auth user, link it now
+  // This write operation can't be cached, but only happens once per user
+  if (!profile.neonAuthUserId) {
+    const linkStart = performance.now();
+    const result = await prisma.profile.update({
+      where: { id: profile.id },
       data: { neonAuthUserId: user.id },
     });
+    const linkTime = performance.now() - linkStart;
+    if (linkTime > 50) {
+      console.log(`[PERF] getOrLinkProfile link: ${linkTime.toFixed(0)}ms`);
+    }
+    return result;
   }
 
-  // No profile exists at all
-  return null;
+  return profile;
 }
 
 /**

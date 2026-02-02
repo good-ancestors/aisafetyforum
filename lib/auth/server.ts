@@ -28,8 +28,18 @@ export const getSession = cache(async () => {
     return { session: null, user: null };
   }
   try {
+    const start = performance.now();
     const { neonAuth } = await import('@neondatabase/auth/next/server');
-    return await neonAuth();
+    const importTime = performance.now() - start;
+
+    const authStart = performance.now();
+    const result = await neonAuth();
+    const authTime = performance.now() - authStart;
+
+    if (importTime > 50 || authTime > 50) {
+      console.log(`[PERF] getSession: import=${importTime.toFixed(0)}ms, auth=${authTime.toFixed(0)}ms`);
+    }
+    return result;
   } catch {
     return { session: null, user: null };
   }
