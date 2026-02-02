@@ -64,7 +64,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
               "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://youtube.com",
-              "connect-src 'self' https://api.stripe.com https://*.neon.tech https://*.brevo.com",
+              "connect-src 'self' https://api.stripe.com https://*.neon.tech https://*.brevo.com https://*.uploadthing.com https://*.ingest.uploadthing.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
