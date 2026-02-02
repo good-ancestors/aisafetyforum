@@ -11,13 +11,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const layoutStart = performance.now();
-
   // Get profile in one call (includes admin check)
   const profile = await getCurrentProfile();
-
-  const profileTime = performance.now() - layoutStart;
-  console.log(`[PERF] AdminLayout profile: ${profileTime.toFixed(0)}ms`);
 
   if (!profile) {
     redirect('/auth/email-otp');

@@ -45,11 +45,12 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
     <nav className="bg-white border-b border-border">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center gap-1 overflow-x-auto">
-          {/* User Navigation */}
+          {/* User Navigation - prefetch disabled to reduce server load */}
           {userItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                 isActive(item.href)
                   ? 'text-navy border-navy'
@@ -70,12 +71,13 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
             </>
           )}
 
-          {/* Admin Navigation */}
+          {/* Admin Navigation - prefetch disabled to reduce server load */}
           {isAdmin &&
             adminItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={false}
                 className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   isActive(item.href)
                     ? 'text-navy border-navy'

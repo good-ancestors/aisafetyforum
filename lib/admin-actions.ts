@@ -201,18 +201,10 @@ export async function getAllOrders(filters?: {
   status?: 'pending' | 'paid' | 'cancelled' | 'failed';
   paymentMethod?: 'card' | 'invoice';
 }) {
-  const start = performance.now();
   const admin = await requireAdmin();
-  const authTime = performance.now() - start;
-
   if (!admin) throw new Error('Unauthorized');
 
-  const dataStart = performance.now();
-  const result = await getCachedAllOrders(filters);
-  const dataTime = performance.now() - dataStart;
-
-  console.log(`[PERF] getAllOrders: auth=${authTime.toFixed(0)}ms, data=${dataTime.toFixed(0)}ms`);
-  return result;
+  return getCachedAllOrders(filters);
 }
 
 /**
