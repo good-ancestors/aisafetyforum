@@ -223,28 +223,6 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
           />
         </div>
 
-        {/* Gender */}
-        <div>
-          <label htmlFor="gender" className="block text-sm font-bold text-navy mb-2">
-            Gender
-          </label>
-          <p className="text-sm text-muted mb-2">
-            Optional — helps us understand our community and work toward gender balance
-          </p>
-          <select
-            id="gender"
-            name="gender"
-            defaultValue={initialProfile?.gender || ''}
-            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
-          >
-            <option value="">Prefer not to say</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="non-binary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
         {/* Title/Role */}
         <div>
           <label htmlFor="title" className="block text-sm font-bold text-navy mb-2">
@@ -424,6 +402,33 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
             />
           </div>
         )}
+
+        {/* Demographics Section */}
+        <div className="border-b-2 border-navy pb-2 pt-2">
+          <h3 className="font-bold text-lg text-navy">Demographics</h3>
+        </div>
+
+        {/* Gender */}
+        <div>
+          <label htmlFor="gender" className="block text-sm font-bold text-navy mb-2">
+            Gender
+          </label>
+          <p className="text-sm text-muted mb-2">
+            Optional — helps us understand our community
+          </p>
+          <select
+            id="gender"
+            name="gender"
+            defaultValue={initialProfile?.gender || ''}
+            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
+          >
+            <option value="">Prefer not to say</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="non-binary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
 
         {/* Submit Button */}
         <div className="pt-4">

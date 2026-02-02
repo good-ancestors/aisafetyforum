@@ -141,28 +141,6 @@ export default function ProfileForm({ email, initialData }: ProfileFormProps) {
           />
         </div>
 
-        {/* Gender */}
-        <div>
-          <label htmlFor="gender" className="block text-sm font-bold text-navy mb-2">
-            Gender
-          </label>
-          <p className="text-xs text-muted mb-2">
-            Optional — helps us understand our community and work toward gender balance
-          </p>
-          <select
-            id="gender"
-            name="gender"
-            defaultValue={initialData?.gender || ''}
-            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
-          >
-            <option value="">Prefer not to say</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="non-binary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-bold text-navy mb-2">
@@ -268,6 +246,31 @@ export default function ProfileForm({ email, initialData }: ProfileFormProps) {
                 className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Demographics Section */}
+        <div className="border-t border-border pt-6">
+          <h3 className="font-bold text-navy mb-4">Demographics</h3>
+          <div>
+            <label htmlFor="gender" className="block text-sm font-bold text-navy mb-2">
+              Gender
+            </label>
+            <p className="text-xs text-muted mb-2">
+              Optional — helps us understand our community
+            </p>
+            <select
+              id="gender"
+              name="gender"
+              defaultValue={initialData?.gender || ''}
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
+            >
+              <option value="">Prefer not to say</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="non-binary">Non-binary</option>
+              <option value="other">Other</option>
+            </select>
           </div>
         </div>
 
