@@ -88,9 +88,9 @@ Borders:
 
 ### Auth Architecture (Next.js 16)
 ```
-proxy.ts (neonAuthMiddleware)     ← Early redirect for unauthenticated users
+proxy.ts (cookie check only)      ← Fast redirect if no cookie (<1ms)
     ↓
-Layout (getSession via neonAuth)  ← Full session validation (DB query, required for security)
+Layout (getSession via neonAuth)  ← Session validation (cached 30s with unstable_cache)
     ↓
 Profile lookup (unstable_cache)   ← Cached 60s, safe to cache (doesn't affect auth)
     ↓
@@ -98,9 +98,10 @@ Data queries (unstable_cache)     ← Cached 30s with tag-based revalidation
 ```
 
 ### Important Auth Rules
-* **DO NOT** cache session validation - security risk (stale sessions)
 * **DO NOT** use `middleware.ts` - deprecated, use `proxy.ts` instead
-* **DO NOT** put heavy logic in `proxy.ts` - keep it lightweight (redirects only)
+* **DO NOT** use `neonAuthMiddleware` in proxy - it does full DB validation (slow)
+* **DO NOT** put heavy logic in `proxy.ts` - just check cookie presence
+* **DO** cache session validation with short TTL (30s) - acceptable security tradeoff
 * **DO** cache profile lookups (safe, doesn't grant access)
 * **DO** use `unstable_cache` for data queries with appropriate tags
 * **DO** use `prefetch={false}` on dashboard navigation links to prevent request storms
