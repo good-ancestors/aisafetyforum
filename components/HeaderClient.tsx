@@ -95,19 +95,13 @@ export default function HeaderClient({
   }, [userEmail, hasServerData]);
 
   async function handleSignOut() {
-    try {
-      await authClient.signOut({
-        fetchOptions: { credentials: 'include' },
-      });
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-    // Clear local state
+    await authClient.signOut({
+      fetchOptions: { credentials: 'include' },
+    });
     setIsAdmin(false);
     setProfile(null);
-    // Full page reload to ensure all server state is cleared
-    // Using window.location instead of router to avoid stale cache issues
-    window.location.href = '/';
+    router.push('/');
+    router.refresh();
   }
 
   return (
