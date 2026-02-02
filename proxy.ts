@@ -1,6 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 /**
+ * Better Auth session cookie name.
+ * Source: https://www.better-auth.com/docs/integrations/next
+ * Default is 'better-auth.session_token' (prefix 'better-auth', name 'session_token')
+ */
+const SESSION_COOKIE_NAME = 'better-auth.session_token';
+
+/**
  * Lightweight proxy for protected routes.
  *
  * IMPORTANT: This only checks for cookie PRESENCE, not validity.
@@ -24,9 +31,8 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Fast path: just check if session cookie exists
-  // Full validation happens in layouts - this prevents rendering for obviously unauthenticated users
-  const sessionToken = request.cookies.get('better_auth.session_token')?.value;
+  // Fast path: check if session cookie exists (name from Better Auth docs)
+  const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
   if (!sessionToken) {
     // No session cookie - redirect to login
