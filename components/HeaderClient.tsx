@@ -16,11 +16,17 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
 ];
 
+interface UserProfile {
+  name: string | null;
+  avatarUrl: string | null;
+}
+
 export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const router = useRouter();
   const { data: session } = authClient.useSession();
 
@@ -33,7 +39,10 @@ export default function HeaderClient() {
     if (!userEmail) {
       // Defer to avoid synchronous setState in effect
       const timeoutId = setTimeout(() => {
-        if (!cancelled) setIsAdmin(false);
+        if (!cancelled) {
+          setIsAdmin(false);
+          setProfile(null);
+        }
       }, 0);
       return () => {
         cancelled = true;
@@ -44,10 +53,16 @@ export default function HeaderClient() {
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
-        if (!cancelled) setIsAdmin(data.isAdmin ?? false);
+        if (!cancelled) {
+          setIsAdmin(data.isAdmin ?? false);
+          setProfile(data.profile ?? null);
+        }
       })
       .catch(() => {
-        if (!cancelled) setIsAdmin(false);
+        if (!cancelled) {
+          setIsAdmin(false);
+          setProfile(null);
+        }
       });
 
     return () => {
@@ -103,6 +118,7 @@ export default function HeaderClient() {
             {user ? (
               <UserMenu
                 user={user}
+                profile={profile}
                 isAdmin={isAdmin}
                 isOpen={isUserMenuOpen}
                 onToggle={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -145,6 +161,7 @@ export default function HeaderClient() {
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
           user={user}
+          profile={profile}
           isAdmin={isAdmin}
           onSignOut={handleSignOut}
           onOpenAuthModal={() => setIsAuthModalOpen(true)}

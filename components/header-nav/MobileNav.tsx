@@ -1,15 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import ProfileAvatar from '@/components/ProfileAvatar';
 
 interface User {
   email: string;
+}
+
+interface UserProfile {
+  name: string | null;
+  avatarUrl: string | null;
 }
 
 interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
   user: User | null;
+  profile: UserProfile | null;
   isAdmin: boolean;
   onSignOut: () => void;
   onOpenAuthModal: () => void;
@@ -27,6 +34,7 @@ export default function MobileNav({
   isOpen,
   onClose,
   user,
+  profile,
   isAdmin,
   onSignOut,
   onOpenAuthModal,
@@ -52,9 +60,17 @@ export default function MobileNav({
         {user ? (
           <>
             <li className="border-t border-border mt-2 pt-2">
-              <div className="px-4 py-2">
-                <p className="text-xs text-muted">Signed in as</p>
-                <p className="text-sm font-medium text-dark truncate">{user.email}</p>
+              <div className="px-4 py-2 flex items-center gap-3">
+                <ProfileAvatar
+                  email={user.email}
+                  name={profile?.name}
+                  avatarUrl={profile?.avatarUrl}
+                  size="sm"
+                />
+                <div className="min-w-0">
+                  <p className="text-xs text-muted">Signed in as</p>
+                  <p className="text-sm font-medium text-dark truncate">{user.email}</p>
+                </div>
               </div>
             </li>
             <li>

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import AvatarUpload from '@/components/AvatarUpload';
+import DietaryCombobox from '@/components/DietaryCombobox';
+import SocialLinkInput from '@/components/SocialLinkInput';
 import { updateProfile, updateAvatar } from '@/lib/profile-actions';
 
 interface ProfileFormProps {
@@ -218,13 +220,10 @@ export default function ProfileForm({ email, initialData }: ProfileFormProps) {
           <p className="text-xs text-muted mb-2">
             Optional — let us know about any dietary needs for catering
           </p>
-          <input
-            type="text"
+          <DietaryCombobox
             id="dietaryRequirements"
             name="dietaryRequirements"
             defaultValue={initialData?.dietaryRequirements}
-            placeholder="e.g. Vegetarian, Vegan, Gluten-free, Halal, Kosher, Allergies..."
-            className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent"
           />
         </div>
 
@@ -235,45 +234,27 @@ export default function ProfileForm({ email, initialData }: ProfileFormProps) {
             Optional - add your professional profiles
           </p>
           <div className="space-y-4">
-            <div>
-              <label htmlFor="linkedin" className="block text-sm font-medium text-body mb-1">
-                LinkedIn
-              </label>
-              <input
-                type="url"
-                id="linkedin"
-                name="linkedin"
-                defaultValue={initialData?.linkedin}
-                placeholder="https://linkedin.com/in/yourname"
-                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="twitter" className="block text-sm font-medium text-body mb-1">
-                X / Twitter
-              </label>
-              <input
-                type="url"
-                id="twitter"
-                name="twitter"
-                defaultValue={initialData?.twitter}
-                placeholder="https://x.com/yourhandle"
-                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="bluesky" className="block text-sm font-medium text-body mb-1">
-                Bluesky
-              </label>
-              <input
-                type="url"
-                id="bluesky"
-                name="bluesky"
-                defaultValue={initialData?.bluesky}
-                placeholder="https://bsky.app/profile/yourname"
-                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent text-sm"
-              />
-            </div>
+            <SocialLinkInput
+              type="linkedin"
+              id="linkedin"
+              name="linkedin"
+              label="LinkedIn"
+              defaultValue={initialData?.linkedin}
+            />
+            <SocialLinkInput
+              type="twitter"
+              id="twitter"
+              name="twitter"
+              label="X / Twitter"
+              defaultValue={initialData?.twitter}
+            />
+            <SocialLinkInput
+              type="bluesky"
+              id="bluesky"
+              name="bluesky"
+              label="Bluesky"
+              defaultValue={initialData?.bluesky}
+            />
             <div>
               <label htmlFor="website" className="block text-sm font-medium text-body mb-1">
                 Website

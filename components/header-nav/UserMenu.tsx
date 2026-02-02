@@ -2,13 +2,20 @@
 
 import Link from 'next/link';
 import { useRef, useEffect } from 'react';
+import ProfileAvatar from '@/components/ProfileAvatar';
 
 interface User {
   email: string;
 }
 
+interface UserProfile {
+  name: string | null;
+  avatarUrl: string | null;
+}
+
 interface UserMenuProps {
   user: User;
+  profile: UserProfile | null;
   isAdmin: boolean;
   isOpen: boolean;
   onToggle: () => void;
@@ -18,6 +25,7 @@ interface UserMenuProps {
 
 export default function UserMenu({
   user,
+  profile,
   isAdmin,
   isOpen,
   onToggle,
@@ -43,9 +51,12 @@ export default function UserMenu({
         onClick={onToggle}
         className="flex items-center gap-2 px-4 py-2 text-[0.95rem] font-medium text-dark hover:text-brand-blue transition-colors rounded-md hover:bg-light"
       >
-        <span className="w-8 h-8 bg-navy text-white rounded-full flex items-center justify-center text-sm font-semibold">
-          {user.email.charAt(0).toUpperCase()}
-        </span>
+        <ProfileAvatar
+          email={user.email}
+          name={profile?.name}
+          avatarUrl={profile?.avatarUrl}
+          size="sm"
+        />
         <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
