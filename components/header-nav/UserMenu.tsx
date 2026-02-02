@@ -71,7 +71,6 @@ export default function UserMenu({
           </div>
           <Link
             href="/dashboard"
-            prefetch={false}
             className="block px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
             onClick={onClose}
           >
@@ -79,7 +78,6 @@ export default function UserMenu({
           </Link>
           <Link
             href="/dashboard/profile"
-            prefetch={false}
             className="block px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
             onClick={onClose}
           >
@@ -87,7 +85,6 @@ export default function UserMenu({
           </Link>
           <Link
             href="/dashboard/tickets"
-            prefetch={false}
             className="block px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
             onClick={onClose}
           >
@@ -98,7 +95,6 @@ export default function UserMenu({
               <div className="border-t border-border my-2" />
               <Link
                 href="/admin/invoices"
-                prefetch={false}
                 className="flex items-center gap-2 px-4 py-2 text-sm text-dark hover:bg-light transition-colors"
                 onClick={onClose}
               >

@@ -50,7 +50,6 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
             <Link
               key={item.href}
               href={item.href}
-              prefetch={false}
               className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                 isActive(item.href)
                   ? 'text-navy border-navy'
@@ -77,7 +76,6 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                prefetch={false}
                 className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   isActive(item.href)
                     ? 'text-navy border-navy'

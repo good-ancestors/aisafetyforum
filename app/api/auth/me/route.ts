@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { isAdmin } from '@/lib/auth/admin';
 import { getCurrentUser } from '@/lib/auth/server';
 import { prisma } from '@/lib/prisma';
 
@@ -9,14 +10,16 @@ export async function GET() {
     return NextResponse.json({ isAdmin: false });
   }
 
-  // Single query to get all needed profile data
+  const admin = await isAdmin(user.email);
+
+  // Fetch profile for avatar and name
   const profile = await prisma.profile.findUnique({
     where: { email: user.email.toLowerCase() },
-    select: { name: true, avatarUrl: true, isAdmin: true },
+    select: { name: true, avatarUrl: true },
   });
 
   return NextResponse.json({
-    isAdmin: profile?.isAdmin ?? false,
+    isAdmin: admin,
     profile: profile ? { name: profile.name, avatarUrl: profile.avatarUrl } : null,
   });
 }
