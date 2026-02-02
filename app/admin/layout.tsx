@@ -24,7 +24,12 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-      <Header />
+      {/* Pass profile data to Header to avoid redundant /api/auth/me fetch */}
+      <Header
+        initialUserEmail={profile.email}
+        initialProfile={{ name: profile.name, avatarUrl: profile.avatarUrl }}
+        initialIsAdmin={true}
+      />
       <DashboardNav isAdmin={true} />
       <main className="flex-1">
         {children}
