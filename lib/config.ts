@@ -1,8 +1,21 @@
 // Site configuration
+// Priority: NEXT_PUBLIC_SITE_URL > VERCEL_URL > production URL
+function getSiteUrl(): string {
+  // Explicitly set URL takes precedence
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // Vercel preview/staging deployments
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Default to production
+  return 'https://aisafetyforum.au';
+}
+
 export const siteConfig = {
-  // The canonical URL for the site (used as fallback when headers unavailable)
-  // Set via NEXT_PUBLIC_SITE_URL env var, or defaults to production URL
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://aisafetyforum.au',
+  // The canonical URL for the site (used for emails, og tags, etc.)
+  url: getSiteUrl(),
 } as const;
 
 // Registration mode: 'open' | 'gated' | 'closed'
