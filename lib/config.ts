@@ -27,8 +27,8 @@ export type RegistrationMode = 'open' | 'gated' | 'closed';
 // Event configuration
 export const eventConfig = {
   year: '2026',
-  dates: '22-23 June',
-  datesLong: '22-23 June 2026',
+  dates: '7-8 July',
+  datesLong: '7-8 July 2026',
   venue: 'Sydney',
   venueLong: 'The University of Sydney, Sydney, Australia',
 
@@ -37,13 +37,13 @@ export const eventConfig = {
 
   // Specific dates (used in funding form and calendar invites)
   day1: {
-    date: '22 June 2026',
-    isoDate: '2026-06-22',
+    date: '7 July 2026',
+    isoDate: '2026-07-07',
     label: 'Day 1',
   },
   day2: {
-    date: '23 June 2026',
-    isoDate: '2026-06-23',
+    date: '8 July 2026',
+    isoDate: '2026-07-08',
     label: 'Day 2',
   },
 

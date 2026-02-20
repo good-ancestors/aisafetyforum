@@ -29,7 +29,7 @@ export default function Program() {
             style={{ animationFillMode: 'backwards' }}
           >
             <div className="text-cyan font-bold text-sm mb-3 uppercase tracking-wider">
-              Day 1 • Monday 22 June
+              Day 1 • Tuesday 7 July
             </div>
             <h3 className="font-serif text-2xl font-bold mb-6">
               Single-Track Program
@@ -62,7 +62,7 @@ export default function Program() {
             style={{ animationFillMode: 'backwards' }}
           >
             <div className="text-teal font-bold text-sm mb-3 uppercase tracking-wider">
-              Day 2 • Tuesday 23 June
+              Day 2 • Wednesday 8 July
             </div>
             <h3 className="font-serif text-2xl font-bold mb-6 text-navy">
               Parallel Workshops

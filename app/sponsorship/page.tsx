@@ -243,7 +243,7 @@ export default function SponsorPage() {
                   </div>
                   <div>
                     <div className="font-semibold text-brand-blue mb-1">Dates & Venue</div>
-                    <p className="text-sm">22-23 June 2026 at The University of Sydney, Sydney, Australia</p>
+                    <p className="text-sm">7-8 July 2026 at The University of Sydney, Sydney, Australia</p>
                   </div>
                 </div>
               </div>
