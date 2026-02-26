@@ -21,6 +21,7 @@ interface DietaryComboboxProps {
   name: string;
   id: string;
   defaultValue?: string;
+  onChange?: (value: string) => void;
 }
 
 /**
@@ -45,6 +46,7 @@ export default function DietaryCombobox({
   name,
   id,
   defaultValue,
+  onChange,
 }: DietaryComboboxProps) {
   const [selectedItems, setSelectedItems] = useState<string[]>(() =>
     parseValue(defaultValue || '')
@@ -90,16 +92,20 @@ export default function DietaryCombobox({
   const addItem = useCallback((item: string) => {
     const trimmed = item.trim();
     if (trimmed && !selectedItems.some((s) => s.toLowerCase() === trimmed.toLowerCase())) {
-      setSelectedItems((prev) => [...prev, trimmed]);
+      const newItems = [...selectedItems, trimmed];
+      setSelectedItems(newItems);
+      onChange?.(serializeValue(newItems));
     }
     setInputValue('');
     setHighlightedIndex(-1);
     inputRef.current?.focus();
-  }, [selectedItems]);
+  }, [selectedItems, onChange]);
 
   const removeItem = useCallback((item: string) => {
-    setSelectedItems((prev) => prev.filter((s) => s !== item));
-  }, []);
+    const newItems = selectedItems.filter((s) => s !== item);
+    setSelectedItems(newItems);
+    onChange?.(serializeValue(newItems));
+  }, [selectedItems, onChange]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

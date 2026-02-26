@@ -1,5 +1,6 @@
 'use client';
 
+import DietaryCombobox from '@/components/DietaryCombobox';
 import { ticketTiers, isEarlyBirdActive, type TicketTierId } from '@/lib/stripe-config';
 
 export type AttendeeFormData = {
@@ -9,6 +10,7 @@ export type AttendeeFormData = {
   organisation: string;
   ticketType: TicketTierId | '';
   freeTicketReason?: string | null;
+  dietaryRequirements?: string;
 };
 
 interface AttendeeCardProps {
@@ -136,6 +138,20 @@ export default function AttendeeCard({
             className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent disabled:bg-gray-100"
           />
         </div>
+      </div>
+
+      {/* Dietary Requirements */}
+      <div className="mb-4">
+        <label htmlFor={`dietary-${index}`} className="block text-sm font-medium text-navy mb-1">
+          Dietary Requirements
+        </label>
+        <DietaryCombobox
+          name={`dietaryRequirements-${index}`}
+          id={`dietary-${index}`}
+          defaultValue={attendee.dietaryRequirements || ''}
+          onChange={(value) => onUpdateAttendee(index, 'dietaryRequirements', value)}
+        />
+        <p className="mt-1 text-xs text-muted">Select any that apply, or type a custom requirement</p>
       </div>
 
       {/* Ticket Type - Radio Card Style */}

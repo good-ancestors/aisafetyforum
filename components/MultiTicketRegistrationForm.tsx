@@ -72,6 +72,7 @@ export default function MultiTicketRegistrationForm({
         role: a.role || undefined,
         organisation: a.organisation || undefined,
         ticketType: a.ticketType as TicketTierId,
+        dietaryRequirements: a.dietaryRequirements || undefined,
       })),
       couponCode: preValidatedCode || (form.couponApplied ? form.couponCode : undefined),
     };

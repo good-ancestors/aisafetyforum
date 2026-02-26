@@ -25,6 +25,7 @@ export type AttendeeData = {
   role?: string;
   organisation?: string;
   ticketType: TicketTierId;
+  dietaryRequirements?: string;
 };
 
 export type MultiTicketFormData = {
@@ -46,7 +47,7 @@ export type InvoiceFormData = MultiTicketFormData & {
  * Get or create a Profile by email.
  * If the profile exists, optionally update name/title/organisation if provided.
  */
-async function getOrCreateProfile(email: string, name?: string, title?: string, organisation?: string) {
+async function getOrCreateProfile(email: string, name?: string, title?: string, organisation?: string, dietaryRequirements?: string) {
   const normalizedEmail = email.toLowerCase().trim();
 
   let profile = await prisma.profile.findUnique({
@@ -55,10 +56,11 @@ async function getOrCreateProfile(email: string, name?: string, title?: string, 
 
   if (profile) {
     // Update profile with new info if provided and different
-    const updates: { name?: string; title?: string; organisation?: string } = {};
+    const updates: { name?: string; title?: string; organisation?: string; dietaryRequirements?: string } = {};
     if (name && name !== profile.name) updates.name = name;
     if (title && title !== profile.title) updates.title = title;
     if (organisation && organisation !== profile.organisation) updates.organisation = organisation;
+    if (dietaryRequirements !== undefined && dietaryRequirements !== profile.dietaryRequirements) updates.dietaryRequirements = dietaryRequirements;
 
     if (Object.keys(updates).length > 0) {
       profile = await prisma.profile.update({
@@ -74,6 +76,7 @@ async function getOrCreateProfile(email: string, name?: string, title?: string, 
         name: name || null,
         title: title || null,
         organisation: organisation || null,
+        dietaryRequirements: dietaryRequirements || null,
       },
     });
   }
@@ -435,7 +438,7 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
     for (let i = 0; i < data.attendees.length; i++) {
       const attendee = data.attendees[i];
       const isFreeTicket = attendeeFreeTicketStatus[i];
-      const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation);
+      const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation, attendee.dietaryRequirements);
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
       const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
 
@@ -674,7 +677,7 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
     for (let i = 0; i < data.attendees.length; i++) {
       const attendee = data.attendees[i];
       const isFreeTicket = attendeeFreeTicketStatus[i];
-      const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation);
+      const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation, attendee.dietaryRequirements);
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
       const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
 

@@ -124,7 +124,7 @@ export function useMultiTicketForm({
       ]);
     } else {
       setAttendees((prev) => [
-        { email: '', name: '', role: '', organisation: '', ticketType: prev[0].ticketType, freeTicketReason: null },
+        { email: '', name: '', role: '', organisation: '', ticketType: prev[0].ticketType, freeTicketReason: null, dietaryRequirements: '' },
         ...prev.slice(1),
       ]);
     }
@@ -145,7 +145,7 @@ export function useMultiTicketForm({
   function addAttendee() {
     setAttendees((prev) => [
       ...prev,
-      { email: '', name: '', role: '', organisation: purchaserOrg, ticketType: '', freeTicketReason: null },
+      { email: '', name: '', role: '', organisation: purchaserOrg, ticketType: '', freeTicketReason: null, dietaryRequirements: '' },
     ]);
   }
 
@@ -268,6 +268,7 @@ export function useMultiTicketForm({
             role: purchaserRole,
             organisation: purchaserOrg,
             ticketType: attendees[0].ticketType,
+            dietaryRequirements: attendees[0].dietaryRequirements,
           },
           ...attendees.slice(1),
         ]
