@@ -14,8 +14,8 @@ export function isEarlyBirdActive(): boolean {
 export const ticketTiers = [
   {
     id: 'standard',
-    name: 'Standard (Industry/Professional)',
-    description: 'For industry professionals and corporate attendees',
+    name: 'Standard (Industry/Professional/Government)',
+    description: 'For industry professionals, corporate attendees, and government employees',
     price: 59500, // Price in cents (AUD)
     priceDisplay: '$595',
     earlyBirdPrice: 35700, // 40% off = $357
@@ -27,8 +27,8 @@ export const ticketTiers = [
   },
   {
     id: 'academic',
-    name: 'Academic / Non-Profit / Government',
-    description: 'For academics, non-profit organizations, and government employees',
+    name: 'Academic / Non-Profit',
+    description: 'For academics and non-profit organizations',
     price: 24500, // Price in cents (AUD)
     priceDisplay: '$245',
     earlyBirdPrice: 14700, // 40% off = $147
