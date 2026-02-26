@@ -23,30 +23,35 @@ const sessionFormats = [
     value: 'Keynote',
     label: 'Keynote',
     description: 'Up to 45 minute presentation to the full audience',
+    note: 'Likely day one (Tuesday 7 July)',
   },
   {
     id: 'lightning',
     value: 'Lightning talk',
     label: 'Lightning Talk',
     description: '5-10 minute focused presentation on a specific topic',
+    note: 'Likely day two (Wednesday 8 July)',
   },
   {
     id: 'workshop',
     value: 'Workshop',
     label: 'Workshop',
     description: 'Interactive session with hands-on activities (45-90 mins)',
+    note: 'Likely day two (Wednesday 8 July)',
   },
   {
     id: 'panel',
     value: 'Panel',
     label: 'Panel Discussion',
     description: 'Moderated discussion with multiple speakers on a theme',
+    note: 'Likely day two (Wednesday 8 July)',
   },
   {
     id: 'flexible',
     value: 'Flexible',
     label: 'Flexible',
     description: "Not sure yet — we'll work with you to find the right format",
+    note: 'Likely day two (Wednesday 8 July)',
   },
 ];
 
@@ -163,6 +168,7 @@ export default function SpeakerProposalForm({ initialProfile }: SpeakerProposalF
                 <div>
                   <div className="font-bold text-navy text-sm">{format.label}</div>
                   <div className="text-xs text-muted">{format.description}</div>
+                  <div className="text-xs text-teal font-medium mt-0.5">{format.note}</div>
                 </div>
               </label>
             ))}
