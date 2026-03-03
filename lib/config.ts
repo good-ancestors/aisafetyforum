@@ -13,6 +13,11 @@ function getSiteUrl(): string {
   return 'https://aisafetyforum.au';
 }
 
+// True only on the canonical production domain (aisafetyforum.au).
+// Vercel preview/branch deploys and localhost are non-production.
+export const isProductionDomain =
+  getSiteUrl() === 'https://aisafetyforum.au';
+
 export const siteConfig = {
   // The canonical URL for the site (used for emails, og tags, etc.)
   url: getSiteUrl(),

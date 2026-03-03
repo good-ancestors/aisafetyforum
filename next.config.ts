@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
+// On Vercel, VERCEL_ENV is 'production' for the production deployment,
+// 'preview' for branch/PR deploys, and undefined locally.
+const isVercelProduction = process.env.VERCEL_ENV === 'production';
+
 const nextConfig: NextConfig = {
   async redirects() {
     return [
@@ -27,6 +31,20 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Prevent Vercel preview/branch deploys from being indexed
+      ...(!isVercelProduction
+        ? [
+            {
+              source: '/(.*)',
+              headers: [
+                {
+                  key: 'X-Robots-Tag',
+                  value: 'noindex, nofollow',
+                },
+              ],
+            },
+          ]
+        : []),
       {
         // Apply security headers to all routes
         source: '/(.*)',
