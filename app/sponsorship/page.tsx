@@ -74,13 +74,6 @@ export default function SponsorPage() {
       logo: '/logos/good-ancestors.svg',
     },
     {
-      name: 'CSIRO (Data61)',
-      lead: 'Liming Zhu',
-      title: 'Director',
-      website: 'https://www.csiro.au/en/about/people/business-units/data61',
-      logo: '/logos/csiro.png',
-    },
-    {
       name: 'University of Sydney (Centre for AI, Trust and Governance)',
       lead: 'Kimberlee Weatherall',
       title: 'Co-Director',
@@ -93,6 +86,13 @@ export default function SponsorPage() {
       title: 'Executive Director',
       website: 'https://techpolicy.au/',
       logo: '/logos/tpdi.png',
+    },
+    {
+      name: 'CSIRO (Data61)',
+      lead: 'Liming Zhu',
+      title: 'Director',
+      website: 'https://www.csiro.au/en/about/people/business-units/data61',
+      logo: '/logos/csiro.png',
     },
     {
       name: 'Timaeus',
@@ -192,7 +192,7 @@ export default function SponsorPage() {
             </div>
 
             <p className="text-center text-lg text-body mt-8 font-semibold">
-              The 2026 forum is an opportunity to take stock of these changes and prepare for what&apos;s to come.
+              The AI Safety Forum 2026 is an opportunity to take stock of these changes and prepare for what&apos;s to come.
             </p>
           </div>
         </section>
@@ -202,7 +202,7 @@ export default function SponsorPage() {
           <div className="max-w-[1200px] mx-auto">
             <div className="text-center mb-12">
               <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">
-                2026 FORUM
+                AI SAFETY FORUM 2026
               </div>
               <h2 className="font-serif text-[2rem] font-bold text-navy">
                 Building on Success

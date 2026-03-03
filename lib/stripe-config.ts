@@ -28,7 +28,7 @@ export const ticketTiers = [
   {
     id: 'academic',
     name: 'Academic / Non-Profit',
-    description: 'For academics and non-profit organizations',
+    description: 'For academics and non-profit organisations',
     price: 24500, // Price in cents (AUD)
     priceDisplay: '$245',
     earlyBirdPrice: 14700, // 40% off = $147

@@ -43,7 +43,7 @@ export default function SpeakersPage() {
         <section className="bg-white py-16 px-8">
           <div className="max-w-[800px] mx-auto text-center">
             <h2 className="font-serif text-[2rem] font-bold text-navy mb-4">
-              Apply to Speak at the 2026 Forum
+              Apply to Speak at the AI Safety Forum 2026
             </h2>
             <p className="text-lg text-muted mb-8 max-w-[600px] mx-auto">
               We&apos;re looking for speakers to present keynotes, workshops, lightning talks, and panel discussions on AI safety science and governance. Early-stage work and fresh perspectives are welcome.

@@ -16,7 +16,7 @@ export default function Program() {
             Two-Day Format
           </h2>
           <p className="text-muted max-w-[700px] mx-auto">
-            Detailed program to be announced. Here&apos;s the structure for the 2026 forum.
+            Detailed program to be announced. Here&apos;s the structure for the AI Safety Forum 2026.
           </p>
         </div>
 
