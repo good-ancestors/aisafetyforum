@@ -14,9 +14,11 @@ function getSiteUrl(): string {
 }
 
 // True only on the canonical production domain (aisafetyforum.au).
-// Vercel preview/branch deploys and localhost are non-production.
-export const isProductionDomain =
-  getSiteUrl() === 'https://aisafetyforum.au';
+// On Vercel: uses VERCEL_ENV (reliable, set automatically per deployment).
+// Off Vercel (local dev, other hosts): falls back to URL comparison.
+export const isProductionDomain = process.env.VERCEL_ENV
+  ? process.env.VERCEL_ENV === 'production'
+  : getSiteUrl() === 'https://aisafetyforum.au';
 
 export const siteConfig = {
   // The canonical URL for the site (used for emails, og tags, etc.)
