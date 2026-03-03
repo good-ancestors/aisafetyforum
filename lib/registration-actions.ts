@@ -7,7 +7,7 @@ import { checkFreeTicketEmail } from './free-ticket-actions';
 import { completeOrder } from './order-completion';
 import { prisma } from './prisma';
 import { requireStripe } from './stripe';
-import { ticketTiers, type TicketTierId, isEarlyBirdActive } from './stripe-config';
+import { ticketTiers, type TicketTierId } from './stripe-config';
 import type { InvoiceLineItem, InvoiceAttendee } from './invoice-pdf';
 import type Stripe from 'stripe';
 
@@ -90,9 +90,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       return { success: false, error: 'Invalid ticket type' };
     }
 
-    // Check if early bird pricing is active
-    const earlyBird = isEarlyBirdActive();
-    const currentPrice = earlyBird ? ticketTier.earlyBirdPrice : ticketTier.price;
+    const currentPrice = ticketTier.price;
 
     // Check if email is on free ticket list first
     const freeTicketCheck = await checkFreeTicketEmail(data.email);
@@ -146,7 +144,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
         email: data.email.toLowerCase().trim(),
         name: data.name,
         organisation: data.organisation || null,
-        ticketType: earlyBird ? `${ticketTier.name} (Early Bird)` : ticketTier.name,
+        ticketType: ticketTier.name,
         ticketPrice: currentPrice,
         originalAmount: currentPrice,
         discountAmount: discountAmount,
@@ -182,8 +180,7 @@ export async function createCheckoutSession(data: RegistrationFormData) {
       };
     }
 
-    // Get the correct Stripe price ID based on early bird status
-    const stripePriceId = earlyBird ? ticketTier.stripeEarlyBirdPriceId : ticketTier.stripePriceId;
+    const stripePriceId = ticketTier.stripePriceId;
     if (!stripePriceId) {
       return { success: false, error: 'Stripe price ID not configured for this ticket type' };
     }
@@ -343,8 +340,6 @@ export async function getOrdersByEmail(email: string) {
 // eslint-disable-next-line complexity -- Multi-attendee payment: free tickets, coupons, partial discounts, Stripe
 export async function createMultiTicketCheckout(data: MultiTicketFormData) {
   try {
-    const earlyBird = isEarlyBirdActive();
-
     // Check each attendee for free ticket eligibility and calculate totals
     let subtotal = 0;
     const lineItems: { price: string; quantity: number }[] = [];
@@ -364,11 +359,10 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
       if (freeTicketCheck.isFree) {
         // Don't add to subtotal or line items for free tickets
       } else {
-        const price = earlyBird ? tier.earlyBirdPrice : tier.price;
-        subtotal += price;
+        subtotal += tier.price;
 
         // Count tickets by type for Stripe line items (only paid tickets)
-        const priceId = earlyBird ? tier.stripeEarlyBirdPriceId : tier.stripePriceId;
+        const priceId = tier.stripePriceId;
         if (!priceId) {
           return { success: false, error: `Stripe price ID not configured for ${tier.name}` };
         }
@@ -437,13 +431,13 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
       const isFreeTicket = attendeeFreeTicketStatus[i];
       const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation);
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
-      const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
+      const ticketPrice = tier.price;
 
       const registration = await prisma.registration.create({
         data: {
           email: attendee.email.toLowerCase().trim(),
           name: attendee.name,
-          ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+          ticketType: tier.name,
           ticketPrice,
           originalAmount: ticketPrice,
           discountAmount: isFreeTicket ? ticketPrice : 0, // Full discount for free tickets
@@ -579,8 +573,6 @@ export async function getOrderBySessionId(sessionId: string) {
 // eslint-disable-next-line complexity -- Invoice generation with free tickets, coupons, PDF creation, email sending
 export async function createInvoiceOrder(data: InvoiceFormData) {
   try {
-    const earlyBird = isEarlyBirdActive();
-
     // Check each attendee for free ticket eligibility and calculate totals
     let subtotal = 0;
     const ticketCounts: Record<string, { tier: (typeof ticketTiers)[number]; count: number }> = {};
@@ -599,8 +591,7 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       if (freeTicketCheck.isFree) {
         // Don't add to subtotal for free tickets
       } else {
-        const price = earlyBird ? tier.earlyBirdPrice : tier.price;
-        subtotal += price;
+        subtotal += tier.price;
 
         // Count tickets by type (only paid tickets)
         if (!ticketCounts[tier.id]) {
@@ -676,13 +667,13 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       const isFreeTicket = attendeeFreeTicketStatus[i];
       const profile = await getOrCreateProfile(attendee.email, attendee.name, attendee.role, attendee.organisation);
       const tier = ticketTiers.find((t) => t.id === attendee.ticketType)!;
-      const ticketPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
+      const ticketPrice = tier.price;
 
       const registration = await prisma.registration.create({
         data: {
           email: attendee.email.toLowerCase().trim(),
           name: attendee.name,
-          ticketType: earlyBird ? `${tier.name} (Early Bird)` : tier.name,
+          ticketType: tier.name,
           ticketPrice,
           originalAmount: ticketPrice,
           discountAmount: isFreeTicket ? ticketPrice : 0, // Full discount for free tickets
@@ -723,12 +714,9 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
 
     const lineItems: InvoiceLineItem[] = [];
     for (const { tier, count } of Object.values(ticketCounts)) {
-      const unitPrice = earlyBird ? tier.earlyBirdPrice : tier.price;
-      const description = earlyBird
-        ? `${tier.name} Ticket (Early Bird) - AI Safety Forum 2026`
-        : `${tier.name} Ticket - AI Safety Forum 2026`;
+      const unitPrice = tier.price;
       lineItems.push({
-        description,
+        description: `${tier.name} Ticket - AI Safety Forum 2026`,
         quantity: count,
         unitPrice,
         amount: unitPrice * count,
@@ -743,9 +731,7 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
         email: a.email,
         ticketType: attendeeFreeTicketStatus[i]
           ? `${tier.name} (Complimentary)`
-          : earlyBird
-            ? `${tier.name} (Early Bird)`
-            : tier.name,
+          : tier.name,
       };
     });
 

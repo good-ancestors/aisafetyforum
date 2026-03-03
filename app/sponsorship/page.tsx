@@ -192,7 +192,7 @@ export default function SponsorPage() {
             </div>
 
             <p className="text-center text-lg text-body mt-8 font-semibold">
-              The AI Safety Forum 2026 is an opportunity to take stock of these changes and prepare for what&apos;s to come.
+              The 2026 forum is an opportunity to take stock of these changes and prepare for what&apos;s to come.
             </p>
           </div>
         </section>
@@ -202,7 +202,7 @@ export default function SponsorPage() {
           <div className="max-w-[1200px] mx-auto">
             <div className="text-center mb-12">
               <div className="text-xs font-semibold text-teal uppercase tracking-widest mb-2">
-                AI SAFETY FORUM 2026
+                2026 FORUM
               </div>
               <h2 className="font-serif text-[2rem] font-bold text-navy">
                 Building on Success

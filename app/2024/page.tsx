@@ -49,7 +49,7 @@ export default function Forum2024() {
                 href="/"
                 className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] bg-transparent text-white border-2 border-[rgba(255,255,255,0.4)] rounded-md hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.8)] transition-colors"
               >
-                AI Safety Forum 2026 →
+                2026 Forum →
               </Link>
             </div>
           </div>

@@ -208,7 +208,7 @@ export default function Speakers() {
       <div className="max-w-[1200px] mx-auto px-8">
         <div className="text-center mt-12">
           <p className="text-muted mb-6">
-            Interested in speaking at the AI Safety Forum 2026?
+            Interested in speaking at the 2026 forum?
           </p>
           <a
             href="/speak"

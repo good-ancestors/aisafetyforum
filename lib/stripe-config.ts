@@ -1,15 +1,14 @@
 // Stripe product configuration
 // Note: These prices include GST (10%)
 
-// Early bird deadline (ISO date format)
-export const earlyBirdDeadline = '2026-04-01';
+// Early bird coupon code — auto-applied at checkout before the deadline.
+// The actual discount % and expiry are managed via the DiscountCode table;
+// this constant is only used by the UI to show / pre-fill the code.
+export const earlyBirdCouponCode = 'EARLYBIRD';
 
-// Helper to check if early bird pricing is active
-export function isEarlyBirdActive(): boolean {
-  const now = new Date();
-  const deadline = new Date(earlyBirdDeadline);
-  return now < deadline;
-}
+// Deadline used only for the UI banner ("Register before …").
+// The coupon's validUntil in the database is the source of truth for enforcement.
+export const earlyBirdDeadline = '2026-04-01';
 
 export const ticketTiers = [
   {
@@ -18,10 +17,7 @@ export const ticketTiers = [
     description: 'For industry professionals, corporate attendees, and government employees',
     price: 59500, // Price in cents (AUD)
     priceDisplay: '$595',
-    earlyBirdPrice: 35700, // 40% off = $357
-    earlyBirdPriceDisplay: '$357',
     stripePriceId: process.env.STRIPE_PRICE_STANDARD || '',
-    stripeEarlyBirdPriceId: process.env.STRIPE_PRICE_STANDARD_EARLYBIRD || '',
     borderColor: 'border-brand-blue',
     textColor: 'text-brand-blue',
   },
@@ -31,10 +27,7 @@ export const ticketTiers = [
     description: 'For academics and non-profit organisations',
     price: 24500, // Price in cents (AUD)
     priceDisplay: '$245',
-    earlyBirdPrice: 14700, // 40% off = $147
-    earlyBirdPriceDisplay: '$147',
     stripePriceId: process.env.STRIPE_PRICE_ACADEMIC || '',
-    stripeEarlyBirdPriceId: process.env.STRIPE_PRICE_ACADEMIC_EARLYBIRD || '',
     borderColor: 'border-teal',
     textColor: 'text-teal',
   },
@@ -44,10 +37,7 @@ export const ticketTiers = [
     description: 'Students, unwaged, or independent researchers',
     price: 7500, // Price in cents (AUD)
     priceDisplay: '$75',
-    earlyBirdPrice: 4500, // 40% off = $45
-    earlyBirdPriceDisplay: '$45',
     stripePriceId: process.env.STRIPE_PRICE_CONCESSION || '',
-    stripeEarlyBirdPriceId: process.env.STRIPE_PRICE_CONCESSION_EARLYBIRD || '',
     borderColor: 'border-cyan',
     textColor: 'text-cyan',
   },
