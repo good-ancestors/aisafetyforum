@@ -203,11 +203,12 @@ export async function createMultiTicketCheckout(data: MultiTicketFormData) {
       }
       discount = validation.discount!;
 
-      // Apply discount to total
+      // Apply discount to order total
       if (discount.type === 'percentage') {
         discountAmount = Math.round(subtotal * (discount.value / 100));
       } else if (discount.type === 'fixed') {
-        discountAmount = discount.value;
+        // Fixed discount is a flat amount off the entire order, not per-ticket
+        discountAmount = Math.min(discount.value, subtotal);
       } else if (discount.type === 'free') {
         discountAmount = subtotal;
       }
@@ -428,11 +429,12 @@ export async function createInvoiceOrder(data: InvoiceFormData) {
       }
       discount = validation.discount!;
 
-      // Apply discount to total
+      // Apply discount to order total
       if (discount.type === 'percentage') {
         discountAmount = Math.round(subtotal * (discount.value / 100));
       } else if (discount.type === 'fixed') {
-        discountAmount = discount.value;
+        // Fixed discount is a flat amount off the entire order, not per-ticket
+        discountAmount = Math.min(discount.value, subtotal);
       } else if (discount.type === 'free') {
         discountAmount = subtotal;
       }

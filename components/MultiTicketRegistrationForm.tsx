@@ -243,6 +243,7 @@ export default function MultiTicketRegistrationForm({
                 purchaserOrg={form.purchaserOrg}
                 purchaserFreeTicket={form.purchaserFreeTicket}
                 totalAttendees={form.attendees.length}
+                discount={form.couponApplied ? form.discount : null}
                 onUpdateAttendee={form.updateAttendee}
                 onRemoveAttendee={form.removeAttendee}
                 onEmailBlur={form.handleAttendeeEmailBlur}
@@ -332,7 +333,7 @@ export default function MultiTicketRegistrationForm({
         )}
 
         {/* Order Summary */}
-        <OrderSummary totals={form.totals} ticketCount={form.attendees.length} />
+        <OrderSummary totals={form.totals} ticketCount={form.attendees.length} discount={form.couponApplied ? form.discount : null} />
 
         {/* Validation Alert */}
         {!form.isFormValid && !isSubmitting && (

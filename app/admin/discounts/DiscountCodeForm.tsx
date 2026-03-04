@@ -184,7 +184,7 @@ export default function DiscountCodeForm({
             className="w-full px-3 py-2 border border-border rounded text-sm"
           >
             <option value="percentage">Percentage Off</option>
-            <option value="fixed">Fixed Amount Off</option>
+            <option value="fixed">Fixed Amount Off (per order)</option>
             <option value="free">Free Ticket (100% off)</option>
           </select>
         </div>
