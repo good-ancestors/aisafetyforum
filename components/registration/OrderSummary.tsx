@@ -7,12 +7,19 @@ interface OrderTotals {
   freeTicketCount: number;
 }
 
+interface DiscountInfo {
+  type: 'percentage' | 'fixed' | 'free';
+  value: number;
+  description?: string;
+}
+
 interface OrderSummaryProps {
   totals: OrderTotals;
   ticketCount: number;
+  discount?: DiscountInfo | null;
 }
 
-export default function OrderSummary({ totals, ticketCount }: OrderSummaryProps) {
+export default function OrderSummary({ totals, ticketCount, discount }: OrderSummaryProps) {
   return (
     <section className="bg-light rounded-lg p-6">
       <h2 className="text-lg font-bold text-navy mb-4">Order Summary</h2>
@@ -29,7 +36,12 @@ export default function OrderSummary({ totals, ticketCount }: OrderSummaryProps)
         )}
         {totals.discountAmount > 0 && (
           <div className="flex justify-between text-green-600">
-            <span>Discount</span>
+            <span>
+              {discount?.description || 'Discount'}
+              {discount?.type === 'fixed' && (
+                <span className="text-xs text-green-500 ml-1">(applied to order)</span>
+              )}
+            </span>
             <span>-${(totals.discountAmount / 100).toFixed(2)}</span>
           </div>
         )}

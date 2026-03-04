@@ -189,7 +189,7 @@ export default function AttendeeCard({
                     <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
                     <div className="font-bold text-green-600">$0.00</div>
                   </>
-                ) : discount ? (
+                ) : discount && discount.type !== 'fixed' ? (
                   <>
                     <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
                     <div className="font-bold text-green-600">

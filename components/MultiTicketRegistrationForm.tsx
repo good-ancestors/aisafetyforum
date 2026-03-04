@@ -333,7 +333,7 @@ export default function MultiTicketRegistrationForm({
         )}
 
         {/* Order Summary */}
-        <OrderSummary totals={form.totals} ticketCount={form.attendees.length} />
+        <OrderSummary totals={form.totals} ticketCount={form.attendees.length} discount={form.couponApplied ? form.discount : null} />
 
         {/* Validation Alert */}
         {!form.isFormValid && !isSubmitting && (

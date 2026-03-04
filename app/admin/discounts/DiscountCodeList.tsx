@@ -117,7 +117,7 @@ export default function DiscountCodeList({ discountCodes }: DiscountCodeListProp
       case 'percentage':
         return `${value}% off`;
       case 'fixed':
-        return `$${(value / 100).toFixed(2)} off`;
+        return `$${(value / 100).toFixed(2)} off order`;
       case 'free':
         return 'Free ticket';
       default:
