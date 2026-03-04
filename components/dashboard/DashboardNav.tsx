@@ -44,7 +44,7 @@ export default function DashboardNav({ isAdmin }: DashboardNavProps) {
   return (
     <nav className="bg-white border-b border-border">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex items-center gap-1 overflow-x-auto">
+        <div className="flex items-center gap-1 overflow-x-auto overflow-y-hidden">
           {/* User Navigation - prefetch disabled to reduce server load */}
           {userItems.map((item) => (
             <Link
