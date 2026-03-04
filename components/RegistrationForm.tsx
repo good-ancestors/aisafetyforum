@@ -277,6 +277,18 @@ export default function RegistrationForm() {
                             <div className="text-sm text-muted line-through">{tier.priceDisplay}</div>
                             <div className="text-xl font-bold text-green-600">$0.00 <span className="text-sm font-normal text-muted">inc GST</span></div>
                           </>
+                        ) : couponApplied && discount && discount.type === 'percentage' ? (
+                          <>
+                            <div className="text-sm text-muted line-through">{tier.priceDisplay}</div>
+                            <div className={`text-xl font-bold ${tier.textColor}`}>
+                              ${(Math.round(tier.price * (1 - discount.value / 100)) / 100).toFixed(0)} <span className="text-sm font-normal text-muted">inc GST</span>
+                            </div>
+                          </>
+                        ) : couponApplied && discount && discount.type === 'free' ? (
+                          <>
+                            <div className="text-sm text-muted line-through">{tier.priceDisplay}</div>
+                            <div className="text-xl font-bold text-green-600">$0.00 <span className="text-sm font-normal text-muted">inc GST</span></div>
+                          </>
                         ) : (
                           <div className={`text-xl font-bold ${tier.textColor}`}>
                             {tier.priceDisplay} <span className="text-sm font-normal text-muted">inc GST</span>

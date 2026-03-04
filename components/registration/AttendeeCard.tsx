@@ -11,6 +11,27 @@ export type AttendeeFormData = {
   freeTicketReason?: string | null;
 };
 
+interface Discount {
+  type: 'percentage' | 'fixed' | 'free';
+  value: number;
+}
+
+function formatCents(cents: number): string {
+  const dollars = cents / 100;
+  return dollars % 1 === 0 ? `$${dollars}` : `$${dollars.toFixed(2)}`;
+}
+
+function getDiscountedPrice(price: number, discount: Discount): number | null {
+  if (discount.type === 'percentage') {
+    return Math.round(price * (1 - discount.value / 100));
+  }
+  if (discount.type === 'free') {
+    return 0;
+  }
+  // Fixed discounts apply to the total, not per-tier
+  return null;
+}
+
 interface AttendeeCardProps {
   index: number;
   attendee: AttendeeFormData;
@@ -21,6 +42,7 @@ interface AttendeeCardProps {
   purchaserOrg: string;
   purchaserFreeTicket: string | null;
   totalAttendees: number;
+  discount?: Discount | null;
   onUpdateAttendee: (index: number, field: keyof AttendeeFormData, value: string) => void;
   onRemoveAttendee: (index: number) => void;
   onEmailBlur: (index: number) => void;
@@ -36,6 +58,7 @@ export default function AttendeeCard({
   purchaserOrg,
   purchaserFreeTicket,
   totalAttendees,
+  discount,
   onUpdateAttendee,
   onRemoveAttendee,
   onEmailBlur,
@@ -168,6 +191,13 @@ export default function AttendeeCard({
                   <>
                     <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
                     <div className="font-bold text-green-600">$0.00</div>
+                  </>
+                ) : discount && getDiscountedPrice(tier.price, discount) !== null ? (
+                  <>
+                    <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
+                    <div className={`font-bold ${tier.textColor}`}>
+                      {formatCents(getDiscountedPrice(tier.price, discount)!)}
+                    </div>
                   </>
                 ) : (
                   <div className={`font-bold ${tier.textColor}`}>{tier.priceDisplay}</div>
