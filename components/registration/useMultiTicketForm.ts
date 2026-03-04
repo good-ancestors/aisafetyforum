@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { validateCoupon } from '@/lib/coupon-actions';
 import { checkFreeTicketEmail } from '@/lib/free-ticket-actions';
-import { ticketTiers, isEarlyBirdActive, type TicketTierId } from '@/lib/stripe-config';
+import { ticketTiers, earlyBirdCouponCode, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 import type { AttendeeFormData } from './AttendeeCard';
 
 interface InitialProfile {
@@ -69,7 +69,8 @@ export function useMultiTicketForm({
   const [orgABN, setOrgABN] = useState('');
   const [poNumber, setPoNumber] = useState('');
 
-  const earlyBird = isEarlyBirdActive();
+  // Early bird banner visibility (UI only — coupon enforcement is server-side)
+  const earlyBirdBannerVisible = new Date() < new Date(earlyBirdDeadline) && !couponApplied;
 
   // --- Free ticket check ---
   async function checkEmailForFreeTicket(email: string): Promise<string | null> {
@@ -162,8 +163,8 @@ export function useMultiTicketForm({
   }
 
   // --- Coupon handlers ---
-  async function handleApplyCoupon() {
-    if (!couponCode.trim()) {
+  async function applyCouponCode(code: string) {
+    if (!code.trim()) {
       setCouponError('Please enter a coupon code');
       return;
     }
@@ -172,9 +173,10 @@ export function useMultiTicketForm({
     setCouponError(null);
 
     const firstTicketType = attendees[0].ticketType || 'standard';
-    const result = await validateCoupon(couponCode, purchaserEmail, firstTicketType as TicketTierId);
+    const result = await validateCoupon(code, purchaserEmail, firstTicketType as TicketTierId);
 
     if (result.valid && result.discount) {
+      setCouponCode(code);
       setCouponApplied(true);
       setDiscount(result.discount);
       setCouponError(null);
@@ -187,11 +189,20 @@ export function useMultiTicketForm({
     setValidatingCoupon(false);
   }
 
+  async function handleApplyCoupon() {
+    await applyCouponCode(couponCode);
+  }
+
   function handleRemoveCoupon() {
     setCouponCode('');
     setCouponApplied(false);
     setDiscount(null);
     setCouponError(null);
+  }
+
+  async function applyEarlyBirdCoupon() {
+    setCouponCode(earlyBirdCouponCode);
+    await applyCouponCode(earlyBirdCouponCode);
   }
 
   // --- Calculations ---
@@ -209,7 +220,7 @@ export function useMultiTicketForm({
           if (hasFreeTicket) {
             freeTicketCount++;
           } else {
-            subtotal += earlyBird ? tier.earlyBirdPrice : tier.price;
+            subtotal += tier.price;
           }
         }
       }
@@ -311,6 +322,7 @@ export function useMultiTicketForm({
     validatingCoupon,
     handleApplyCoupon,
     handleRemoveCoupon,
+    applyEarlyBirdCoupon,
 
     // Payment
     paymentMethod,
@@ -321,7 +333,7 @@ export function useMultiTicketForm({
     setPoNumber,
 
     // Computed
-    earlyBird,
+    earlyBirdBannerVisible,
     totals,
     validationErrors,
     isFormValid,

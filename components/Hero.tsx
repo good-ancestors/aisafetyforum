@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { eventConfig } from '@/lib/config';
+import ScrollToButton from './ScrollToButton';
 
 export default function Hero() {
   return (
@@ -19,7 +19,7 @@ export default function Hero() {
       <div className="max-w-[800px] mx-auto px-8 py-20 relative text-center">
         <div className="inline-flex items-center gap-2 bg-[rgba(0,212,255,0.15)] border border-[rgba(0,212,255,0.3)] px-4 py-2 rounded text-sm font-semibold mb-6 uppercase tracking-wider">
           <span className="w-2 h-2 bg-cyan rounded-full shadow-[0_0_10px_var(--cyan)]" />
-          {eventConfig.year} Forum
+          AI Safety Forum {eventConfig.year}
         </div>
         <h1 className="font-serif text-[clamp(2.5rem,5vw,3.5rem)] font-bold leading-tight mb-6">
           Charting Australia&apos;s Course in AI Safety and Governance
@@ -31,9 +31,9 @@ export default function Hero() {
           Join leading researchers, policymakers, and industry experts for two days of rigorous dialogue on the future of AI safety in Australia, grounded in the science of AI safety as explored in the <a href="https://internationalaisafetyreport.org/" target="_blank" rel="noopener noreferrer" className="underline hover:text-cyan">International AI Safety Report</a>.
         </p>
         <div className="flex gap-4 flex-wrap justify-center">
-          <Link href="#register" className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors">
+          <ScrollToButton targetId="register" className="inline-flex items-center gap-2 px-7 py-3.5 text-[0.95rem] font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors">
             Join Us
-          </Link>
+          </ScrollToButton>
         </div>
       </div>
     </section>

@@ -102,9 +102,7 @@ export async function resendInvoiceEmail(orderId: string) {
     // Import PDF generation dynamically
     const { generateInvoicePDF, calculateGST } = await import('./invoice-pdf');
     const { sendInvoiceEmail } = await import('./brevo');
-    const { ticketTiers, isEarlyBirdActive } = await import('./stripe-config');
-
-    const earlyBird = isEarlyBirdActive();
+    const { ticketTiers } = await import('./stripe-config');
 
     // Build line items from registrations
     const ticketCounts: Record<string, { name: string; count: number; price: number }> = {};
@@ -112,18 +110,15 @@ export async function resendInvoiceEmail(orderId: string) {
       const tier = ticketTiers.find((t) => reg.ticketType.includes(t.name));
       if (tier) {
         const key = tier.id;
-        const price = earlyBird ? tier.earlyBirdPrice : tier.price;
         if (!ticketCounts[key]) {
-          ticketCounts[key] = { name: tier.name, count: 0, price };
+          ticketCounts[key] = { name: tier.name, count: 0, price: tier.price };
         }
         ticketCounts[key].count++;
       }
     }
 
     const lineItems = Object.values(ticketCounts).map(({ name, count, price }) => ({
-      description: earlyBird
-        ? `${name} Ticket (Early Bird) - AI Safety Forum 2026`
-        : `${name} Ticket - AI Safety Forum 2026`,
+      description: `${name} Ticket - AI Safety Forum 2026`,
       quantity: count,
       unitPrice: price,
       amount: price * count,

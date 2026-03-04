@@ -49,6 +49,10 @@
   --border: #e0e4e8;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body {
   overflow-x: hidden;
 }

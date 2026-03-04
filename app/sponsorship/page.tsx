@@ -74,13 +74,6 @@ export default function SponsorPage() {
       logo: '/logos/good-ancestors.svg',
     },
     {
-      name: 'CSIRO (Data61)',
-      lead: 'Liming Zhu',
-      title: 'Director',
-      website: 'https://www.csiro.au/en/about/people/business-units/data61',
-      logo: '/logos/csiro.png',
-    },
-    {
       name: 'University of Sydney (Centre for AI, Trust and Governance)',
       lead: 'Kimberlee Weatherall',
       title: 'Co-Director',
@@ -93,6 +86,13 @@ export default function SponsorPage() {
       title: 'Executive Director',
       website: 'https://techpolicy.au/',
       logo: '/logos/tpdi.png',
+    },
+    {
+      name: 'CSIRO (Data61)',
+      lead: 'Liming Zhu',
+      title: 'Director',
+      website: 'https://www.csiro.au/en/about/people/business-units/data61',
+      logo: '/logos/csiro.png',
     },
     {
       name: 'Timaeus',

@@ -1,5 +1,5 @@
 import { Libre_Baskerville, Public_Sans } from "next/font/google";
-import { eventConfig, siteConfig } from "@/lib/config";
+import { eventConfig, siteConfig, isProductionDomain } from "@/lib/config";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -56,11 +56,11 @@ export const metadata: Metadata = {
     description: `${eventConfig.datesLong} in ${eventConfig.venue}. ${siteDescription}`,
   },
   robots: {
-    index: true,
-    follow: true,
+    index: isProductionDomain,
+    follow: isProductionDomain,
     googleBot: {
-      index: true,
-      follow: true,
+      index: isProductionDomain,
+      follow: isProductionDomain,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,

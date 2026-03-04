@@ -11,10 +11,10 @@ export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: 'Contact Us',
-  description: 'Get in touch with the Australian AI Safety Forum organizing team.',
+  description: 'Get in touch with the Australian AI Safety Forum organising team.',
   openGraph: {
     title: `Contact Us - Australian AI Safety Forum ${eventConfig.year}`,
-    description: 'Get in touch with the Australian AI Safety Forum organizing team.',
+    description: 'Get in touch with the Australian AI Safety Forum organising team.',
   },
 };
 
@@ -51,7 +51,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-navy mb-2">Organized By</h3>
+                  <h3 className="font-bold text-navy mb-2">Organised By</h3>
                   <p className="text-body">{eventConfig.organization.name}</p>
                   <p className="text-sm text-muted mt-1">ABN: {eventConfig.organization.abn}</p>
                 </div>

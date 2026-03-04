@@ -1,6 +1,6 @@
 'use client';
 
-import { ticketTiers, isEarlyBirdActive, type TicketTierId } from '@/lib/stripe-config';
+import { ticketTiers, type TicketTierId } from '@/lib/stripe-config';
 
 export type AttendeeFormData = {
   email: string;
@@ -46,8 +46,6 @@ export default function AttendeeCard({
   const role = isFirstAndPurchaser ? purchaserRole : attendee.role;
   const organisation = isFirstAndPurchaser ? purchaserOrg : attendee.organisation;
   const freeReason = isFirstAndPurchaser ? purchaserFreeTicket : attendee.freeTicketReason;
-
-  const earlyBird = isEarlyBirdActive();
 
   return (
     <div className="border border-border rounded-lg p-4 relative">
@@ -168,15 +166,8 @@ export default function AttendeeCard({
               <div className="text-right">
                 {freeReason ? (
                   <>
-                    <div className="text-xs text-muted line-through">
-                      {earlyBird ? tier.earlyBirdPriceDisplay : tier.priceDisplay}
-                    </div>
-                    <div className="font-bold text-green-600">$0.00</div>
-                  </>
-                ) : earlyBird ? (
-                  <>
                     <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
-                    <div className={`font-bold ${tier.textColor}`}>{tier.earlyBirdPriceDisplay}</div>
+                    <div className="font-bold text-green-600">$0.00</div>
                   </>
                 ) : (
                   <div className={`font-bold ${tier.textColor}`}>{tier.priceDisplay}</div>

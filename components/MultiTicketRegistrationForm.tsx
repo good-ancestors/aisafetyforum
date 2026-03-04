@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { AttendeeCard, OrderSummary, PaymentMethodSelector } from '@/components/registration';
 import { useMultiTicketForm } from '@/components/registration/useMultiTicketForm';
 import { createMultiTicketCheckout, createInvoiceOrder, type MultiTicketFormData } from '@/lib/registration-actions';
-import { earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
+import { earlyBirdCouponCode, earlyBirdDeadline, type TicketTierId } from '@/lib/stripe-config';
 
 interface InitialProfile {
   email: string;
@@ -116,19 +116,29 @@ export default function MultiTicketRegistrationForm({
       )}
 
       <div className="space-y-8">
-        {/* Early Bird Banner */}
-        {form.earlyBird && (
+        {/* Early Bird Coupon Banner */}
+        {form.earlyBirdBannerVisible && !preValidatedCode && (
           <div className="bg-gradient-to-r from-navy to-brand-blue text-white rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-cyan/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-cyan/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-bold">Early Bird Discount Available!</p>
+                  <p className="text-sm opacity-90">Use code <strong>{earlyBirdCouponCode}</strong> before {deadlineDate}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold">Early Bird Pricing — 40% Off!</p>
-                <p className="text-sm opacity-90">Register before {deadlineDate} to save</p>
-              </div>
+              <button
+                type="button"
+                onClick={() => form.applyEarlyBirdCoupon()}
+                disabled={form.validatingCoupon}
+                className="px-4 py-2 text-sm font-bold bg-white text-navy rounded-md hover:bg-white/90 transition-colors flex-shrink-0 disabled:opacity-50"
+              >
+                {form.validatingCoupon ? 'Applying...' : 'Apply'}
+              </button>
             </div>
           </div>
         )}
