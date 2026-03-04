@@ -11,6 +11,11 @@ export type AttendeeFormData = {
   freeTicketReason?: string | null;
 };
 
+interface ActiveDiscount {
+  type: 'percentage' | 'fixed' | 'free';
+  value: number;
+}
+
 interface AttendeeCardProps {
   index: number;
   attendee: AttendeeFormData;
@@ -21,9 +26,23 @@ interface AttendeeCardProps {
   purchaserOrg: string;
   purchaserFreeTicket: string | null;
   totalAttendees: number;
+  discount?: ActiveDiscount | null;
   onUpdateAttendee: (index: number, field: keyof AttendeeFormData, value: string) => void;
   onRemoveAttendee: (index: number) => void;
   onEmailBlur: (index: number) => void;
+}
+
+function formatDiscountedPrice(priceInCents: number, discount: ActiveDiscount): string {
+  let discounted: number;
+  if (discount.type === 'free') {
+    discounted = 0;
+  } else if (discount.type === 'percentage') {
+    discounted = priceInCents - Math.round(priceInCents * discount.value / 100);
+  } else {
+    discounted = Math.max(0, priceInCents - discount.value);
+  }
+  const dollars = discounted / 100;
+  return dollars % 1 === 0 ? `$${dollars}` : `$${dollars.toFixed(2)}`;
 }
 
 export default function AttendeeCard({
@@ -36,6 +55,7 @@ export default function AttendeeCard({
   purchaserOrg,
   purchaserFreeTicket,
   totalAttendees,
+  discount,
   onUpdateAttendee,
   onRemoveAttendee,
   onEmailBlur,
@@ -168,6 +188,13 @@ export default function AttendeeCard({
                   <>
                     <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
                     <div className="font-bold text-green-600">$0.00</div>
+                  </>
+                ) : discount ? (
+                  <>
+                    <div className="text-xs text-muted line-through">{tier.priceDisplay}</div>
+                    <div className="font-bold text-green-600">
+                      {formatDiscountedPrice(tier.price, discount)}
+                    </div>
                   </>
                 ) : (
                   <div className={`font-bold ${tier.textColor}`}>{tier.priceDisplay}</div>

@@ -243,6 +243,7 @@ export default function MultiTicketRegistrationForm({
                 purchaserOrg={form.purchaserOrg}
                 purchaserFreeTicket={form.purchaserFreeTicket}
                 totalAttendees={form.attendees.length}
+                discount={form.couponApplied ? form.discount : null}
                 onUpdateAttendee={form.updateAttendee}
                 onRemoveAttendee={form.removeAttendee}
                 onEmailBlur={form.handleAttendeeEmailBlur}
